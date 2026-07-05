@@ -23,7 +23,10 @@ Errors at the public boundary are returned as ``{"error": ...}`` by the
 from __future__ import annotations
 
 import hashlib
+import logging
+import os
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any, Optional
@@ -437,14 +440,25 @@ def _form_compatible(rule: dict, form: str) -> bool:
 
 
 def _llm_extract_section(
-    section_text: str, rules: list[dict], period: str, *, max_chars: int = 12000,
+    section_text: str, rules: list[dict], period: str, *, max_chars: int | None = None,
+    pdf_url: str | None = None, section_key: str | None = None,
 ) -> dict[str, dict]:
     """One LLM call over a section requesting every indicator in `rules`.
 
     Returns ``{indicator_name: {value, unit, note}}``. On any failure (no API
     key, parse error) returns one entry per rule with ``value=None`` and a note.
+
+    When ``pdf_url`` and ``section_key`` are provided, the raw ``{records:[...]}``
+    response is persisted to and read from the section cache
+    (:mod:`llm_section_cache`). On a full hit (all wanted indicators present in
+    the cached ``meta.wanted``) the LLM is not called; on a partial hit the
+    delta is fetched and merged into the cached response.
     """
     import cnreport_tools as T
+    import llm_section_cache as LSC
+
+    if max_chars is None:
+        max_chars = int(os.environ.get("LLM_MAX_CHARS", "12000"))
 
     cfg = T.llm_config()
     if not cfg["api_key"]:
@@ -453,22 +467,73 @@ def _llm_extract_section(
             for r in rules
         }
 
+    wanted_names = [r["name"] for r in rules]
+    rh = rules_hash() if (pdf_url and section_key) else ""
+
+    # Section cache lookup (only when caller supplied pdf_url + section_key).
+    # Cache read/write are wrapped in try/except so a broken cache never blocks
+    # the LLM path; on any error we fall through to a fresh LLM call.
+    _log = logging.getLogger(__name__)
+    cached = None
+    if pdf_url and section_key:
+        try:
+            cached = LSC.get(pdf_url, section_key, period, rh)
+        except Exception as e:
+            _log.debug("section cache read error: %s", e)
+            cached = None
+
+    if cached is not None:
+        cached_records = LSC.cached_subset(cached, wanted_names)
+        cached_norm = {LSC._normalize_name(r.get("indicator", "")) for r in cached_records}
+        wanted_norm = {LSC._normalize_name(n) for n in wanted_names}
+        missing_norm = wanted_norm - cached_norm
+        if not missing_norm:
+            # Full hit: every wanted indicator is in the cache. No LLM call.
+            return _records_to_results(cached_records, rules, note="llm-section-cache")
+        # Partial hit: fetch the delta, merge, write back, return merged.
+        delta_rules = [r for r in rules if LSC._normalize_name(r["name"]) in missing_norm]
+        delta_out = _llm_fetch_records(section_text, delta_rules, period, max_chars)
+        if "error" in delta_out:
+            return _records_to_results(cached_records, rules, note="llm-section-cache")
+        delta_records = list(delta_out.get("records") or [])
+        merged = list(cached_records) + [
+            r for r in delta_records
+            if LSC._normalize_name(r.get("indicator", "")) not in cached_norm
+        ]
+        try:
+            LSC.put(pdf_url, section_key, period, rh, merged)
+        except Exception as e:
+            _log.debug("section cache write error: %s", e)
+        return _records_to_results(merged, rules, note="llm-section-cache")
+
+    # Cache miss (or cache disabled / no pdf_url/section_key): call the LLM.
+    fetched = _llm_fetch_records(section_text, rules, period, max_chars)
+    if "error" in fetched:
+        return fetched["error"]
+    if pdf_url and section_key:
+        try:
+            LSC.put(pdf_url, section_key, period, rh, fetched.get("records") or [])
+        except Exception as e:
+            _log.debug("section cache write error: %s", e)
+    return _records_to_results(fetched.get("records") or [], rules, note="llm")
+
+
+def _llm_fetch_records(
+    section_text: str, rules: list[dict], period: str, max_chars: int,
+) -> dict:
+    """One LLM call → ``{"records": [...]}`` or ``{"error": {name: {value:None, note}}}``.
+
+    Pure LLM call + parse; no cache reads or writes. Returns the raw records so
+    the caller can persist them, and the per-rule error map for failure paths.
+    """
+    import cnreport_tools as T
+
     snippet = section_text[:max_chars]
     wanted = []
     for r in rules:
         hint = (r.get("source") or {}).get("schema_hint") or {}
         wanted.append({"indicator": r["name"], "unit": r.get("unit", ""), **hint})
 
-    item_schema = {
-        "type": "object",
-        "properties": {
-            "indicator": {"type": "string"},
-            "value": {"type": ["string", "number", "null"]},
-            "period": {"type": "string"},
-            "unit": {"type": "string"},
-        },
-        "required": ["indicator", "value"],
-    }
     system = (
         "You extract structured financial figures from Chinese annual-report text. "
         "For each requested indicator, return its value for the requested period. "
@@ -483,11 +548,22 @@ def _llm_extract_section(
         if not isinstance(records, list):
             records = []
     except Exception as e:
-        return {
+        return {"error": {
             r["name"]: {"value": None, "unit": r.get("unit", ""), "note": f"llm error: {type(e).__name__}: {e}"}
             for r in rules
-        }
+        }}
+    return {"records": records}
 
+
+def _records_to_results(
+    records: list[dict], rules: list[dict], *, note: str,
+) -> dict[str, dict]:
+    """Map a ``{records:[{indicator,value,unit}]}`` payload to ``{name: {value, unit, note}}``.
+
+    Missing indicators get ``value=None`` and ``note="<note>: not returned"``
+    so the caller can distinguish a cache hit that was complete from one that
+    had a partial LLM response originally.
+    """
     by_name: dict[str, dict] = {}
     for rec in records:
         if not isinstance(rec, dict):
@@ -498,7 +574,7 @@ def _llm_extract_section(
         by_name[_normalize(nm)] = {
             "value": rec.get("value"),
             "unit": rec.get("unit") or "",
-            "note": "llm",
+            "note": note,
         }
     out: dict[str, dict] = {}
     for r in rules:
@@ -506,18 +582,28 @@ def _llm_extract_section(
         if key in by_name:
             out[r["name"]] = by_name[key]
         else:
-            out[r["name"]] = {"value": None, "unit": r.get("unit", ""), "note": "llm: not returned"}
+            out[r["name"]] = {"value": None, "unit": r.get("unit", ""),
+                              "note": f"{note}: not returned" if note != "llm" else "llm: not returned"}
     return out
 
 
 def _run_extractor(
     section_text: str, rule: dict, period: str, extractor_mode: str = "auto",
     llm_cache: Optional[dict] = None,
+    *,
+    pdf_url: str | None = None,
+    section_key: str | None = None,
 ) -> dict:
     """Dispatch one report rule to its extractor, honoring ``extractor_mode``.
 
     ``llm_cache`` (when provided) carries the batched LLM result for this section
     so a single indicator lookup reuses the per-section call instead of re-querying.
+
+    When ``pdf_url`` + ``section_key`` are provided and the rule resolves to the
+    LLM extractor, the persistent section cache (``llm_section_cache``) is
+    consulted first. A hit returns the cached record with
+    ``note: "llm-section-cache"``; a miss falls through to ``_llm_extract_section``
+    and the result is written back to the cache.
     """
     declared = rule.get("extractor") or (rule.get("source") or {}).get("extractor") or "llm"
     if extractor_mode == "llm":
@@ -534,7 +620,10 @@ def _run_extractor(
     if effective == "llm":
         if llm_cache is not None and rule["name"] in llm_cache:
             return llm_cache[rule["name"]]
-        result = _llm_extract_section(section_text, [rule], period)
+        result = _llm_extract_section(
+            section_text, [rule], period,
+            pdf_url=pdf_url, section_key=section_key,
+        )
         return result.get(rule["name"], {"value": None, "unit": rule.get("unit", ""), "note": "llm: empty"})
     if effective.startswith("python:"):
         import indicators_extractors
@@ -564,7 +653,10 @@ def _resolve_via_report(
             period=period, provenance=pdf_url,
             note=f"section not found; tried {matched}",
         )
-    res = _run_extractor(section_text, rule, period, extractor_mode, llm_cache=llm_cache)
+    res = _run_extractor(
+        section_text, rule, period, extractor_mode, llm_cache=llm_cache,
+        pdf_url=pdf_url, section_key=matched,
+    )
     return _value_obj(
         res.get("value"), rule=rule, source=f"report:{matched}",
         extractor=res.get("note", "").startswith("llm") and "llm"
@@ -884,6 +976,7 @@ def extract_indicators(
     results: dict[str, dict] = {}
     missing: list[dict] = []
     unresolved: list[dict] = []
+    section_cache_reuse = 0  # incremented in the LLM per-section loop below
 
     if indicators is not None:
         for nm in unknown:
@@ -945,7 +1038,15 @@ def extract_indicators(
             python_rules = [r for r in rules_in_sec if _effective_extractor(r, extractor_mode).startswith("python:")]
             llm_cache: dict[str, dict] = {}
             if llm_rules:
-                llm_cache = _llm_extract_section(section_text_cache[sec], llm_rules, "annual")
+                llm_cache = _llm_extract_section(
+                    section_text_cache[sec], llm_rules, "annual",
+                    pdf_url=ctx.pdf_url, section_key=sec,
+                )
+                # Count records served from the section cache.
+                for r in llm_rules:
+                    rec = llm_cache.get(r["name"], {})
+                    if (rec.get("note") or "").startswith("llm-section-cache"):
+                        section_cache_reuse += 1
             for r in llm_rules:
                 rec = llm_cache.get(r["name"], {"value": None, "note": "llm: empty"})
                 results[r["name"]] = _value_obj(
@@ -1005,6 +1106,7 @@ def extract_indicators(
         "indicators": results,
         "missing": missing,
         "unresolved": unresolved,
+        "section_cache_reuse": section_cache_reuse,
     }
     if stem is not None:
         report_cache.write_cached_indicators(stem, bundle)
@@ -1116,6 +1218,7 @@ def extract_indicators_by_position(
                 "indicators": {},
                 "missing": [],
                 "unresolved": [],
+                "section_cache_reuse": 0,
             }
 
     bundle["csv_path"] = str(_resolve_csv_path(csv_path))
@@ -1224,6 +1327,23 @@ def render_methodology() -> str:
         "The engine dispatches by name; no engine change is required. Python extractors "
         "receive the already-sliced, cache-backed section text and never touch the PDF "
         "themselves. Use `--extractor python` on the script to run LLM-free where possible."
+    )
+    lines.append("")
+    lines.append("## LLM section cache")
+    lines.append("")
+    lines.append(
+        "The LLM extractor persists the raw `{records:[...]}` response to "
+        "`<CNREPORT_CACHE_DIR>/llm_sections/<key>.json`, keyed by "
+        "`(pdf_url, section_key, period, rules_hash)`. After a section has been "
+        "extracted once, subsequent runs — including single-indicator lookups via "
+        "`get_indicator` and re-runs with different indicator subsets — reuse the "
+        "cached records and only re-query the LLM for indicators not yet cached.\n"
+        "\n"
+        "The bundle exposes a `section_cache_reuse: <int>` field that counts records "
+        "served from the section cache in that run (distinct from `cached: true`, "
+        "which indicates a full bundle hit). The cache is on by default; set "
+        "`LLM_SECTION_CACHE=off` to disable it at runtime. CNINFO reports are "
+        "immutable, so the cache is safe to leave on indefinitely."
     )
     lines.append("")
     return "\n".join(lines)

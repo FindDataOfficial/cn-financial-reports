@@ -609,3 +609,9 @@ Append an entry to `indicator_rules.json`. Required fields: `name`, `module`, `s
 
 The engine dispatches by name; no engine change is required. Python extractors receive the already-sliced, cache-backed section text and never touch the PDF themselves. Use `--extractor python` on the script to run LLM-free where possible.
 
+## LLM section cache
+
+The LLM extractor persists the raw `{records:[...]}` response to `<CNREPORT_CACHE_DIR>/llm_sections/<key>.json`, keyed by `(pdf_url, section_key, period, rules_hash)`. After a section has been extracted once, subsequent runs — including single-indicator lookups via `get_indicator` and re-runs with different indicator subsets — reuse the cached records and only re-query the LLM for indicators not yet cached.
+
+The bundle exposes a `section_cache_reuse: <int>` field that counts records served from the section cache in that run (distinct from `cached: true`, which indicates a full bundle hit). The cache is on by default; set `LLM_SECTION_CACHE=off` to disable it at runtime. CNINFO reports are immutable, so the cache is safe to leave on indefinitely.
+

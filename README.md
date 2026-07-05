@@ -219,6 +219,21 @@ Adding a new Python extractor: write `(section_text, rule, period) -> {value, un
 in `indicators_extractors.py`, call `register("name", fn)`, then set
 `"extractor": "python:name"` on the rule. See `docs/indicators-methodology.md`.
 
+### Section cache (LLM response reuse)
+
+The LLM extractor persists the raw `{records:[...]}` response to
+`<CNREPORT_CACHE_DIR>/llm_sections/<key>.json`, keyed by
+`(pdf_url, section_key, period, rules_hash)`. Once a section has been
+extracted, subsequent runs — including single-indicator lookups via
+`get_indicator` and re-runs with different indicator subsets — reuse the
+cached records and only re-query the LLM for indicators not yet cached.
+
+The bundle exposes a `section_cache_reuse: <int>` field that counts records
+served from the section cache in that run (distinct from `cached: true`,
+which indicates a full bundle hit). Set `LLM_SECTION_CACHE=off` to disable
+the cache at runtime. The cache is on by default; safe to leave on
+indefinitely because CNINFO reports are immutable.
+
 ## Setup
 
 ```bash

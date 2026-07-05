@@ -1,0 +1,8 @@
+{
+  "_source": "Fixture rule set for test_llm_indicator_extract.py. Three report-type rules on balance_sheet with different report_type values, used to exercise form-compat filtering (_form_compatible) across all four periodic forms and the one-LLM-call-per-section contract. Loaded via indicators_client.set_registry_path.",
+  "rules": [
+    {"name": "资产总计", "aliases": ["总资产"], "module": "balance_sheet", "subgroup": "一、资产", "applies_to": {"industry": "*", "sub_types": ["*"], "companies": ["*"], "exclude_companies": []}, "source_type": "report", "source": {"selectors": [], "extractor": "llm"}, "extractor": "llm", "unit": "元", "report_type": "年报/半年报/季报", "period_type": "annual", "direction": "none", "note": "universal report rule — every form"},
+    {"name": "负债合计", "aliases": [], "module": "balance_sheet", "subgroup": "二、负债", "applies_to": {"industry": "*", "sub_types": ["*"], "companies": ["*"], "exclude_companies": []}, "source_type": "report", "source": {"selectors": [], "extractor": "llm"}, "extractor": "llm", "unit": "元", "report_type": "年报", "period_type": "annual", "direction": "none", "note": "annual-only report rule — skipped for 半年报/季报"},
+    {"name": "营业收入", "aliases": [], "module": "balance_sheet", "subgroup": "三、利润", "applies_to": {"industry": "*", "sub_types": ["*"], "companies": ["*"], "exclude_companies": []}, "source_type": "report", "source": {"selectors": [], "extractor": "llm"}, "extractor": "llm", "unit": "元", "period_type": "annual", "direction": "none", "note": "report rule with no report_type — defaults to broadly applicable"}
+  ]
+}
