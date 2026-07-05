@@ -410,14 +410,13 @@ wheels = [
 [[package]]
 name = "cnreport-mcp"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "akshare" },
     { name = "elasticsearch" },
     { name = "fastmcp" },
     { name = "httpx" },
     { name = "jsonschema" },
-    { name = "mcp-models" },
     { name = "pandas", version = "2.3.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "pandas", version = "3.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pypdf" },
@@ -432,7 +431,6 @@ requires-dist = [
     { name = "fastmcp", specifier = ">=2.0" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "jsonschema", specifier = ">=4.0" },
-    { name = "mcp-models", editable = "../models" },
     { name = "pandas", specifier = ">=2.0" },
     { name = "pypdf", specifier = ">=4.0" },
     { name = "python-dotenv", specifier = ">=1.0" },
@@ -1155,17 +1153,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/6e/77/9450b8f251a13affb
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e2/5e/d118fce19f87a2e7d8101c35c8ae0ec289098a4df0ff244cec23e415aca0/mcp-1.28.1-py3-none-any.whl", hash = "sha256:2726bca5e7193f61c5dde8b12500a6de2d9acf6d1a1c0be9e8c2e706437991df", size = 222620, upload-time = "2026-06-26T12:57:27.218Z" },
 ]
-
-[[package]]
-name = "mcp-models"
-version = "0.1.0"
-source = { editable = "../models" }
-dependencies = [
-    { name = "sqlalchemy" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "sqlalchemy", specifier = ">=2.0" }]
 
 [[package]]
 name = "mdurl"
