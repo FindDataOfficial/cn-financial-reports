@@ -1,0 +1,32 @@
+{
+  "totalAnnouncement": 3,
+  "announcements": [
+    {
+      "announcementId": "1219730876",
+      "announcementTitle": "贵州茅台：2023年年度报告",
+      "announcementType": "年度报告",
+      "announcementTime": 1712016000000,
+      "adjunctUrl": "finalpage/2024-04-02/1219730876.PDF",
+      "secCode": "600519",
+      "secName": "贵州茅台"
+    },
+    {
+      "announcementId": "1219730900",
+      "announcementTitle": "贵州茅台：2023年第三季度报告",
+      "announcementType": "第三季度报告",
+      "announcementTime": 1698768000000,
+      "adjunctUrl": "finalpage/2023-10-31/1219730900.PDF",
+      "secCode": "600519",
+      "secName": "贵州茅台"
+    },
+    {
+      "announcementId": "1219730777",
+      "announcementTitle": "贵州茅台：2022年年度报告",
+      "announcementType": "年度报告",
+      "announcementTime": 1680480000000,
+      "adjunctUrl": "finalpage/2023-04-02/1219730777.PDF",
+      "secCode": "600519",
+      "secName": "贵州茅台"
+    }
+  ]
+}

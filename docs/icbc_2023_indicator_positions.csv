@@ -1,0 +1,68 @@
+module,subgroup,indicator,source_type,extractor,unit,applies_to_industry,position_type,selector_chain,matched_selector,matched_section,toc_ordinal,toc_level,char_start,char_end,body_chars,statement,field,report_hint_section,report_hint_ordinal,formula,inputs,resolved,note
+资产负债表,一、资产,资产总计,akshare,auto,元,*,akshare_api,,,,,,,,,balance_sheet,资产总计,7. 2.2 资产负债表项目分析,78,,,yes,akshare-sourced; report hint is the matched TOC section (balance_sheet).
+资产负债表,一、资产,发放贷款及垫款,report,llm,元,bank,section,发放贷款及垫款 → 资产负债表 (fallback),资产负债表,7. 2.2 资产负债表项目分析,78,3,305,152859,152534,,,,,,,yes,
+资产负债表,二、负债,负债合计,akshare,auto,元,*,akshare_api,,,,,,,,,balance_sheet,负债合计,7. 2.2 资产负债表项目分析,78,,,yes,akshare-sourced; report hint is the matched TOC section (balance_sheet).
+资产负债表,二、负债,资产负债率,computed,computed,%,*,derived,,,,,,,,,,,,,负债合计 / 资产总计 * 100,负债合计 | 资产总计,n/a,computed locally; no report position
+资产负债表,二、负债,客户存款,report,llm,元,bank,section,客户存款 → 资产负债表 (fallback),客户存款,19. 客户存款,243,3,268192,269233,1023,,,,,,,yes,
+资产负债表,三、所有者权益,所有者权益合计,akshare,auto,元,*,akshare_api,,,,,,,,,balance_sheet,所有者权益合计,7. 2.2 资产负债表项目分析,78,,,yes,akshare-sourced; report hint is the matched TOC section (balance_sheet).
+资产负债表,四、核心指标,风险加权资产合计,report,llm,元,bank,section,资本充足率 → 风险管理 (fallback),资本充足率,7. 5.1 资本充足率及杠杆率情况,107,3,305,152859,152534,,,,,,,yes,
+资产负债表,四、核心指标,核心一级资本充足率,report,llm,%,bank,section,资本充足率分析 → 资本充足率 → 风险管理 (fallback),资本充足率,7. 5.1 资本充足率及杠杆率情况,107,3,305,152859,152534,,,,,,,yes,
+资产负债表,四、核心指标,一级资本充足率,report,llm,%,bank,section,资本充足率分析 → 资本充足率 → 风险管理 (fallback),资本充足率,7. 5.1 资本充足率及杠杆率情况,107,3,305,152859,152534,,,,,,,yes,
+资产负债表,四、核心指标,资本充足率,report,llm,%,bank,section,资本充足率分析 → 资本充足率 → 风险管理 (fallback),资本充足率,7. 5.1 资本充足率及杠杆率情况,107,3,305,152859,152534,,,,,,,yes,
+资产负债表,四、核心指标,净利差,report,llm,%,bank,section,主要财务指标 → 财务概要 → 讨论与分析 (fallback) → 管理层讨论与分析 (fallback),财务概要,5. 财务概要,5,3,9876,13769,3879,,,,,,,yes,
+资产负债表,四、核心指标,净息差,report,llm,%,bank,section,主要财务指标 → 财务概要 → 讨论与分析 (fallback) → 管理层讨论与分析 (fallback),财务概要,5. 财务概要,5,3,9876,13769,3879,,,,,,,yes,
+资产负债表,四、核心指标,流动性覆盖率,report,llm,%,bank,section,流动性风险 → 风险管理 (fallback),流动性风险,7. 4.5 流动性风险,101,3,305,152859,152534,,,,,,,yes,
+资产负债表,四、核心指标,流动性比例（人民币）,report,llm,%,bank,section,流动性风险 → 风险管理 (fallback),流动性风险,7. 4.5 流动性风险,101,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,贷款和垫款总额,report,llm,元,bank,section,五、贷款质量 → 贷款质量 → 信用风险 (fallback) → 风险管理 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,不良贷款余额,report,llm,元,bank,section,贷款质量 → 信用风险 (fallback) → 风险管理 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,正常类贷款迁徙率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,关注类贷款迁徙率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,次级类贷款迁徙率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,可疑类贷款迁徙率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,不良率,computed,computed,%,bank,derived,,,,,,,,,,,,,不良贷款余额 / 贷款和垫款总额 * 100,不良贷款余额 | 贷款和垫款总额,n/a,computed locally; no report position
+资产负债表,五、贷款质量,拨贷比,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,不良贷款拨备覆盖率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback) → 风险管理 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,逾期贷款率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,重组贷款率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,五、贷款质量,逾期 90 天重组贷款率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+资产负债表,六、员工情况,员工人数,report,python:headcount,人,*,section,人力资源管理 → 员工情况 → 员工 (fallback),人力资源管理,7. 3.8 人力资源管理与员工机构情况,18,3,305,97483,97158,,,,,,,yes,
+资产负债表,七、股本、股东以及估值,前十大股东持仓占总股本比例,report,llm,%,*,section,股本变动 → 股份变动及股东情况 → 股东情况 (fallback) → 主要股东 (fallback),股本变动,8. 股本变动及主要股东持股情况,26,3,97483,107716,10213,,,,,,,yes,
+利润表,一、营业收入,营业收入,akshare,auto,元,*,akshare_api,,,,,,,,,income_statement,营业收入,7. 2.1 利润表项目分析,68,,,yes,akshare-sourced; report hint is the matched TOC section (income_statement).
+利润表,一、营业收入,净利息收入,akshare,auto,元,bank,akshare_api,,,,,,,,,income_statement,利息净收入,7. 2.1 利润表项目分析,68,,,yes,akshare-sourced; report hint is the matched TOC section (income_statement).
+利润表,一、营业收入,手续费及佣金净收入,akshare,auto,元,bank,akshare_api,,,,,,,,,income_statement,手续费及佣金净收入,7. 2.1 利润表项目分析,68,,,yes,akshare-sourced; report hint is the matched TOC section (income_statement).
+利润表,三、营业利润,营业利润,akshare,auto,元,*,akshare_api,,,,,,,,,income_statement,营业利润,7. 2.1 利润表项目分析,68,,,yes,akshare-sourced; report hint is the matched TOC section (income_statement).
+利润表,三、营业利润,营业利润率,computed,computed,%,*,derived,,,,,,,,,,,,,营业利润 / 营业收入 * 100,营业利润 | 营业收入,n/a,computed locally; no report position
+利润表,四、利润总额,利润总额,akshare,auto,元,*,akshare_api,,,,,,,,,income_statement,利润总额,7. 2.1 利润表项目分析,68,,,yes,akshare-sourced; report hint is the matched TOC section (income_statement).
+利润表,五、净利润,净利润,akshare,auto,元,*,akshare_api,,,,,,,,,income_statement,净利润,7. 2.1 利润表项目分析,68,,,yes,akshare-sourced; report hint is the matched TOC section (income_statement).
+利润表,五、净利润,净利润率,computed,computed,%,*,derived,,,,,,,,,,,,,净利润 / 营业收入 * 100,净利润 | 营业收入,n/a,computed locally; no report position
+利润表,六、每股收益,基本每股收益,akshare,auto,元/股,*,akshare_api,,,,,,,,,income_statement,基本每股收益,7. 2.1 利润表项目分析,68,,,yes,akshare-sourced; report hint is the matched TOC section (income_statement).
+利润表,八、区域收入,境内收入,report,llm,元,*,section,分部信息 → 分地区 → 营业收入构成 (fallback),分部信息,五、 分部信息,291,2,299386,310420,11021,,,,,,,yes,
+利润表,八、区域收入,境外收入,report,llm,元,*,section,分部信息 → 分地区 → 营业收入构成 (fallback),分部信息,五、 分部信息,291,2,299386,310420,11021,,,,,,,yes,
+利润表,九、分红、融资及涨跌幅,分红金额,report,llm,元,*,section,利润分配 → 重要事项 (fallback),重要事项,14. 重要事项,32,3,150644,152752,2096,,,,,,,yes,
+现金流量表,一、经营活动产生的现金流量,经营活动产生的现金流量净额,akshare,auto,元,*,akshare_api,,,,,,,,,cashflow,经营活动产生的现金流量净额,7. 2.3 现金流量表项目分析,83,,,yes,akshare-sourced; report hint is the matched TOC section (cashflow).
+现金流量表,二、投资活动产生的现金流量,投资活动产生的现金流量净额,akshare,auto,元,*,akshare_api,,,,,,,,,cashflow,投资活动产生的现金流量净额,7. 2.3 现金流量表项目分析,83,,,yes,akshare-sourced; report hint is the matched TOC section (cashflow).
+现金流量表,三、筹资活动产生的现金流量,筹资活动产生的现金流量净额,akshare,auto,元,*,akshare_api,,,,,,,,,cashflow,筹资活动产生的现金流量净额,7. 2.3 现金流量表项目分析,83,,,yes,akshare-sourced; report hint is the matched TOC section (cashflow).
+现金流量表,五、附注,净利润,akshare,auto,元,*,akshare_api,,,,,,,,,income_statement,净利润,7. 2.1 利润表项目分析,68,,,yes,akshare-sourced; report hint is the matched TOC section (income_statement).
+现金流量表,五、附注,经营活动产生的现金流量净额,akshare,auto,元,*,akshare_api,,,,,,,,,cashflow,经营活动产生的现金流量净额,7. 2.3 现金流量表项目分析,83,,,yes,akshare-sourced; report hint is the matched TOC section (cashflow).
+财务指标,一、人均指标,员工人数,report,python:headcount,人,*,section,人力资源管理 → 员工情况 → 员工 (fallback),人力资源管理,7. 3.8 人力资源管理与员工机构情况,18,3,305,97483,97158,,,,,,,yes,
+财务指标,一、人均指标,人均营业收入,computed,computed,元/人,*,derived,,,,,,,,,,,,,营业收入 / 员工人数,营业收入 | 员工人数,n/a,computed locally; no report position
+财务指标,一、人均指标,人均净利润,computed,computed,元/人,*,derived,,,,,,,,,,,,,净利润 / 员工人数,净利润 | 员工人数,n/a,computed locally; no report position
+财务指标,二、银行特有指标,核心一级资本充足率,report,llm,%,bank,section,资本充足率分析 → 资本充足率 → 风险管理 (fallback),资本充足率,7. 5.1 资本充足率及杠杆率情况,107,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,一级资本充足率,report,llm,%,bank,section,资本充足率分析 → 资本充足率 → 风险管理 (fallback),资本充足率,7. 5.1 资本充足率及杠杆率情况,107,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,资本充足率,report,llm,%,bank,section,资本充足率分析 → 资本充足率 → 风险管理 (fallback),资本充足率,7. 5.1 资本充足率及杠杆率情况,107,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,净利差,report,llm,%,bank,section,主要财务指标 → 财务概要 → 讨论与分析 (fallback) → 管理层讨论与分析 (fallback),财务概要,5. 财务概要,5,3,9876,13769,3879,,,,,,,yes,
+财务指标,二、银行特有指标,净息差,report,llm,%,bank,section,主要财务指标 → 财务概要 → 讨论与分析 (fallback) → 管理层讨论与分析 (fallback),财务概要,5. 财务概要,5,3,9876,13769,3879,,,,,,,yes,
+财务指标,二、银行特有指标,流动性覆盖率,report,llm,%,bank,section,流动性风险 → 风险管理 (fallback),流动性风险,7. 4.5 流动性风险,101,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,风险加权资产合计,report,llm,元,bank,section,资本充足率 → 风险管理 (fallback),资本充足率,7. 5.1 资本充足率及杠杆率情况,107,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,客户存款,report,llm,元,bank,section,客户存款 → 资产负债表 (fallback),客户存款,19. 客户存款,243,3,268192,269233,1023,,,,,,,yes,
+财务指标,二、银行特有指标,发放贷款及垫款,report,llm,元,bank,section,发放贷款及垫款 → 资产负债表 (fallback),资产负债表,7. 2.2 资产负债表项目分析,78,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,贷款和垫款总额,report,llm,元,bank,section,五、贷款质量 → 贷款质量 → 信用风险 (fallback) → 风险管理 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,不良贷款余额,report,llm,元,bank,section,贷款质量 → 信用风险 (fallback) → 风险管理 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,不良率,computed,computed,%,bank,derived,,,,,,,,,,,,,不良贷款余额 / 贷款和垫款总额 * 100,不良贷款余额 | 贷款和垫款总额,n/a,computed locally; no report position
+财务指标,二、银行特有指标,不良贷款拨备覆盖率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback) → 风险管理 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,拨贷比,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,逾期贷款率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,重组贷款率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+财务指标,二、银行特有指标,逾期 90 天重组贷款率,report,llm,%,bank,section,贷款质量 → 信用风险 (fallback),信用风险,7. 4.2 信用风险,96,3,305,152859,152534,,,,,,,yes,
+财务指标,四、盈利能力,净利润率,computed,computed,%,*,derived,,,,,,,,,,,,,净利润 / 营业收入 * 100,净利润 | 营业收入,n/a,computed locally; no report position
+财务指标,七、偿债及资本结构,资产负债率,computed,computed,%,*,derived,,,,,,,,,,,,,负债合计 / 资产总计 * 100,负债合计 | 资产总计,n/a,computed locally; no report position

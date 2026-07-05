@@ -1,0 +1,62 @@
+{
+  "_source": "CNINFO category dictionary, sourced from CNINFO's own frontend JS (http://www.cninfo.com.cn/new/js/app/disclosure/notice/history-notice.js) via akshare.stock_feature.stock_disclosure_cninfo.__get_category_dict (akshare 1.18.64). All codes confirmed against that source on 2026-07.",
+  "_todo": "Considered but NOT in CNINFO's published category list — add only when a canonical code is confirmed: 业绩快报 (likely folded into 业绩预告), 关联交易 (likely 日常经营/公司治理), 对外担保 (no separate category found), 招股说明书-as-separate (covered by 首发). CNINFO may add/remove codes over time — re-sync from akshare or the history-notice.js URL above when refreshing this file.",
+  "groups": [
+    {
+      "name": "定期报告",
+      "categories": [
+        {"name": "年度报告", "code": "category_ndbg_szsh", "description": "Annual report"},
+        {"name": "半年度报告", "code": "category_bndbg_szsh", "description": "Semi-annual report"},
+        {"name": "第一季度报告", "code": "category_yjdbg_szsh", "description": "Q1 report"},
+        {"name": "第三季度报告", "code": "category_sjdbg_szsh", "description": "Q3 report"}
+      ]
+    },
+    {
+      "name": "融资",
+      "categories": [
+        {"name": "首发", "code": "category_sf_szsh", "description": "IPO / prospectus (招股说明书)"},
+        {"name": "增发", "code": "category_zf_szsh", "description": "Additional issuance"},
+        {"name": "配股", "code": "category_pg_szsh", "description": "Rights issue"},
+        {"name": "可转债", "code": "category_kzzq_szsh", "description": "Convertible bond"},
+        {"name": "公司债", "code": "category_gszq_szsh", "description": "Corporate bond"},
+        {"name": "其他融资", "code": "category_qtrz_szsh", "description": "Other refinancing"}
+      ]
+    },
+    {
+      "name": "业绩",
+      "categories": [
+        {"name": "业绩预告", "code": "category_yjygjxz_szsh", "description": "Earnings forecast"},
+        {"name": "权益分派", "code": "category_qyfpxzcs_szsh", "description": "Dividend / rights distribution"}
+      ]
+    },
+    {
+      "name": "股权变动",
+      "categories": [
+        {"name": "股权变动", "code": "category_gqbd_szsh", "description": "Equity change (incl. 收购报告书 / 权益变动报告书)"},
+        {"name": "股权激励", "code": "category_gqjl_szsh", "description": "Equity incentive"},
+        {"name": "解禁", "code": "category_jj_szsh", "description": "Share unlock"}
+      ]
+    },
+    {
+      "name": "公司治理",
+      "categories": [
+        {"name": "股东大会", "code": "category_gddh_szsh", "description": "Shareholders' meeting"},
+        {"name": "董事会", "code": "category_dshgg_szsh", "description": "Board of directors"},
+        {"name": "监事会", "code": "category_jshgg_szsh", "description": "Supervisory board"},
+        {"name": "日常经营", "code": "category_rcjy_szsh", "description": "Daily operations"},
+        {"name": "公司治理", "code": "category_gszl_szsh", "description": "Corporate governance"},
+        {"name": "中介报告", "code": "category_zj_szsh", "description": "Intermediary report"}
+      ]
+    },
+    {
+      "name": "风险与特别处理",
+      "categories": [
+        {"name": "风险提示", "code": "category_fxts_szsh", "description": "Risk warning"},
+        {"name": "澄清致歉", "code": "category_cqdq_szsh", "description": "Clarification / apology"},
+        {"name": "补充更正", "code": "category_bcgz_szsh", "description": "Supplement / correction"},
+        {"name": "特别处理和退市", "code": "category_tbclts_szsh", "description": "ST / delisting"},
+        {"name": "退市整理期", "code": "category_tszlq_szsh", "description": "Delisting period"}
+      ]
+    }
+  ]
+}

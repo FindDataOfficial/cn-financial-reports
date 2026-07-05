@@ -1,0 +1,30 @@
+[project]
+name = "cnreport-mcp"
+version = "0.1.0"
+description = "Chinese annual report MCP — outline extraction, AI structured extraction, Elasticsearch store + search"
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp>=2.0",
+    "sqlalchemy>=2.0",
+    "python-dotenv>=1.0",
+    "httpx>=0.27",
+    "pypdf>=4.0",
+    "jsonschema>=4.0",
+    "elasticsearch>=8.0",
+    "akshare>=1.13",
+    "pandas>=2.0",
+    "mcp-models",
+]
+
+[tool.setuptools]
+py-modules = [
+    "server",
+    "cnreport_database",
+    "cnreport_tools",
+    "cninfo_client",
+    "financials_client",
+    "migrate",
+]
+
+[tool.uv.sources]
+mcp-models = { path = "../models", editable = true }

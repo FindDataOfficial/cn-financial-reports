@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Caches
+.cache/
+.pytest_cache/
+
+# Test outputs
+out/
+
+# macOS
+.DS_Store
+
+# Env / secrets
+.env
+.env.local

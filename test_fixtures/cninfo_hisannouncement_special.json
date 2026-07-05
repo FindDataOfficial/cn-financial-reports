@@ -1,0 +1,14 @@
+{
+  "totalAnnouncement": 1,
+  "announcements": [
+    {
+      "announcementId": "9900000001",
+      "announcementTitle": "贵州茅台：首次公开发行股票招股说明书",
+      "announcementType": "首发",
+      "announcementTime": 998956800000,
+      "adjunctUrl": "finalpage/2001-09-01/9900000001.PDF",
+      "secCode": "600519",
+      "secName": "贵州茅台"
+    }
+  ]
+}
