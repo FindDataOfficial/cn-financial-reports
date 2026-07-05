@@ -13,18 +13,25 @@ dependencies = [
     "elasticsearch>=8.0",
     "akshare>=1.13",
     "pandas>=2.0",
-    "mcp-models",
 ]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 py-modules = [
     "server",
     "cnreport_database",
+    "cnreport_models",
     "cnreport_tools",
     "cninfo_client",
     "financials_client",
+    "indicators_client",
+    "indicators_extractors",
+    "indicators_csv_migration",
+    "report_cache",
+    "selfcheck",
+    "selfcheck_cache",
     "migrate",
 ]
-
-[tool.uv.sources]
-mcp-models = { path = "../models", editable = true }

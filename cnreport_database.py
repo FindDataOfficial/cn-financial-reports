@@ -20,7 +20,7 @@ from typing import Optional
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from models import Base, EsIndexMeta, ReportDocument, ReportSection
+from cnreport_models import Base, EsIndexMeta, ReportDocument, ReportSection
 
 logger = logging.getLogger(__name__)
 
