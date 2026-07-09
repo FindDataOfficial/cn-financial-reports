@@ -41,10 +41,26 @@ def strip_html(html: str) -> str:
 
 
 def extract_pdf_text(data: bytes) -> str:
-    """Extract text from a text-layer PDF via pypdf."""
-    from pypdf import PdfReader
+    """Extract text from a text-layer PDF.
+
+    Tries pymupdf first (better CJK font handling), falls back to pypdf.
+    """
     import io
 
+    try:
+        import fitz
+        doc = fitz.Document(stream=data, filetype="pdf")
+        parts = []
+        for i in range(len(doc)):
+            try:
+                parts.append(doc[i].get_text() or "")
+            except Exception:
+                continue
+        return "\n".join(parts)
+    except ImportError:
+        pass
+
+    from pypdf import PdfReader
     reader = PdfReader(io.BytesIO(data))
     parts = []
     for page in reader.pages:
@@ -53,6 +69,45 @@ def extract_pdf_text(data: bytes) -> str:
         except Exception:
             continue
     return "\n".join(parts)
+
+
+def get_pypdf_page_offsets(data: bytes) -> list[int]:
+    """Return character offsets ``[0, p1_end, p2_end, ..., total]`` for each page
+    in the full text produced by ``extract_pdf_text``. The Nth entry is the
+    ``(N-1)``th page's start offset (0-based); the last entry is ``len(text)``.
+    1-based page N maps to slice ``offsets[N-1 : N+1]``.
+    """
+    import io
+
+    try:
+        import fitz
+        doc = fitz.Document(stream=data, filetype="pdf")
+        offsets = [0]
+        for i in range(len(doc)):
+            try:
+                text = doc[i].get_text() or ""
+            except Exception:
+                text = ""
+            offsets.append(offsets[-1] + len(text) + 1)
+        total = offsets[-1] - 1 if offsets[-1] > 0 else 0
+        offsets[-1] = total
+        return offsets
+    except ImportError:
+        pass
+
+    from pypdf import PdfReader
+    reader = PdfReader(io.BytesIO(data))
+    offsets = [0]
+    for page in reader.pages:
+        try:
+            text = page.extract_text() or ""
+        except Exception:
+            text = ""
+        offsets.append(offsets[-1] + len(text) + 1)  # +1 for the \n separator
+    # last entry = len(text) stripping the trailing \n we won't have
+    total = offsets[-1] - 1 if offsets[-1] > 0 else 0
+    offsets[-1] = total
+    return offsets
 
 
 def fetch_source(source: str, fetcher: str = "uv") -> str:
@@ -132,6 +187,74 @@ def _heading_level(token: str) -> int:
     return 3  # （一）/1.
 
 
+def parse_pymupdf_outline(data: bytes) -> list[dict]:
+    """Parse PDF bookmarks via pymupdf ``get_toc()``.
+
+    Returns a list of ``{level, title, page, source: "pymupdf"}`` entries
+    where ``page`` is the 1-based page number. Returns empty list when
+    pymupdf is unavailable or the PDF has no bookmarks.
+    """
+    try:
+        import fitz
+    except ImportError:
+        return []
+    try:
+        doc = fitz.Document(stream=data, filetype="pdf")
+        toc = doc.get_toc()
+        doc.close()
+    except Exception:
+        return []
+    entries = []
+    seen: set[str] = set()
+    for level, title, page in toc:
+        title = title.strip()
+        if not title or title in seen:
+            continue
+        seen.add(title)
+        entries.append({"level": level, "title": title, "page": page, "source": "pymupdf"})
+    return entries
+
+
+def merge_outlines(pymupdf_entries: list[dict], regex_entries: list[dict]) -> list[dict]:
+    """Merge pymupdf bookmarks with heading-regex outline entries.
+
+    Deduplicates by normalized title (pymupdf entries win priority).
+    Regex-only entries (no page number) are appended after the merged set,
+    preserving their ordinal sequence.
+    """
+    from_normalized = {}
+    for e in regex_entries:
+        key = _normalize_section_title(e["title"])
+        from_normalized[key] = e
+    merged: list[dict] = []
+    seen_keys: set[str] = set()
+    ordinal = 0
+    for e in pymupdf_entries:
+        key = _normalize_section_title(e["title"])
+        seen_keys.add(key)
+        ordinal += 1
+        merged.append({**e, "ordinal": ordinal})
+    for e in regex_entries:
+        key = _normalize_section_title(e["title"])
+        if key in seen_keys:
+            continue
+        seen_keys.add(key)
+        ordinal += 1
+        merged.append({**e, "ordinal": ordinal})
+    return merged
+
+
+def page_to_char_offset(page: int, offsets: list[int]) -> int:
+    """Convert a 1-based page number to a character offset in the full text.
+
+    Returns the start offset of the page when ``page`` is within range,
+    or ``0`` when not (safe fallback).
+    """
+    if page < 1 or page >= len(offsets):
+        return 0
+    return offsets[page - 1]
+
+
 def resolve_selector(outline: list[dict], selector: str) -> Optional[dict]:
     """Resolve a selector (ordinal int | exact title | regex | normalized substring) to an outline entry.
 
@@ -154,25 +277,49 @@ def resolve_selector(outline: list[dict], selector: str) -> Optional[dict]:
     for e in outline:
         if e["title"] == selector:
             return e
-    # normalized leading-keyword substring (tolerant of ordinals/em-dashes/whitespace)
+    # normalized leading-keyword: exact-ish match after stripping ordinals/dashes.
+    # Always falls back to substring match so "资产负债表" matches "合并资产负债表"
+    # and "讨论与分析" matches "管理层讨论与分析".
     sel_key = _normalize_section_title(_leading_keyword(selector))
-    if sel_key:
+    if sel_key and len(sel_key) >= 2:
         for e in outline:
-            if sel_key in _normalize_section_title(e["title"]):
+            norm_title = _normalize_section_title(e["title"])
+            if sel_key == norm_title:
                 return e
-    # regex
-    try:
-        pat = re.compile(selector)
-    except re.error:
-        return None
-    for e in outline:
-        if pat.search(e["title"]):
-            return e
+        # substring match as fallback (tolerant for CSV selectors)
+        for e in outline:
+            norm_title = _normalize_section_title(e["title"])
+            if sel_key in norm_title:
+                return e
+    # Also try the tail keyword (after em-dash) when leading keyword fails.
+    # E.g. "人力资源管理 — 员工情况" → tail "员工情况" matches "5. 14 员工情况".
+    tail = _leading_keyword_tail(selector)
+    if tail and tail != sel_key and len(tail) >= 2:
+        for e in outline:
+            norm_title = _normalize_section_title(e["title"])
+            if tail == norm_title:
+                return e
+        for e in outline:
+            norm_title = _normalize_section_title(e["title"])
+            if tail in norm_title:
+                return e
+    # regex (only when the selector is an actual regex pattern, not plain text)
+    if re.search(r"[.+*?^$()\[\]{}|\\]", selector):
+        try:
+            pat = re.compile(selector)
+        except re.error:
+            return None
+        for e in outline:
+            if pat.search(e["title"]):
+                return e
     return None
 
 
-# ordinals a section title may carry: "一、", "（一）", "1、" — stripped for tolerant matching.
-_SECTION_ORDINAL_RE = re.compile(r"[一二三四五六七八九十百]+、|（[一二三四五六七八九十百]+）|\d+、|第[一二三四五六七八九十百]+节")
+# ordinals a section title may carry: "一、", "（一）", "1、", "第一章", "第二节" etc.
+_SECTION_ORDINAL_RE = re.compile(
+    r"[一二三四五六七八九十百]+、|（[一二三四五六七八九十百]+）|\d+、"
+    r"|第[一二三四五六七八九十百]+[章节部分]"
+)
 # em-dashes / hyphens used as section delimiters in the CSV (e.g. "资产负债表 — 一、资产").
 _SECTION_DASH_RE = re.compile(r"[—–\-]")
 
@@ -184,6 +331,15 @@ def _leading_keyword(selector: str) -> str:
         if sep in s:
             return s.split(sep, 1)[0].strip()
     return s.strip()
+
+
+def _leading_keyword_tail(selector: str) -> str:
+    """Return the text after the last em-dash/hyphen, or empty string."""
+    s = selector or ""
+    for sep in ("—", "–", "-"):
+        if sep in s:
+            return s.rsplit(sep, 1)[-1].strip()
+    return ""
 
 
 def _normalize_section_title(s: str) -> str:
@@ -200,10 +356,159 @@ def _normalize_section_title(s: str) -> str:
 # never contain the consolidated substring, so they're skipped on the first
 # pass and only matched as a last-resort fallback on the un-prefixed pass.
 STATEMENT_MATCHERS: dict[str, list[str]] = {
-    "income_statement": ["合并利润表", "利润表"],
-    "balance_sheet": ["合并资产负债表", "资产负债表"],
-    "cashflow": ["合并现金流量表", "现金流量表"],
+    "income_statement": ["合并及公司利润表", "合并利润表", "利润表", "合并及公司利润表–按中国会计准则编制"],
+    "balance_sheet": ["合并及公司资产负债表", "合并资产负债表", "资产负债表", "合并及公司资产负债表–按中国会计准则编制"],
+    "cashflow": ["合并及公司现金流量表", "合并现金流量表", "现金流量表", "合并及公司现金流量表–按中国会计准则编制"],
 }
+
+# Financial statement table titles that may be absent from both PDF bookmarks
+# and the heading-regex outline. The system scans for these in the body text
+# and injects them as virtual outline entries with page-level positions.
+# Bank-specific variants (银行资产负债表 etc.) are checked first.
+STATEMENT_TITLES: dict[str, list[str]] = {
+    "balance_sheet": [
+        "合并及公司资产负债表",
+        "银行资产负债表",
+        "银行资产负债表（未经审计）",
+        "合并资产负债表",
+        "资产负债表",
+    ],
+    "income_statement": [
+        "合并及公司利润表",
+        "银行利润表",
+        "银行利润表（未经审计）",
+        "合并利润表",
+        "利润表",
+    ],
+    "cashflow": [
+        "合并及公司现金流量表",
+        "银行现金流量表",
+        "银行现金流量表（未经审计）",
+        "合并现金流量表",
+        "现金流量表",
+    ],
+    "equity": [
+        "合并及公司股东权益变动表",
+        "合并股东权益变动表",
+        "股东权益变动表",
+    ],
+}
+
+
+def detect_statement_titles(text: str, page_offsets: list[int], page_count: int) -> list[dict]:
+    """Scan body text for financial statement table titles not in the outline.
+
+    Returns a list of ``{level: 2, title, page, source: "statement_detection",
+    module: <key>}`` entries, one per detected title.
+    """
+    detected: list[dict] = []
+    seen_titles: set[str] = set()
+    _TOC_LINE_RE = re.compile(r"^\s*(?:\.{2,}(?:\s*\d+)?|\d+(?:\s*[-–]\s*\d+)*)\s*$")
+    for module, titles in STATEMENT_TITLES.items():
+        for title in titles:
+            if title in seen_titles:
+                continue
+            # find first body occurrence (skip TOC lines, skips references inside text)
+            idx = 0
+            found_pos = -1
+            while True:
+                pos = text.find(title, idx)
+                if pos == -1:
+                    break
+                line_end = text.find("\n", pos)
+                if line_end == -1:
+                    line_end = len(text)
+                after = text[pos + len(title):line_end].strip()
+                if _TOC_LINE_RE.match(after):
+                    idx = pos + 1
+                    continue
+                # also skip if the line looks like a TOC entry (digits + optional page range)
+                if re.match(r'^\d+(?:\s*[-–]\s*\d+)*\s*$', after):
+                    idx = pos + 1
+                    continue
+                # title must be at the start of the line (only whitespace before)
+                line_start = text.rfind("\n", 0, pos)
+                if line_start == -1:
+                    line_start = 0
+                before_on_line = text[line_start:pos]
+                if before_on_line.strip():
+                    idx = pos + 1
+                    continue
+                # also skip if this is before the main report body (table of contents section)
+                line = text[line_start:line_end]
+                if "目" in line or "录" in line or "TOC" in line.upper():
+                    idx = pos + 1
+                    continue
+                found_pos = pos
+                break
+            if found_pos == -1:
+                continue
+            seen_titles.add(title)
+            # resolve position to page number
+            page = pos_to_page(found_pos + 1, page_offsets, page_count)  # +1 because find gives 0-based
+            detected.append({
+                "level": 2,
+                "title": title,
+                "page": page,
+                "source": "statement_detection",
+                "module": module,
+            })
+    return detected
+
+
+def pos_to_page(char_pos: int, offsets: list[int], page_count: int) -> int:
+    """Convert a 1-based character position to a 1-based page number."""
+    for p in range(1, page_count + 1):
+        start = offsets[p - 1] if p - 1 < len(offsets) else 0
+        end = offsets[p] if p < len(offsets) else offsets[-1]
+        if start <= char_pos <= end:
+            return p
+    return 1
+
+
+def build_enriched_outline(
+    text: str,
+    pdf_data: Optional[bytes] = None,
+    page_offsets: Optional[list[int]] = None,
+    page_count: int = 0,
+) -> tuple[list[dict], list[int], int]:
+    """Build the enriched outline by merging PDF bookmarks + regex outline + statement titles.
+
+    Returns ``(merged_entries, page_offsets, page_count)``.
+    When ``pdf_data`` is provided and pymupdf is available, also computes
+    ``page_offsets`` from it.
+    """
+    regex_entries = parse_outline(text)
+    pymupdf_entries = parse_pymupdf_outline(pdf_data) if pdf_data else []
+    merged = merge_outlines(pymupdf_entries, regex_entries)
+    if pdf_data and page_offsets is None:
+        page_offsets = get_pypdf_page_offsets(pdf_data)
+    if not page_count and page_offsets:
+        page_count = len(page_offsets) - 1
+    if page_offsets and page_count:
+        stmt_entries = detect_statement_titles(text, page_offsets, page_count)
+        # Remove generic un-prefixed titles when the specific version exists
+        # for the same module (e.g., keep 合并资产负债表, drop 资产负债表).
+        has_specific: set[str] = set()
+        for e in stmt_entries:
+            title = e["title"]
+            if title.startswith(("合并", "银行", "公司")):
+                has_specific.add(e.get("module", ""))
+        stmt_entries = [
+            e for e in stmt_entries
+            if e["title"].startswith(("合并", "银行", "公司"))
+            or e.get("module", "") not in has_specific
+        ]
+        # inject at the start of the outline so they take priority in substring matching
+        ordinal = 0
+        for e in stmt_entries:
+            ordinal += 1
+            e["ordinal"] = ordinal
+        for e in merged:
+            ordinal += 1
+            e["ordinal"] = ordinal
+        merged = stmt_entries + merged
+    return merged, page_offsets or [], page_count
 
 
 def resolve_statement(outline: list[dict], key: str) -> Optional[dict]:
@@ -279,41 +584,152 @@ def extract_statement_text(text: str, module: str) -> Optional[str]:
     return text[start:end]
 
 
-def _find_section_start(text: str, title: str) -> int:
-    """Find the body occurrence of `title`, skipping 目录 (dot-leader) rows."""
-    idx = 0
+def extract_section_by_title(text: str, title: str) -> Optional[str]:
+    """Slice body text from *title* to the next top-level heading.
+
+    Searches the raw text for *title* (skipping TOC rows), then slices to
+    the next numbered heading (``第X节`` / ``一、`` / ``X.``) or end of text.
+    Skips page-header boundaries (same heading repeating within ~2000 chars).
+    Used as fallback when the outline lacks the section entry.
+    """
+    pos = _find_section_start(text, title)
+    if pos == -1:
+        return None
+    line_start = text.rfind("\n", 0, pos) + 1
+    body_start = text.find("\n", pos)
+    if body_start == -1:
+        body_start = len(text)
+    end = len(text)
+    # Find the first boundary that is NOT a page header.
+    # Page headers have a page number line before them within the last 3 lines.
+    for m in _STATEMENT_NEXT_BOUNDARY_RE.finditer(text, body_start):
+        if m.start() <= body_start:
+            continue
+        # Check if this is a page header: look back for a standalone page number
+        pre = text[max(0, m.start() - 80):m.start()]
+        pre_lines = [l.strip() for l in pre.splitlines() if l.strip()]
+        is_page_header = False
+        for pl in pre_lines[-3:]:
+            if pl.isdigit() and len(pl) <= 4:
+                is_page_header = True
+                break
+        if is_page_header:
+            continue
+        end = m.start()
+        break
+    return text[line_start:end]
+
+
+def _find_section_start(text: str, title: str, start_pos: int = 0) -> int:
+    """Find the body occurrence of `title` at or after ``start_pos``, skipping
+    目录 (TOC) rows and inline references.
+
+    The match must be at an effective line boundary (start of string, preceded
+    by ``\\n``, or preceded only by whitespace on the same line) so that titles
+    like ``"资产负债表"`` don't match inside longer titles like ``"银行资产负债表"``
+    but do match lines with leading whitespace (common in PDF text extraction).
+    Additionally the title must be followed by whitespace / line-end / punctuation
+    (not a Chinese character) to avoid matching inline references like
+    ``"合并资产负债表中投资标准银行的年末余额"``.
+    """
+    _TOC_SKIP_RE = re.compile(r"^\s*(?:\.{2,}(?:\s*\d+)?|\d+(?:\s*[-–]\s*\d+)*)\s*$")
+    idx = start_pos
     while True:
         pos = text.find(title, idx)
         if pos == -1:
             return -1
-        after = text[pos + len(title): pos + len(title) + 8]
-        # 目录 rows look like "title ......... 12"; body headings are followed by \n
-        if re.match(r"\s*\.{2,}", after):
+        # must be at effective line boundary: either start of string,
+        # preceded by \n, or preceded only by whitespace on the same line
+        line_start = text.rfind("\n", 0, pos) + 1  # 0 if no \n found
+        before_on_line = text[line_start:pos]
+        if before_on_line.strip():
+            # non-whitespace text before the title on the same line → false positive
             idx = pos + 1
             continue
+        # title must be followed by whitespace, punctuation, or end-of-line
+        # (not a Chinese character — avoids matching "合并资产负债表中...")
+        next_ch = text[pos + len(title):pos + len(title) + 1] if pos + len(title) < len(text) else "\n"
+        if next_ch and ord(next_ch) > 0x2E80 and ord(next_ch) < 0x9FFF:
+            # next char is a CJK ideograph → this is an inline reference, not a heading
+            idx = pos + 1
+            continue
+        # peek at the rest of the line after the title
+        line_end = text.find("\n", pos)
+        if line_end == -1:
+            line_end = len(text)
+        after = text[pos + len(title):line_end].strip()
+        # TOC rows: "title ......... 12" or "title 7-8" (page refs)
+        if _TOC_SKIP_RE.match(after):
+            idx = pos + 1
+            continue
+        # Also skip if the next line is just a page number (page on its own line,
+        # e.g. "第三章 管理层讨论与分析\n19" — common in CJK PDF TOCs).
+        next_line_start = line_end + 1
+        if next_line_start < len(text):
+            next_line_end = text.find("\n", next_line_start)
+            if next_line_end == -1:
+                next_line_end = len(text)
+            next_line = text[next_line_start:next_line_end].strip()
+            if next_line.isdigit() or re.match(r"^\d+\s*[-–]\s*\d+$", next_line):
+                idx = pos + 1
+                continue
         return pos
 
 
-def extract_section_text(text: str, outline: list[dict], entry: dict) -> str:
-    """Slice body text from entry's title to the next outline entry's title."""
-    start = _find_section_start(text, entry["title"])
-    if start == -1:
-        # title may have been normalized; try a fuzzy prefix match on the token
-        token = entry["title"].split()[0] if entry["title"] else entry["title"]
-        start = _find_section_start(text, token)
-    if start == -1:
-        return ""
+def extract_section_text(
+    text: str,
+    outline: list[dict],
+    entry: dict,
+    page_offsets: Optional[list[int]] = None,
+    page_count: int = 0,
+) -> str:
+    """Slice body text from entry's title to the next outline entry's title.
+
+    When ``entry`` has a ``page`` and ``page_offsets`` is provided, restricts
+    the title search to the entry's page area.  This avoids false matches
+    against the table-of-contents or earlier cross-references.
+    """
+    # Start: restrict search to entry's page area when available
+    if entry.get("page") and page_offsets:
+        page_start = page_to_char_offset(entry["page"], page_offsets)
+        start = _find_section_start(text, entry["title"], start_pos=page_start)
+        if start == -1:
+            start = _find_section_start(text, entry["title"])
+        if start == -1:
+            token = entry["title"].split()[0] if entry["title"] else entry["title"]
+            start = _find_section_start(text, token)
+        if start == -1:
+            return ""
+    else:
+        start = _find_section_start(text, entry["title"])
+        if start == -1:
+            token = entry["title"].split()[0] if entry["title"] else entry["title"]
+            start = _find_section_start(text, token)
+        if start == -1:
+            return ""
+
     start = text.find("\n", start)
     if start == -1:
         start = len(text)
-    # next sibling = next entry whose body title appears after `start`
+
+    # End: next sibling outline entry's position
+    # Skip entries whose title is a substring of the current entry (e.g., "资产负债表"
+    # is a substring of "合并资产负债表") to avoid premature truncation on the same page.
+    cur_title = entry["title"]
     end = len(text)
     for e in outline:
         if e["ordinal"] <= entry["ordinal"]:
             continue
-        pos = _find_section_start(text, e["title"])
-        if pos != -1 and pos >= start:
-            end = pos
+        if e.get("source") == entry.get("source") and e["title"] in cur_title:
+            continue
+        nsearch_start = start
+        if e.get("page") and page_offsets:
+            e_page = page_to_char_offset(e["page"], page_offsets)
+            if e_page > start:
+                nsearch_start = e_page
+        pos = _find_section_start(text, e["title"], start_pos=nsearch_start)
+        if pos != -1:
+            end = min(end, pos)
             break
     return text[start:end].strip()
 
@@ -329,9 +745,14 @@ def llm_config() -> dict:
     }
 
 
-def call_llm_json(system: str, user: str) -> str:
-    """Call the OpenAI-compatible chat/completions endpoint, return raw content."""
+def call_llm_json(system: str, user: str, max_retries: int = 3) -> str:
+    """Call the OpenAI-compatible chat/completions endpoint, return raw content.
+
+    Retries on transient connection errors (OpenRouter free tier and other
+    shared upstreams often drop the connection mid-stream).
+    """
     import httpx
+    import time
 
     cfg = llm_config()
     if not cfg["api_key"]:
@@ -346,15 +767,112 @@ def call_llm_json(system: str, user: str) -> str:
         "temperature": 0,
         "response_format": {"type": "json_object"},
     }
-    resp = httpx.post(
-        url,
-        json=payload,
-        headers={"Authorization": f"Bearer {cfg['api_key']}"},
-        timeout=120.0,
-    )
-    resp.raise_for_status()
-    data = resp.json()
-    return data["choices"][0]["message"]["content"]
+    headers = {"Authorization": f"Bearer {cfg['api_key']}"}
+    last_err: Exception | None = None
+    for attempt in range(max_retries):
+        try:
+            resp = httpx.post(url, json=payload, headers=headers, timeout=120.0)
+            if resp.status_code == 429 and attempt < max_retries - 1:
+                retry_after = float(resp.headers.get("Retry-After", "5"))
+                time.sleep(min(retry_after, 30.0))
+                last_err = RuntimeError(f"429 rate-limited (retry-after={retry_after:.0f}s)")
+                continue
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"]["content"]
+        except (httpx.RemoteProtocolError, httpx.ReadTimeout,
+                httpx.ConnectError, httpx.ReadError) as e:
+            last_err = e
+            if attempt < max_retries - 1:
+                time.sleep(2.0 * (attempt + 1))
+    raise last_err  # type: ignore[misc]
+
+
+def call_llm_pydantic(
+    system: str,
+    user: str,
+    model_class: type,
+    max_retries: int = 2,
+) -> Any:
+    """Call the LLM with ``response_format.json_schema``, return a validated
+    Pydantic model instance.
+
+    ``model_class`` must be a subclass of ``BaseExtractionResult`` (or any
+    Pydantic`` BaseModel`` with ``model_validate``).
+
+    **Fallback chain:**
+    1. ``json_schema`` (OpenAI structured output)
+    2. ``json_object`` (provider doesn't support ``json_schema``) — retry once
+    3. No ``response_format`` (provider supports neither) — retry once
+    """
+    from indicators_models import model_to_json_schema
+
+    import httpx
+    import time
+
+    cfg = llm_config()
+    if not cfg["api_key"]:
+        raise RuntimeError("LLM_API_KEY is not configured")
+    url = cfg["base_url"] + "/chat/completions"
+    headers = {"Authorization": f"Bearer {cfg['api_key']}"}
+
+    schema_payload = model_to_json_schema(model_class)
+
+    strategies: list[dict | None] = [
+        {"type": "json_schema", "json_schema": schema_payload},
+        {"type": "json_object"},
+        None,
+    ]
+
+    last_err: Exception | None = None
+    for strat in strategies:
+        for attempt in range(max_retries):
+            payload: dict = {
+                "model": cfg["model"],
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "temperature": 0,
+            }
+            if strat is not None:
+                payload["response_format"] = strat
+            try:
+                resp = httpx.post(url, json=payload, headers=headers, timeout=120.0)
+                if resp.status_code == 400 and strat is not None and strat.get("type") == "json_schema":
+                    # provider rejected json_schema → try next strategy
+                    last_err = RuntimeError(f"json_schema rejected: {resp.text[:200]}")
+                    break
+                if resp.status_code == 429 and attempt < max_retries - 1:
+                    retry_after = float(resp.headers.get("Retry-After", "5"))
+                    time.sleep(min(retry_after, 30.0))
+                    last_err = RuntimeError(f"429 rate-limited (retry-after={retry_after:.0f}s)")
+                    continue
+                resp.raise_for_status()
+                data = resp.json()
+                content = data["choices"][0]["message"]["content"]
+                parsed = json.loads(content)
+                # Handle single-field models: LLM may return bare value instead of {"field": value}
+                if not isinstance(parsed, dict):
+                    fields = list(model_class.model_fields.keys())
+                    if len(fields) == 1:
+                        parsed = {fields[0]: parsed}
+                return model_class.model_validate(parsed)
+            except (httpx.RemoteProtocolError, httpx.ReadTimeout,
+                    httpx.ConnectError, httpx.ReadError) as e:
+                last_err = e
+                if attempt < max_retries - 1:
+                    time.sleep(2.0 * (attempt + 1))
+            except (json.JSONDecodeError, TypeError, ValueError) as e:
+                last_err = e
+                if attempt < max_retries - 1:
+                    continue
+                break  # no point retrying with the same strategy for parse errors
+        else:
+            continue  # inner loop finished without break → strat worked
+        continue  # inner break → try next strategy
+
+    raise RuntimeError(f"LLM extraction failed after all strategies: {last_err}") from last_err
 
 
 def validate_against_schema(data, schema: dict) -> Optional[str]:
@@ -616,14 +1134,16 @@ def get_section(
         }
     top = filings[0]
     pdf = top["pdf_url"]
-    text, _ = report_cache.get_or_fetch(
+    text, cache_info = report_cache.get_or_fetch(
         pdf,
         stock_code=company["stock_code"],
         year=year,
         form=form,
         announcement_id=top.get("announcement_id") or "",
     )
-    outline = parse_outline(text)
+    enriched = cache_info.get("enriched_outline")
+    outline = enriched or parse_outline(text)
+    page_offsets = cache_info.get("page_offsets") or []
     entry = resolve_selector(outline, section)
     if entry is None:
         return {
@@ -631,7 +1151,9 @@ def get_section(
             "available": [e["title"] for e in outline],
             "pdf_url": pdf,
         }
-    body = extract_section_text(text, outline, entry)
+    body = extract_section_text(text, outline, entry,
+                                page_offsets=page_offsets or None,
+                                page_count=len(page_offsets) - 1 if len(page_offsets) > 1 else 0)
     return {
         "stock_code": company["stock_code"],
         "company_name": company["name"],
@@ -803,7 +1325,9 @@ def get_financial_statements(
         form=form,
         announcement_id=top.get("announcement_id") or "",
     )
-    outline = parse_outline(text)
+    enriched = cache_info.get("enriched_outline")
+    outline = enriched or parse_outline(text)
+    page_offsets = cache_info.get("page_offsets") or []
     statements: dict = {}
     missing: list[str] = []
     for key in ("income_statement", "balance_sheet", "cashflow"):
@@ -811,7 +1335,9 @@ def get_financial_statements(
         if entry is None:
             missing.append(key)
             continue
-        body = extract_section_text(text, outline, entry)
+        body = extract_section_text(text, outline, entry,
+                                    page_offsets=page_offsets or None,
+                                    page_count=len(page_offsets) - 1 if len(page_offsets) > 1 else 0)
         statements[key] = {
             "title": entry["title"],
             "outline_entry": entry,
@@ -924,3 +1450,180 @@ def extract_indicators_by_position(
     return indicators_client.extract_indicators_by_position(
         ticker_or_name, year, csv_path=csv_path, extractor=extractor, indicators=indicators,
     )
+
+
+@_tool_safe
+def audit_rule_gaps(
+    out_dir: str = "out",
+    output_path: str = "docs/rule_gap_audit.json",
+    max_files: int = 0,
+) -> dict:
+    import time
+    from pathlib import Path
+
+    import report_section_map as RSM
+
+    repo_root = Path(__file__).resolve().parent
+    rules_path = repo_root / "indicator_rules.json"
+    out_root = (repo_root / out_dir).resolve() if not Path(out_dir).is_absolute() else Path(out_dir).resolve()
+    output_file = (repo_root / output_path).resolve() if not Path(output_path).is_absolute() else Path(output_path).resolve()
+
+    rules = json.loads(rules_path.read_text(encoding="utf-8"))
+    rules_array = rules.get("rules") or []
+    rules_hash = hashlib.sha1(
+        json.dumps(rules_array, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()[:16]
+
+    files = sorted(out_root.glob("*.json"))
+    if max_files and max_files > 0:
+        files = files[:max_files]
+
+    def _classify_bundle(bundle: dict, path: str) -> list[dict]:
+        items: list[dict] = []
+        stock_code = bundle.get("stock_code", "")
+        form = bundle.get("form", "")
+        year = bundle.get("year", "")
+
+        for m in bundle.get("missing") or []:
+            if isinstance(m, str):
+                ind = m
+                reason = "missing"
+                tried = []
+            else:
+                ind = m.get("indicator") or m.get("name") or ""
+                reason = m.get("reason") or ""
+                tried = m.get("tried") or []
+
+            categories: list[str] = []
+            if "not applicable" in reason:
+                categories.append("inapplicable_rule")
+            elif "unknown" in reason or "no rule" in reason:
+                categories.append("missing_rule")
+            elif "section not found" in reason:
+                categories.append("missing_section")
+            else:
+                categories.append("missing_rule")
+
+            suggested: list[str] = []
+            if "missing_section" in categories:
+                seen: set[str] = set()
+                for t in tried if isinstance(tried, list) else []:
+                    for c in RSM.candidates(form, str(t)):
+                        if c not in seen:
+                            seen.add(c)
+                            suggested.append(c)
+                if not suggested:
+                    for key in RSM.canonical_keys(form):
+                        for c in RSM.candidates(form, key):
+                            if c not in seen:
+                                seen.add(c)
+                                suggested.append(c)
+
+            items.append(
+                {
+                    "indicator": ind,
+                    "categories": categories,
+                    "evidence": {
+                        "bundle": path,
+                        "stock_code": stock_code,
+                        "year": year,
+                        "form": form,
+                        "reason": reason,
+                        "tried": tried,
+                    },
+                    "suggested_sections": suggested,
+                }
+            )
+
+        for u in bundle.get("unresolved") or []:
+            if isinstance(u, str):
+                ind = u
+                note = ""
+            else:
+                ind = u.get("indicator") or u.get("name") or ""
+                note = u.get("note") or ""
+            items.append(
+                {
+                    "indicator": ind,
+                    "categories": ["unresolved_extractor"],
+                    "evidence": {
+                        "bundle": path,
+                        "stock_code": stock_code,
+                        "year": year,
+                        "form": form,
+                        "note": note,
+                    },
+                    "suggested_sections": [],
+                }
+            )
+
+        indicators = bundle.get("indicators") or {}
+        for ind, entry in indicators.items():
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("source_type") != "report":
+                continue
+            if entry.get("value") is not None:
+                continue
+            note = entry.get("note") or ""
+            if isinstance(note, str) and note.startswith("llm"):
+                items.append(
+                    {
+                        "indicator": ind,
+                        "categories": ["llm_null_value"],
+                        "evidence": {
+                            "bundle": path,
+                            "stock_code": stock_code,
+                            "year": year,
+                            "form": form,
+                            "note": note,
+                            "source": entry.get("source") or "",
+                        },
+                        "suggested_sections": [],
+                    }
+                )
+        return items
+
+    all_items: list[dict] = []
+    for p in files:
+        try:
+            bundle = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        all_items.extend(_classify_bundle(bundle, str(p)))
+
+    def _stable_key(it: dict) -> tuple:
+        ev = it.get("evidence") or {}
+        return (
+            it.get("indicator") or "",
+            ",".join(it.get("categories") or []),
+            ev.get("stock_code") or "",
+            str(ev.get("year") or ""),
+            ev.get("form") or "",
+            ev.get("bundle") or "",
+        )
+
+    all_items.sort(key=_stable_key)
+    summary: dict[str, int] = {}
+    for it in all_items:
+        for c in it.get("categories") or []:
+            summary[c] = summary.get(c, 0) + 1
+
+    report = {
+        "generated_at": int(time.time()),
+        "rules_hash": rules_hash,
+        "inputs": {
+            "rules_path": str(rules_path),
+            "out_dir": str(out_root),
+            "files_scanned": [str(p) for p in files],
+        },
+        "summary": summary,
+        "items": all_items,
+    }
+
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text(
+        json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2),
+        encoding="utf-8",
+    )
+    return {"output_path": str(output_file), "report": report}

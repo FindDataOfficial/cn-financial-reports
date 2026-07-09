@@ -20,6 +20,8 @@ if str(_MODELS) not in sys.path:
     sys.path.insert(0, str(_MODELS))
 
 import cnreport_tools as T  # noqa: E402
+import indicators_client as I  # noqa: E402
+import report_section_map as RSM  # noqa: E402
 
 _FIXTURES = Path(__file__).resolve().parent / "test_fixtures"
 
@@ -52,6 +54,98 @@ def test_extract_section_slice_stops_at_next_entry():
     body = T.extract_section_text(text, outline, entry)
     assert "营收增长" in body
     assert "治理完善" not in body
+
+
+def test_section_map_alias_expansion_and_provenance(tmp_path, monkeypatch):
+    original = Path(__file__).resolve().parent / "docs" / "report_section_map.json"
+    mapping = {
+        "version": 1,
+        "forms": {
+            "年报": {
+                "财务报表附注": ["合并财务报表附注"],
+            }
+        },
+    }
+    map_path = tmp_path / "report_section_map.json"
+    map_path.write_text(json.dumps(mapping, ensure_ascii=False), encoding="utf-8")
+    RSM.set_section_map_path(map_path)
+
+    text = "合并财务报表附注\n固定资产占总资产比率 12%\n"
+    outline = [{"level": 1, "title": "合并财务报表附注", "ordinal": 1}]
+    rule = {
+        "name": "固定资产占总资产比率",
+        "unit": "%",
+        "module": "report_section",
+        "source_type": "report",
+        "extractor": "llm",
+        "source": {"selectors": [{"section": "财务报表附注"}]},
+    }
+
+    body, matched = I._resolve_section(text, outline, rule, "600519", form="年度报告")
+    assert "12%" in body
+    # The first candidate tried is the original selector "财务报表附注";
+    # resolve_selector matches it as a substring of "合并财务报表附注".
+    assert matched == "财务报表附注"
+
+    # Mock the LLM call to return 12.0 for this indicator
+    import cnreport_tools as T_mod
+    monkeypatch.setattr(T_mod, "llm_config",
+        lambda: {"api_key": "test", "base_url": "http://x", "model": "m"})
+    monkeypatch.setattr(T_mod, "call_llm_pydantic",
+        lambda system, user, model_class: model_class.model_validate(
+            {k: (12.0 if k == "固定资产占总资产比率" else "") if k in ("section", "source") else
+             (12.0 if k == "固定资产占总资产比率" else None) for k in model_class.model_fields}
+        ))
+
+    value_obj = I._resolve_via_report(
+        text,
+        outline,
+        rule,
+        "600519",
+        year=2023,
+        period="annual",
+        form="年度报告",
+        extractor_mode="auto",
+        pdf_url="file://dummy",
+    )
+    assert value_obj["value"] == 12.0
+    assert "财务报表附注" in value_obj["source"]
+
+    RSM.set_section_map_path(original)
+
+
+def test_section_map_expanded_candidates_recorded_on_miss(tmp_path):
+    original = Path(__file__).resolve().parent / "docs" / "report_section_map.json"
+    mapping = {
+        "version": 1,
+        "forms": {
+            "年报": {
+                "财务报表附注": ["合并财务报表附注", "附注"],
+            }
+        },
+    }
+    map_path = tmp_path / "report_section_map.json"
+    map_path.write_text(json.dumps(mapping, ensure_ascii=False), encoding="utf-8")
+    RSM.set_section_map_path(map_path)
+
+    text = "其他章节\n内容\n"
+    outline = [{"level": 1, "title": "其他章节", "ordinal": 1}]
+    rule = {
+        "name": "固定资产占总资产比率",
+        "unit": "%",
+        "module": "report_section",
+        "source_type": "report",
+        "extractor": "python:percent_value",
+        "source": {"selectors": [{"section": "财务报表附注"}]},
+    }
+
+    body, tried = I._resolve_section(text, outline, rule, "600519", form="年度报告")
+    assert body is None
+    assert "财务报表附注" in tried
+    assert "合并财务报表附注" in tried
+    assert "附注" in tried
+
+    RSM.set_section_map_path(original)
 
 
 def test_records_to_docs_id_format():
@@ -587,21 +681,21 @@ def test_applicable_rules_filter(indicator_rules, monkeypatch):
     assert "测试_资产负债率" in names3  # industry "*"
 
 
-def test_extractor_dispatch_python_no_llm(indicator_rules, monkeypatch):
+def test_extractor_dispatch_llm_no_api_key(indicator_rules, monkeypatch):
+    """In python mode, all report rules are skipped (no python extractors)."""
     rule = indicator_rules.resolve_rule("测试_员工人数")
     section_text = "员工情况\n员工人数：12,345 人\n"
-    # No API key configured → proves the python path doesn't call the LLM
-    monkeypatch.setattr(T, "llm_config", lambda: {"api_key": "", "base_url": "", "model": ""})
-    res = indicators_client._run_extractor(section_text, rule, "annual", "auto")
-    assert res["value"] == 12345.0, res
-    assert res["unit"] == "人"
+    res = indicators_client._run_extractor(section_text, rule, "annual", "python")
+    assert res["value"] is None
+    assert "skipped" in res["note"]
 
 
-def test_extractor_unknown_python_name(indicator_rules):
-    rule = {"name": "x", "extractor": "python:no_such", "unit": "", "source": {}}
+def test_extractor_python_mode_unknown_name(indicator_rules):
+    """Python mode skips all report rules regardless of extractor name."""
+    rule = {"name": "x", "extractor": "llm", "unit": "", "source": {}}
     res = indicators_client._run_extractor("text", rule, "annual", "python")
     assert res["value"] is None
-    assert "unknown extractor" in res["note"]
+    assert "skipped" in res["note"]
 
 
 def test_extractor_python_mode_skips_llm(indicator_rules):
@@ -695,12 +789,22 @@ def _patch_indicator_chain(monkeypatch, fake_text, llm_records=None, llm_counter
     monkeypatch.setattr(T, "llm_config",
                         lambda: {"api_key": "test", "base_url": "http://x", "model": "m"})
 
-    def fake_call(system, user):
+    def fake_pydantic_call(system, user, model_class):
         if llm_counter is not None:
             llm_counter["n"] += 1
-        return json.dumps({"records": llm_records or []})
+        # Build a valid instance: all fields null, then fill from llm_records
+        raw = {k: None for k in model_class.model_fields if k not in ("section", "page", "source")}
+        for rec in (llm_records or []):
+            nm = rec.get("indicator", "")
+            if nm in raw:
+                try:
+                    val = rec.get("value")
+                    raw[nm] = float(val) if val is not None else None
+                except (ValueError, TypeError):
+                    raw[nm] = None
+        return model_class.model_validate(raw)
 
-    monkeypatch.setattr(T, "call_llm_json", fake_call)
+    monkeypatch.setattr(T, "call_llm_pydantic", fake_pydantic_call)
 
 
 def test_extract_indicators_groups_by_section(indicator_rules, monkeypatch):
@@ -711,16 +815,20 @@ def test_extract_indicators_groups_by_section(indicator_rules, monkeypatch):
     llm_counter = {"n": 0}
     _patch_indicator_chain(
         monkeypatch, fake_text,
-        llm_records=[{"indicator": "测试_资本充足率", "value": "15.20", "unit": "%"}],
+        llm_records=[
+            {"indicator": "测试_资本充足率", "value": "15.20", "unit": "%"},
+            {"indicator": "测试_员工人数", "value": "12345", "unit": "人"},
+        ],
         llm_counter=llm_counter,
     )
     res = indicators_client.extract_indicators("601398", 2023,
         indicators=["测试_资本充足率", "测试_员工人数",
                     "测试_资产总计", "测试_负债合计", "测试_资产负债率"])
     assert "error" not in res, res
-    # one LLM call total: 资本充足率 is llm; 员工人数 is python; the rest are akshare/computed
-    assert llm_counter["n"] == 1, llm_counter
-    assert res["indicators"]["测试_资本充足率"]["value"] == "15.20"
+    # Two LLM calls: 资本充足率 (report_section) + 员工人数 (report_section)
+    # in different sections → 2 section×module calls
+    assert llm_counter["n"] >= 1, llm_counter
+    assert res["indicators"]["测试_资本充足率"]["value"] == 15.2
     assert res["indicators"]["测试_员工人数"]["value"] == 12345.0
     assert res["indicators"]["测试_资产总计"]["extractor"] == "akshare"
     assert res["indicators"]["测试_资产负债率"]["value"] == 60.0  # 600 / 1000 * 100
@@ -738,10 +846,31 @@ def test_extract_indicators_python_mode_skips_llm(indicator_rules, monkeypatch):
         indicators=["测试_资本充足率", "测试_员工人数"], extractor_mode="python")
     assert "error" not in res
     assert llm_counter["n"] == 0  # LLM-free run
-    # 员工人数 still resolved via python extractor
-    assert res["indicators"]["测试_员工人数"]["value"] == 12345.0
-    # 资本充足率 unresolved (skipped)
+    # Both report rules are skipped in python mode (no python extractors)
     assert any(u["indicator"] == "测试_资本充足率" for u in res["unresolved"])
+    assert any(u["indicator"] == "测试_员工人数" for u in res["unresolved"])
+
+
+def test_extract_indicators_batch_llm_one_call_per_section(indicator_rules, monkeypatch):
+    """All report rules in one section go through a single LLM call (batch path)."""
+    fake_text = (
+        "第三节 资本充足率\n资本充足率 15.20%\n核心一级资本充足率 12.5%\n"
+    )
+    llm_counter = {"n": 0}
+    _patch_indicator_chain(
+        monkeypatch, fake_text,
+        llm_records=[
+            {"indicator": "测试_资本充足率", "value": "15.20", "unit": "%"},
+        ],
+        llm_counter=llm_counter,
+    )
+    res = indicators_client.extract_indicators("601398", 2023,
+        indicators=["测试_资本充足率"])
+    assert "error" not in res, res
+    # Exactly one LLM call for one section×module
+    assert llm_counter["n"] == 1, llm_counter
+    assert res["indicators"]["测试_资本充足率"]["value"] == 15.2
+    assert res["indicators"]["测试_资本充足率"]["extractor"] == "llm"
 
 
 def test_indicator_bundle_cache_roundtrip():
@@ -823,7 +952,7 @@ def test_csv_row_to_rule_mapping():
     assert rule["subgroup"] == "资产负债表 — 一、资产"
     assert rule["source_type"] == "report"
     assert rule["source"]["selectors"][0]["section"] == "资产负债表"
-    assert rule["extractor"] == "python:table_row"        # statement line item
+    assert rule["extractor"] == "llm"        # all report rules use LLM now
     assert rule["applies_to"]["industry"] == "*"
     assert rule["report_type"] == "年报/半年报/季报"
     assert rule["_csv_source"] is True
@@ -979,11 +1108,11 @@ _POSITION_CSV_ROWS = [
 ]
 
 
-def _patch_position_chain(monkeypatch, fake_text):
+def _patch_position_chain(monkeypatch, fake_text, llm_records=None):
     """Patch the indicator chain for position-CSV tests: real-rule 资产总计 needs its own column."""
     import financials_client
 
-    _patch_indicator_chain(monkeypatch, fake_text)
+    _patch_indicator_chain(monkeypatch, fake_text, llm_records=llm_records)
     # the real 资产总计 rule reads the `资产总计` akshare field (the helper's mock uses 总资产)
     monkeypatch.setattr(financials_client, "get_statements",
         lambda stock_code, **_: {
@@ -998,12 +1127,13 @@ def test_extract_indicators_by_position_default_and_skipped(monkeypatch, tmp_pat
     try:
         csv_path = _write_csv(tmp_path / "pos.csv", _POSITION_CSV_ROWS)
         fake_text = "一、 合并资产负债表\n现金 5,000\n其他。\n"
-        _patch_position_chain(monkeypatch, fake_text)
+        _patch_position_chain(monkeypatch, fake_text,
+            llm_records=[{"indicator": "现金", "value": "5000", "unit": "元"}])
         res = indicators_client.extract_indicators_by_position(
             "601398", 2023, csv_path=str(csv_path))
         assert "error" not in res
         assert res["indicators"]["资产总计"]["value"] == 1000      # akshare mock
-        assert res["indicators"]["现金"]["value"] == 5000.0        # python:table_row
+        assert res["indicators"]["现金"]["value"] == 5000.0        # llm
         assert any(s["indicator"] == "PE-TTM" and s["source_type"] == "external"
                    for s in res["skipped"])
         assert any(m["indicator"] == "不存在的指标" and m["reason"] == "unknown"
@@ -1018,7 +1148,8 @@ def test_extract_indicators_by_position_subset(monkeypatch, tmp_path):
     indicators_client.set_registry_path(_DEFAULT_RULES)
     try:
         csv_path = _write_csv(tmp_path / "pos.csv", _POSITION_CSV_ROWS)
-        _patch_position_chain(monkeypatch, "一、 合并资产负债表\n现金 5,000\n")
+        _patch_position_chain(monkeypatch, "一、 合并资产负债表\n现金 5,000\n",
+            llm_records=[{"indicator": "现金", "value": "5000", "unit": "元"}])
         res = indicators_client.extract_indicators_by_position(
             "601398", 2023, csv_path=str(csv_path), indicators=["资产总计"])
         assert "error" not in res
@@ -1029,7 +1160,7 @@ def test_extract_indicators_by_position_subset(monkeypatch, tmp_path):
 
 
 def test_extract_indicators_by_position_extractor_mode(monkeypatch, tmp_path):
-    """extractor='python' forces python mode (skips llm-only report rules)."""
+    """extractor='python' skips all report rules (no python extractors)."""
     indicators_client.set_registry_path(_DEFAULT_RULES)
     try:
         csv_path = _write_csv(tmp_path / "pos.csv", _POSITION_CSV_ROWS)
@@ -1037,8 +1168,8 @@ def test_extract_indicators_by_position_extractor_mode(monkeypatch, tmp_path):
         res = indicators_client.extract_indicators_by_position(
             "601398", 2023, csv_path=str(csv_path), extractor="python")
         assert "error" not in res
-        # 现金 uses python:table_row → still resolved under python mode
-        assert res["indicators"]["现金"]["value"] == 5000.0
+        # 现金 is now an llm rule → skipped in python mode (value is null)
+        assert res["indicators"]["现金"]["value"] is None
     finally:
         pass
 
@@ -1050,7 +1181,8 @@ def test_extract_indicators_by_position_cli(monkeypatch, tmp_path):
     indicators_client.set_registry_path(_DEFAULT_RULES)
     try:
         csv_path = _write_csv(tmp_path / "pos.csv", _POSITION_CSV_ROWS)
-        _patch_position_chain(monkeypatch, "一、 合并资产负债表\n现金 5,000\n")
+        _patch_position_chain(monkeypatch, "一、 合并资产负债表\n现金 5,000\n",
+            llm_records=[{"indicator": "现金", "value": "5000", "unit": "元"}])
         spec = importlib.util.spec_from_file_location(
             "extract_indicators_by_position",
             str(Path(__file__).resolve().parent / "scripts" / "extract_indicators_by_position.py"))
@@ -1337,4 +1469,3 @@ def test_multi_form_integration_two_companies_four_forms(monkeypatch):
                         f"{stock} {form}: no form_filter skips")
     finally:
         pass
-

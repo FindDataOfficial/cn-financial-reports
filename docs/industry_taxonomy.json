@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "defaults": {
+    "country": "cn",
+    "company_types": ["listed"],
+    "report_kinds": ["annual-report"]
+  },
+  "industries": [
+    {
+      "industry": "bank",
+      "label": "银行",
+      "company_types": ["listed"],
+      "report_kinds": ["annual-report", "interim-report", "quarterly-report"]
+    },
+    {
+      "industry": "insurance",
+      "label": "保险",
+      "company_types": ["listed"],
+      "report_kinds": ["annual-report", "interim-report"]
+    },
+    {
+      "industry": "securities",
+      "label": "证券",
+      "company_types": ["listed"],
+      "report_kinds": ["annual-report", "interim-report"]
+    },
+    {
+      "industry": "manufacturing",
+      "label": "制造业",
+      "company_types": ["listed"],
+      "report_kinds": ["annual-report", "interim-report"]
+    }
+  ]
+}
+

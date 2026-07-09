@@ -1068,12 +1068,12 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount",
+        "extractor": "llm",
         "schema_hint": {
           "indicator": "员工人数"
         }
       },
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -1771,7 +1771,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -1785,7 +1785,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -1806,7 +1806,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -1820,7 +1820,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -1841,7 +1841,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -1855,7 +1855,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -1876,7 +1876,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -1890,7 +1890,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -1911,7 +1911,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -1925,7 +1925,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -1946,7 +1946,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -1960,7 +1960,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -1981,7 +1981,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -1995,7 +1995,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2016,7 +2016,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2030,7 +2030,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2051,7 +2051,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2065,7 +2065,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2086,7 +2086,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2100,7 +2100,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2121,7 +2121,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2135,7 +2135,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2156,7 +2156,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2170,7 +2170,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2191,7 +2191,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2205,7 +2205,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2226,7 +2226,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2240,7 +2240,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2261,7 +2261,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2275,7 +2275,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2296,7 +2296,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2310,7 +2310,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2331,7 +2331,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2345,7 +2345,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2366,7 +2366,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2380,7 +2380,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2401,7 +2401,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2415,7 +2415,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2436,7 +2436,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "股",
       "period_type": "annual",
       "direction": "none",
@@ -2450,7 +2450,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2471,7 +2471,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2485,7 +2485,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2506,7 +2506,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2520,7 +2520,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2541,7 +2541,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -2555,7 +2555,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -2576,7 +2576,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2590,7 +2590,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2611,7 +2611,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2625,7 +2625,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2646,7 +2646,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2660,7 +2660,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2681,7 +2681,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2695,7 +2695,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2716,7 +2716,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -2730,7 +2730,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -2751,7 +2751,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2765,7 +2765,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2786,7 +2786,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2800,7 +2800,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2821,7 +2821,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2835,7 +2835,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2856,7 +2856,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2870,7 +2870,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2891,7 +2891,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2905,7 +2905,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2926,7 +2926,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2940,7 +2940,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2961,7 +2961,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -2975,7 +2975,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -2996,7 +2996,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3010,7 +3010,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3031,7 +3031,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3045,7 +3045,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3066,7 +3066,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3080,7 +3080,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3101,7 +3101,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3115,7 +3115,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3136,7 +3136,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3150,7 +3150,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3171,7 +3171,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3185,7 +3185,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3206,7 +3206,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3220,7 +3220,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3241,7 +3241,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3255,7 +3255,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3276,7 +3276,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3290,7 +3290,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3311,7 +3311,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3325,7 +3325,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3346,7 +3346,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3360,7 +3360,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3381,7 +3381,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -3395,7 +3395,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -3416,7 +3416,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "股",
       "period_type": "annual",
       "direction": "none",
@@ -3430,7 +3430,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3451,7 +3451,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3465,7 +3465,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3486,7 +3486,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "股",
       "period_type": "annual",
       "direction": "none",
@@ -3500,7 +3500,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3521,7 +3521,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3535,7 +3535,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3556,7 +3556,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3570,7 +3570,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3591,7 +3591,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "股",
       "period_type": "annual",
       "direction": "none",
@@ -3605,7 +3605,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3626,7 +3626,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3640,7 +3640,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3661,7 +3661,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3675,7 +3675,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3696,7 +3696,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3710,7 +3710,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3731,7 +3731,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3745,7 +3745,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3766,7 +3766,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3780,7 +3780,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3801,7 +3801,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3815,7 +3815,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3836,7 +3836,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3850,7 +3850,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3871,7 +3871,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3885,7 +3885,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3941,7 +3941,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -3955,7 +3955,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -3976,7 +3976,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -3990,7 +3990,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -4011,7 +4011,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -4025,7 +4025,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -4396,7 +4396,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -4410,7 +4410,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -4431,7 +4431,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -4445,7 +4445,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -4466,7 +4466,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4480,7 +4480,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4501,7 +4501,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4515,7 +4515,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4536,7 +4536,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4550,7 +4550,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4571,7 +4571,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4585,7 +4585,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4606,7 +4606,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4620,7 +4620,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4641,7 +4641,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4655,7 +4655,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4676,7 +4676,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4690,7 +4690,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4711,7 +4711,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4725,7 +4725,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4746,7 +4746,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4760,7 +4760,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4781,7 +4781,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4795,7 +4795,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4816,7 +4816,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4830,7 +4830,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4948,7 +4948,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4962,7 +4962,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -4983,7 +4983,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -4997,7 +4997,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -5018,7 +5018,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -5032,7 +5032,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -5053,7 +5053,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -5067,7 +5067,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -5358,7 +5358,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5372,7 +5372,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5393,7 +5393,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5407,7 +5407,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5428,7 +5428,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -5442,7 +5442,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -5463,7 +5463,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5477,7 +5477,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5498,7 +5498,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -5512,7 +5512,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -5533,7 +5533,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5547,7 +5547,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5568,7 +5568,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5582,7 +5582,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5603,7 +5603,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5617,7 +5617,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5638,7 +5638,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5652,7 +5652,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5673,7 +5673,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5687,7 +5687,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5708,7 +5708,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5722,7 +5722,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5743,7 +5743,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5757,7 +5757,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5778,7 +5778,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5792,7 +5792,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5813,7 +5813,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5827,7 +5827,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5848,7 +5848,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5862,7 +5862,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5883,7 +5883,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5897,7 +5897,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5953,7 +5953,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -5967,7 +5967,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -5988,7 +5988,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6002,7 +6002,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6023,7 +6023,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6037,7 +6037,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6058,7 +6058,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6072,7 +6072,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6093,7 +6093,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6107,7 +6107,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6128,7 +6128,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6142,7 +6142,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6163,7 +6163,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -6177,7 +6177,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -6198,7 +6198,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6212,7 +6212,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6233,7 +6233,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6247,7 +6247,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6268,7 +6268,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6282,7 +6282,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6303,7 +6303,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6317,7 +6317,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6338,7 +6338,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6352,7 +6352,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6408,7 +6408,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -6422,7 +6422,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -6513,7 +6513,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "股",
       "period_type": "annual",
       "direction": "none",
@@ -6527,7 +6527,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6548,7 +6548,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6562,7 +6562,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6583,7 +6583,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6597,7 +6597,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6618,7 +6618,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6632,7 +6632,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6653,7 +6653,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6667,7 +6667,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6688,7 +6688,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -6702,7 +6702,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -6758,7 +6758,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -6772,7 +6772,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -6793,7 +6793,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -6807,7 +6807,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -6863,7 +6863,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -6877,7 +6877,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -6898,7 +6898,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -6912,7 +6912,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -6933,7 +6933,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -6947,7 +6947,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -7065,7 +7065,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -7079,7 +7079,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -7100,7 +7100,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -7114,7 +7114,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -7135,7 +7135,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7149,7 +7149,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7170,7 +7170,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7184,7 +7184,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7205,7 +7205,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7219,7 +7219,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7240,7 +7240,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7254,7 +7254,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7275,7 +7275,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7289,7 +7289,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7310,7 +7310,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7324,7 +7324,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7345,7 +7345,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7359,7 +7359,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7380,7 +7380,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7394,7 +7394,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7415,7 +7415,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7429,7 +7429,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7450,7 +7450,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7464,7 +7464,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7485,7 +7485,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7499,7 +7499,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7520,7 +7520,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7534,7 +7534,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7555,7 +7555,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7569,7 +7569,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7590,7 +7590,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7604,7 +7604,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7625,7 +7625,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7639,7 +7639,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7660,7 +7660,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7674,7 +7674,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7695,7 +7695,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7709,7 +7709,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7730,7 +7730,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7744,7 +7744,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7765,7 +7765,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7779,7 +7779,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7800,7 +7800,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7814,7 +7814,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7835,7 +7835,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7849,7 +7849,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7870,7 +7870,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7884,7 +7884,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7905,7 +7905,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7919,7 +7919,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7940,7 +7940,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7954,7 +7954,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -7975,7 +7975,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -7989,7 +7989,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8010,7 +8010,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8024,7 +8024,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8045,7 +8045,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8059,7 +8059,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8080,7 +8080,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8094,7 +8094,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8115,7 +8115,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8129,7 +8129,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8150,7 +8150,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8164,7 +8164,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8185,7 +8185,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8199,7 +8199,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8220,7 +8220,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8234,7 +8234,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8255,7 +8255,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8269,7 +8269,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8290,7 +8290,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8304,7 +8304,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8325,7 +8325,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8339,7 +8339,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8360,7 +8360,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8374,7 +8374,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8395,7 +8395,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8409,7 +8409,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8430,7 +8430,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8444,7 +8444,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8465,7 +8465,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8479,7 +8479,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8500,7 +8500,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8514,7 +8514,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8535,7 +8535,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8549,7 +8549,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8570,7 +8570,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8584,7 +8584,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8605,7 +8605,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8619,7 +8619,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8640,7 +8640,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8654,7 +8654,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8675,7 +8675,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8689,7 +8689,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8710,7 +8710,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8724,7 +8724,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8745,7 +8745,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8759,7 +8759,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8780,7 +8780,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8794,7 +8794,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8815,7 +8815,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8829,7 +8829,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8850,7 +8850,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8864,7 +8864,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8885,7 +8885,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8899,7 +8899,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8920,7 +8920,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8934,7 +8934,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8955,7 +8955,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -8969,7 +8969,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -8990,7 +8990,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9004,7 +9004,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9025,7 +9025,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9039,7 +9039,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9060,7 +9060,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9074,7 +9074,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9095,7 +9095,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9109,7 +9109,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9130,7 +9130,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9144,7 +9144,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9165,7 +9165,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9179,7 +9179,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9200,7 +9200,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9214,7 +9214,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9235,7 +9235,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9249,7 +9249,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9270,7 +9270,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9284,7 +9284,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9305,7 +9305,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9319,7 +9319,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9340,7 +9340,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9354,7 +9354,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9375,7 +9375,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9389,7 +9389,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9410,7 +9410,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9424,7 +9424,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9445,7 +9445,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9459,7 +9459,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9480,7 +9480,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "股",
       "period_type": "annual",
       "direction": "none",
@@ -9494,7 +9494,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9515,7 +9515,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9529,7 +9529,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9550,7 +9550,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9564,7 +9564,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9585,7 +9585,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "股",
       "period_type": "annual",
       "direction": "none",
@@ -9599,7 +9599,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9620,7 +9620,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9634,7 +9634,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9655,7 +9655,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9669,7 +9669,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9690,7 +9690,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -9704,7 +9704,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -9725,7 +9725,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9739,7 +9739,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9760,7 +9760,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9774,7 +9774,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9795,7 +9795,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9809,7 +9809,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9830,7 +9830,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9844,7 +9844,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9865,7 +9865,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9879,7 +9879,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9900,7 +9900,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9914,7 +9914,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9935,7 +9935,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9949,7 +9949,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -9970,7 +9970,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -9984,7 +9984,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10005,7 +10005,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10019,7 +10019,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10040,7 +10040,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10054,7 +10054,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10075,7 +10075,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10089,7 +10089,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10110,7 +10110,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10124,7 +10124,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10145,7 +10145,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10159,7 +10159,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10180,7 +10180,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10194,7 +10194,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10215,7 +10215,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10229,7 +10229,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10250,7 +10250,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10264,7 +10264,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10285,7 +10285,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10299,7 +10299,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10320,7 +10320,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10334,7 +10334,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10355,7 +10355,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10369,7 +10369,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10390,7 +10390,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10404,7 +10404,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10425,7 +10425,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10439,7 +10439,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10460,7 +10460,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -10474,7 +10474,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     },
     {
@@ -10495,7 +10495,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:headcount",
+      "extractor": "llm",
       "unit": "人",
       "period_type": "annual",
       "direction": "none",
@@ -10509,7 +10509,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:headcount"
+        "extractor": "llm"
       }
     },
     {
@@ -10915,7 +10915,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -10929,7 +10929,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -10950,7 +10950,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -10964,7 +10964,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -11020,7 +11020,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -11034,7 +11034,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -11055,7 +11055,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -11069,7 +11069,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -11090,7 +11090,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:percent_value",
+      "extractor": "llm",
       "unit": "%",
       "period_type": "annual",
       "direction": "none",
@@ -11104,7 +11104,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:percent_value"
+        "extractor": "llm"
       }
     },
     {
@@ -11265,7 +11265,7 @@
         "exclude_companies": []
       },
       "source_type": "report",
-      "extractor": "python:table_row",
+      "extractor": "llm",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
@@ -11279,7 +11279,7 @@
             "fallback": true
           }
         ],
-        "extractor": "python:table_row"
+        "extractor": "llm"
       }
     }
   ]

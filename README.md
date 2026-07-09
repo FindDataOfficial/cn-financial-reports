@@ -24,6 +24,7 @@ MCP server for Chinese A-share annual reports. Sixteen tools across three layers
 | | `get_indicator` | One indicator's value for (indicator, company, period) — routes to akshare / PDF section / computed ratio |
 | | `extract_indicators` | All applicable indicators for one company/year in one pass (one fetch, batched LLM, cached bundle) |
 | | `extract_indicators_by_position` | Indicators named in a position CSV (`docs/indicators_position.csv`) for one company/year — external/realtime ones listed in `skipped` |
+| | `extract_indicators_batch` | Many `(ticker, year)` extractions concurrently (feeds `--from-file` / multiyear scripts) |
 
 ## Typical chain
 
@@ -233,6 +234,38 @@ served from the section cache in that run (distinct from `cached: true`,
 which indicates a full bundle hit). Set `LLM_SECTION_CACHE=off` to disable
 the cache at runtime. The cache is on by default; safe to leave on
 indefinitely because CNINFO reports are immutable.
+
+### Concurrency (parallel extraction)
+
+`extract_indicators` runs its per-section LLM calls and `akshare` calls
+**concurrently** up to a worker cap — the sections are independent (disjoint
+indicator names, distinct section-cache keys), so a cold first pass takes
+`~1 × LLM_latency` instead of `N_sections × latency`. The bundle reports the
+cap used via a `concurrency: <int>` field.
+
+```python
+extract_indicators("工商银行", 2023, concurrency=4)        # explicit cap
+extract_indicators("工商银行", 2023, concurrency=1)        # sequential, reproducible
+# EXTRACT_CONCURRENCY=8 python ...                            # env override (default 4)
+```
+
+`extract_indicators_batch(targets, ...)` runs many `(ticker, year[, form])`
+extractions concurrently — the cross-company/cross-year speedup that powers
+`scripts/extract_indicators_by_position.py --from-file` and
+`scripts/extract_indicators_multiyear.py`:
+
+```python
+extract_indicators_batch([("601398", 2023), ("600519", 2023), ("000001", 2023)],
+                         concurrency=2, extract_concurrency=4, csv_path="docs/indicators_position.csv")
+# → {"results": {"601398_2023": {...}, ...}, "failures": [...], "concurrency": 2}
+```
+
+The batch cap (`concurrency`, default `EXTRACT_BATCH_CONCURRENCY`/`2`) and the
+in-call cap (`extract_concurrency`, default `EXTRACT_CONCURRENCY`/`4`) are
+independent — peak in-flight LLM calls is bounded by their product
+(`2 × 4 = 8` by default). Lower either if your provider rate-limits (429s are
+already retried with `Retry-After` by `call_llm_json`); set either to `1` for
+strictly sequential, reproducible runs.
 
 ## Setup
 

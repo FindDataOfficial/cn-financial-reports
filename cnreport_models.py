@@ -5,10 +5,120 @@ and publishable to PyPI without the local mcp-models path dependency.
 """
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Integer, String, UniqueConstraint
+from sqlalchemy import JSON, Column, DateTime, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
+
+
+class LlmRule(Base):
+    """An LLM (non-script) indicator rule persisted in SQLite.
+
+    Mirrors the demand's LLM-rule shape (``indicator``, ``instruction``,
+    ``position``, ``document_type``) plus the metadata the extraction
+    pipeline already consumes (``module``, ``applies_to``, ``source``,
+    ...). Sourced from ``indicator_rules.json`` via the one-shot migration,
+    or written by the generator skills.
+    """
+    __tablename__ = "llm_rules"
+    __table_args__ = (
+        UniqueConstraint("indicator", "document_type", name="uq_llm_rule_indicator_doc"),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    indicator = Column(String(255), nullable=False, index=True)
+    document_type = Column(String(64), nullable=False, index=True)
+    module = Column(String(64), nullable=True, index=True)
+    subgroup = Column(String(255), nullable=True)
+    source_type = Column(String(32), nullable=True)
+    extractor = Column(String(64), nullable=True)
+    applies_to = Column(JSON, nullable=True)
+    unit = Column(String(32), nullable=True)
+    period_type = Column(String(32), nullable=True)
+    value_range = Column(JSON, nullable=True)
+    source = Column(JSON, nullable=True)
+    aliases = Column(JSON, nullable=True)
+    note = Column(Text, nullable=True)
+    direction = Column(String(32), nullable=True)
+    # demand's derived convenience fields
+    instruction = Column(Text, nullable=True)
+    position = Column(Text, nullable=True)
+
+    def to_rule_dict(self) -> dict:
+        """Reconstruct the in-memory rule dict the pipeline expects.
+
+        Maps DB ``indicator``→dict ``name`` and ``document_type``→dict
+        ``report_type`` so callers (``applicable_rules``, ``resolve_rule``,
+        ``_resolve_via_report``) see the same shape they got from
+        ``indicator_rules.json`` before the migration.
+        """
+        return {
+            "name": self.indicator,
+            "indicator": self.indicator,
+            "document_type": self.document_type,
+            "report_type": self.document_type,
+            "module": self.module,
+            "subgroup": self.subgroup,
+            "source_type": self.source_type,
+            "extractor": self.extractor,
+            "applies_to": self.applies_to,
+            "unit": self.unit,
+            "period_type": self.period_type,
+            "value_range": self.value_range,
+            "source": self.source,
+            "aliases": self.aliases or [],
+            "note": self.note or "",
+            "direction": self.direction,
+            "instruction": self.instruction or "",
+            "position": self.position or "",
+        }
+
+
+class ScriptRule(Base):
+    """A script (deterministic) indicator rule persisted in SQLite.
+
+    Carries the demand's script-rule shape (``indicator``, ``extract_rule``,
+    ``position``, ``document_type``) plus shared metadata. ``extract_rule``
+    names a registered extractor in ``script_extractors``.
+    """
+    __tablename__ = "script_rules"
+    __table_args__ = (
+        UniqueConstraint("indicator", "document_type", name="uq_script_rule_indicator_doc"),
+    )
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    indicator = Column(String(255), nullable=False, index=True)
+    document_type = Column(String(64), nullable=False, index=True)
+    extract_rule = Column(String(128), nullable=False)
+    position = Column(Text, nullable=True)
+    module = Column(String(64), nullable=True, index=True)
+    subgroup = Column(String(255), nullable=True)
+    source_type = Column(String(32), nullable=True)
+    applies_to = Column(JSON, nullable=True)
+    unit = Column(String(32), nullable=True)
+    period_type = Column(String(32), nullable=True)
+    source = Column(JSON, nullable=True)
+    aliases = Column(JSON, nullable=True)
+    note = Column(Text, nullable=True)
+
+    def to_rule_dict(self) -> dict:
+        return {
+            "name": self.indicator,
+            "indicator": self.indicator,
+            "document_type": self.document_type,
+            "report_type": self.document_type,
+            "extract_rule": self.extract_rule,
+            "position": self.position or "",
+            "module": self.module,
+            "subgroup": self.subgroup,
+            "source_type": self.source_type,
+            "applies_to": self.applies_to,
+            "unit": self.unit,
+            "period_type": self.period_type,
+            "source": self.source,
+            "aliases": self.aliases or [],
+            "note": self.note or "",
+        }
 
 
 class ReportDocument(Base):

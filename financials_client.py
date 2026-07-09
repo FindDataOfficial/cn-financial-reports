@@ -12,6 +12,7 @@ ALL reporting periods (annual + interim + quarterly). We post-filter:
 """
 from __future__ import annotations
 
+import time
 from typing import Any
 
 
@@ -25,6 +26,12 @@ _STATEMENT_SINA_PARAM = {
     "balance_sheet": "资产负债表",
     "cashflow": "现金流量表",
 }
+
+# akshare returns ALL reporting periods in one call, so the same fetch serves
+# every year. Cache it briefly to (a) avoid re-paying the 3 Sina round-trips per
+# year and (b) dodge Sina rate-limiting that throttles rapid repeat calls.
+_STMT_CACHE: dict[tuple, tuple[float, dict]] = {}
+_STMT_TTL = 600.0  # seconds — statements change at most quarterly
 
 
 def _sina_stock(stock_code: str, exchange: str = "") -> str:
@@ -75,6 +82,10 @@ def get_statements(stock_code: str, *, period: str = "annual", exchange: str = "
 
     Raises `MissingDependencyError` if akshare is not installed. Network
     failures propagate as the underlying httpx/akshare exception.
+
+    Results are cached per (stock, period, exchange) for ``_STMT_TTL`` seconds:
+    akshare returns ALL reporting periods in one call, so one fetch serves
+    every year — collapsing repeated calls also avoids Sina rate-limiting.
     """
     try:
         import akshare as ak  # noqa: WPS433 (lazy import is the point)
@@ -83,10 +94,29 @@ def get_statements(stock_code: str, *, period: str = "annual", exchange: str = "
             "akshare not installed. Run: uv sync --directory mcp/cnreport-mcp"
         ) from e
 
+    cache_key = (stock_code.strip(), period, exchange or "")
+    now = time.monotonic()
+    cached = _STMT_CACHE.get(cache_key)
+    if cached and now - cached[0] < _STMT_TTL:
+        return cached[1]
+
     sina_stock = _sina_stock(stock_code, exchange)
     out: dict[str, dict] = {}
     for key, sina_param in _STATEMENT_SINA_PARAM.items():
-        df = ak.stock_financial_report_sina(stock=sina_stock, symbol=sina_param)
+        df = None
+        last_err: Exception | None = None
+        for _attempt in range(3):  # Sina rate-limits — back off and retry
+            try:
+                df = ak.stock_financial_report_sina(stock=sina_stock, symbol=sina_param)
+                break
+            except Exception as e:  # noqa: BLE001 — surface after retries exhausted
+                last_err = e
+                if _attempt < 2:
+                    time.sleep((3, 15)[_attempt])
+        if df is None:
+            assert last_err is not None
+            raise last_err
         df = _filter_period(df, period)
         out[key] = _serialize_df(df)
+    _STMT_CACHE[cache_key] = (now, out)
     return out

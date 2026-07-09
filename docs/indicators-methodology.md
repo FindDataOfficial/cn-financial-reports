@@ -615,3 +615,9 @@ The LLM extractor persists the raw `{records:[...]}` response to `<CNREPORT_CACH
 
 The bundle exposes a `section_cache_reuse: <int>` field that counts records served from the section cache in that run (distinct from `cached: true`, which indicates a full bundle hit). The cache is on by default; set `LLM_SECTION_CACHE=off` to disable it at runtime. CNINFO reports are immutable, so the cache is safe to leave on indefinitely.
 
+## Concurrency
+
+`extract_indicators` runs its per-section LLM calls and `akshare` calls concurrently up to a worker cap (sections are independent: disjoint indicator names, distinct section-cache keys), so a cold first pass takes `~1 × LLM_latency` instead of `N_sections × latency`. The cap is set by the `concurrency` parameter, falling back to the `EXTRACT_CONCURRENCY` env var (default `4`); `concurrency=1` runs inline with no thread pool and reproduces the prior sequential behavior and call order exactly. The bundle reports the cap used via a `concurrency: <int>` field.
+
+`extract_indicators_batch(targets, ...)` runs many `(ticker, year[, form])` extractions concurrently (powering `scripts/extract_indicators_by_position.py --from-file` and `scripts/extract_indicators_multiyear.py`). Its batch cap (`concurrency`, default `EXTRACT_BATCH_CONCURRENCY`/`2`) is independent of the in-call cap (`extract_concurrency`, default `EXTRACT_CONCURRENCY`/`4`), so peak in-flight LLM calls is bounded by their product (`2 × 4 = 8` by default). Lower either if the provider rate-limits; set either to `1` for strictly sequential runs. The thread pool relies on the existing concurrency boundaries — `call_llm_json` issues a fresh `httpx.post` per call, `report_cache`/`llm_section_cache` write atomically to distinct keys, and `_RULES_CACHE` is read-only after first load — so no new locking is needed.
+

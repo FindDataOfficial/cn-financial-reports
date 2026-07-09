@@ -97,10 +97,11 @@ def get_or_fetch(
 ) -> tuple[str, dict]:
     """Return ``(text, cache_info)`` for ``source``, caching when cacheable.
 
-    ``cache_info = {"cached": bool, "stem": str|None, "cache_dir": str}``.
+    ``cache_info = {"cached": bool, "stem": str|None, "cache_dir": str,
+                    "enriched_outline": ..., "page_offsets": ...}``.
     On a hit the cached ``.txt`` is returned (no download, no pypdf). On a miss
-    the PDF + text + outline are written atomically. Local-path sources pass
-    straight through to ``fetch_source`` with no cache write.
+    the PDF + text + outline + page offsets are written atomically. Local-path
+    sources pass straight through to ``fetch_source`` with no cache write.
     """
     import cnreport_tools as T
 
@@ -111,11 +112,24 @@ def get_or_fetch(
         return text, {"cached": False, "stem": None, "cache_dir": str(d)}
 
     txt_path = d / f"{stem}.txt"
+    enriched_path = d / f"{stem}.outline_enriched.json"
+    offsets_path = d / f"{stem}.page_offsets.json"
     if txt_path.exists():
         try:
-            return txt_path.read_text(encoding="utf-8", errors="replace"), {
-                "cached": True, "stem": stem, "cache_dir": str(d),
-            }
+            text = txt_path.read_text(encoding="utf-8", errors="replace")
+            info: dict = {"cached": True, "stem": stem, "cache_dir": str(d)}
+            # load enriched cache artifacts (graceful if missing — older cache)
+            if enriched_path.exists():
+                try:
+                    info["enriched_outline"] = json.loads(enriched_path.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
+            if offsets_path.exists():
+                try:
+                    info["page_offsets"] = json.loads(offsets_path.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
+            return text, info
         except Exception:
             pass  # corrupt cache file → fall through to re-fetch
 
@@ -131,8 +145,30 @@ def get_or_fetch(
             json.dumps(outline, ensure_ascii=False, indent=2).encode("utf-8"),
         )
     except Exception:
-        pass  # outline snapshot is a bonus artifact, not required
-    return text, {"cached": False, "stem": stem, "cache_dir": str(d)}
+        pass
+    # enriched outline + page offsets (pymupdf-backed)
+    enriched = None
+    offsets = None
+    if raw is not None:
+        try:
+            enriched, offsets, _ = T.build_enriched_outline(text, pdf_data=raw)
+            _atomic_write(
+                d / f"{stem}.outline_enriched.json",
+                json.dumps(enriched, ensure_ascii=False, indent=2).encode("utf-8"),
+            )
+            _atomic_write(
+                d / f"{stem}.page_offsets.json",
+                json.dumps(offsets, ensure_ascii=False).encode("utf-8"),
+            )
+        except Exception:
+            pass  # non-critical — fall back to regular outline
+    return text, {
+        "cached": False,
+        "stem": stem,
+        "cache_dir": str(d),
+        "enriched_outline": enriched,
+        "page_offsets": offsets,
+    }
 
 
 def get_cached_indicators(stem: str, expected_rules_hash: str) -> Optional[dict]:

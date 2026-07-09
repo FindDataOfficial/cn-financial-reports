@@ -3,19 +3,17 @@
 ## Purpose
 
 Resolve a single named financial indicator to a value for a given company and period. The `get_indicator` tool selects the rule for the indicator, filters it by company applicability, resolves the section via the rule's `selectors[]` chain, and runs the rule's declared extractor (`"llm"`, `"python:<name>"`, a `computed` formula, or an `akshare` field read). Returns a uniform result object and never raises on failure.
-
 ## Requirements
-
 ### Requirement: Single indicator lookup via the applicable rule
-The system SHALL provide a `get_indicator` tool that resolves one named financial indicator to a value for a given company (6-digit ticker or name fragment) and period. The system SHALL select the rule for that indicator, filter it by company applicability, resolve the section via the rule's `selectors[]` chain, and run the rule's declared extractor (`"llm"` or `"python:<name>"`) — or compute the formula for `computed` rules, or read the akshare field for `akshare` rules. The tool SHALL return a uniform result object and SHALL NOT raise on failure; it SHALL return `{"error": "..."}`.
+The system SHALL provide a `get_indicator` tool that resolves one named financial indicator to a value for a given company (6-digit ticker or name fragment) and period. The system SHALL select the rule for that indicator, filter it by company applicability, resolve the section via the rule's `selectors[]` chain, and run the rule's declared extractor (`"llm"`, a script rule resolved via the extractor registry, a `computed` formula, or an `akshare` field read). The tool SHALL return a uniform result object and SHALL NOT raise on failure; it SHALL return `{"error": "..."}`.
 
 #### Scenario: Bank-specific indicator via the LLM extractor
 - **WHEN** `get_indicator(indicator="资本充足率", ticker_or_name="工商银行", year=2023)` is called
 - **THEN** the system selects the 资本充足率 rule, confirms it applies to 工商银行, resolves the section via the company-specific selector (`三、资本充足率分析`) falling back to `资本充足率` then `风险管理`, fetches the cached PDF section, runs the `llm` extractor, and returns `{stock_code, company_name, year, indicator, value, unit, source_type: "report", extractor: "llm", source, period, provenance, pdf_url}`.
 
-#### Scenario: Deterministic Python extractor
-- **WHEN** a rule declares `extractor: "python:regex_amount"` for an indicator
-- **THEN** the system dispatches to the registered `regex_amount` function with the section text + rule, returns its `{value, unit}` with `extractor: "python:regex_amount"`, and makes no LLM call.
+#### Scenario: Deterministic script extractor
+- **WHEN** a rule has a matching `script_rules` row with `extract_rule: "regex_amount"`
+- **THEN** the system dispatches to the registered `regex_amount` function with the section text + rule, returns its `{value, unit}` with `extractor: "script:regex_amount"`, and makes no LLM call.
 
 #### Scenario: Computed ratio derived from base values
 - **WHEN** `get_indicator(indicator="资产负债率", ticker_or_name="600519", year=2023)` is called for a `computed` rule
@@ -68,3 +66,4 @@ The system SHALL wrap `get_indicator` in the existing `@_tool_safe` decorator so
 #### Scenario: Underlying failure surfaces as error
 - **WHEN** an akshare or HTTP failure occurs during lookup
 - **THEN** the tool returns `{"error": "..."}` and does not raise.
+

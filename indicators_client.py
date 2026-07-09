@@ -28,11 +28,53 @@ import os
 import json
 import os
 import re
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Optional
 
 _REGISTRY_PATH = Path(__file__).resolve().parent / "indicator_rules.json"
-_RULES_CACHE: Optional[dict] = None
+"""Default migration-seed path. Rules are loaded from the rules database
+(:mod:`rules_db`); this is kept for the ``--rules`` metadata and as the
+seed consumed by ``scripts/migrate_rules_to_db.py``."""
+
+
+def load_rules() -> dict:
+    """Load and cache the indicator rule set from the rules database.
+
+    Returns ``{"rules": [...]}`` where each rule dict is the pipeline's
+    existing shape (``name``, ``module``, ``applies_to``, ``source``, ...).
+    Delegates to :func:`rules_db.load_rules`, which reads the ``llm_rules``
+    table (mapping DB ``indicator``→dict ``name`` and ``document_type``→
+    ``report_type``). ``indicator_rules.json`` is a migration seed, not the
+    runtime source of truth.
+    """
+    import rules_db
+
+    return rules_db.load_rules()
+
+
+def set_registry_path(path) -> None:
+    """Swap the active rule set to the rules in ``path`` (a JSON file).
+
+    Seeds the rules database from the file (clearing ``llm_rules`` first) and
+    rebuilds the Pydantic model registry. Used by the standalone extraction
+    script (``--rules``) and by tests pointing at fixture rule sets. Also
+    updates ``_REGISTRY_PATH`` so callers that record the rule source
+    (e.g. ``bundle["rule_file"]``) reflect the swap.
+    """
+    from indicators_models import rebuild_registry as _rebuild_models
+
+    global _REGISTRY_PATH
+    _REGISTRY_PATH = Path(path)
+    _rebuild_models(path)
+
+
+def invalidate_rules_cache() -> None:
+    """Drop the in-process rule cache and rebuild the Pydantic model registry."""
+    import rules_db
+
+    rules_db.invalidate_rules_cache()
 
 # ── bank sub-type lookup ──────────────────────────────────────────
 # Curated ticker → sub_type for the listed Chinese banks. Name-keyword
@@ -57,51 +99,20 @@ _SUBTYPE_BY_NAME_KEYWORD = (
 # ── rule loading + name resolution ────────────────────────────────
 
 
-def load_rules() -> dict:
-    """Load and cache the indicator rule set (indicator_rules.json).
-
-    Returns ``{_schema, rules: [...]}``. Raises ``FileNotFoundError`` if the
-    registry is missing and ``json.JSONDecodeError`` if malformed — both naming
-    the file, so a misconfigured package fails loudly at first use.
-    """
-    global _RULES_CACHE
-    if _RULES_CACHE is not None:
-        return _RULES_CACHE
-    if not _REGISTRY_PATH.exists():
-        raise FileNotFoundError(f"indicator rule set not found: {_REGISTRY_PATH}")
-    try:
-        data = json.loads(_REGISTRY_PATH.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as e:
-        raise json.JSONDecodeError(
-            f"malformed indicator rule set {_REGISTRY_PATH}: {e.msg}", e.doc, e.pos
-        ) from None
-    if not isinstance(data, dict) or not isinstance(data.get("rules"), list):
-        raise ValueError(f"indicator rule set {_REGISTRY_PATH}: missing 'rules' array")
-    _RULES_CACHE = data
-    return data
-
-
-def set_registry_path(path) -> None:
-    """Point the engine at a different rule file and clear the cache.
-
-    Used by the standalone extraction script (``--rules``) so different
-    companies can be processed against different rule sets in separate runs.
-    """
-    global _REGISTRY_PATH, _RULES_CACHE
-    _REGISTRY_PATH = Path(path)
-    _RULES_CACHE = None
-
-
 def _rules() -> list[dict]:
     return load_rules().get("rules", [])
 
 
 def rules_hash(rules: Optional[list[dict]] = None) -> str:
-    """Stable 16-char sha1 of the rule set — used to bust the indicator bundle cache."""
+    """Stable 16-char sha1 of the rule set + Pydantic model schemas — cache busting."""
+    from indicators_models import rules_hash as _model_hash
+
     rs = rules if rules is not None else _rules()
-    return hashlib.sha1(
+    h = hashlib.sha1(
         json.dumps(rs, sort_keys=True, ensure_ascii=False).encode("utf-8")
-    ).hexdigest()[:16]
+    )
+    h.update(_model_hash().encode())
+    return h.hexdigest()[:16]
 
 
 def _normalize(s: str) -> str:
@@ -272,13 +283,21 @@ def _applicable_for(company: str, rules: list[dict]) -> tuple[dict, list[dict]]:
 # ── source routing primitives ─────────────────────────────────────
 
 
+def _to_json_val(v: Any) -> Any:
+    """Convert Decimal (from Pydantic) to float so the bundle is JSON-safe."""
+    from decimal import Decimal
+    if isinstance(v, Decimal):
+        return float(v)
+    return v
+
+
 def _value_obj(
     value: Any, *, rule: dict, source: str, extractor: str, period: str,
     provenance: str = "", note: str = "",
 ) -> dict:
     return {
         "indicator": rule.get("name"),
-        "value": value,
+        "value": _to_json_val(value),
         "unit": rule.get("unit", ""),
         "source_type": rule.get("source_type"),
         "extractor": extractor,
@@ -305,10 +324,10 @@ def _resolve_via_akshare(company: dict, rule: dict, year: int, period: str) -> d
         all_stmts = financials_client.get_statements(
             company["stock_code"], period=period, exchange=company.get("exchange", ""),
         )
-    except financials_client.MissingDependencyError as e:
+    except Exception as e:  # noqa: BLE001 — akshare/Sina flakiness must not kill the whole year
         return _value_obj(
             None, rule=rule, source="akshare", extractor="akshare", period=period,
-            note=f"akshare unavailable: {e}",
+            note=f"akshare unavailable: {type(e).__name__}: {e}",
         )
     stmt = all_stmts.get(statement)
     if not stmt:
@@ -333,8 +352,14 @@ def _resolve_via_akshare(company: dict, rule: dict, year: int, period: str) -> d
     row = None
     date_col = next((c for c in ("报告日", "报告期", "日期") if c in columns), None)
     if date_col:
+        di = columns.index(date_col)
+        ystr = str(year)
         for r in data:
-            if str(r[columns.index(date_col)]) == target:
+            # str() may be "2024-12-31", "2024-12-31 00:00:00", or "20241231";
+            # rows are already annual-filtered, so matching the 4-digit year is correct
+            # (the old exact `== target` compare fell through to data[0] for datetime
+            # strings, leaking the most-recent year's value into every year).
+            if str(r[di])[:4] == ystr:
                 row = r
                 break
     if row is None and data:
@@ -351,7 +376,12 @@ def _resolve_via_akshare(company: dict, rule: dict, year: int, period: str) -> d
     )
 
 
-def _resolve_section(text: str, outline: list[dict], rule: dict, stock_code: str):
+def _resolve_section(
+    text: str, outline: list[dict], rule: dict, stock_code: str,
+    form: str = "",
+    page_offsets: Optional[list[int]] = None,
+    page_count: int = 0,
+):
     """Walk the rule's ``selectors[]`` chain; return ``(section_text, matched)``.
 
     Company-filtered selectors are tried first; on a miss the next entry is
@@ -361,6 +391,11 @@ def _resolve_section(text: str, outline: list[dict], rule: dict, stock_code: str
 
     src = rule.get("source") or {}
     selectors = src.get("selectors") or []
+    # Fallback: use subgroup as a single selector when no explicit selectors exist.
+    if not selectors and rule.get("subgroup"):
+        selectors = [{"section": rule["subgroup"]}]
+    import report_section_map as RSM
+
     tried: list[str] = []
     # order: company-matching selectors first, then the rest, preserving chain order within each
     def _company_matches(sel: dict) -> bool:
@@ -374,13 +409,20 @@ def _resolve_section(text: str, outline: list[dict], rule: dict, stock_code: str
         section = sel.get("section")
         if not section:
             continue
-        tried.append(section)
-        entry = T.resolve_selector(outline, section)
-        if entry is None:
-            continue
-        body = T.extract_section_text(text, outline, entry)
-        if body:
-            return body, section
+        for candidate in RSM.candidates(form, section):
+            tried.append(candidate)
+            entry = T.resolve_selector(outline, candidate)
+            if entry is None:
+                continue
+            body = T.extract_section_text(
+                text,
+                outline,
+                entry,
+                page_offsets=page_offsets,
+                page_count=page_count,
+            )
+            if body:
+                return body, candidate
     # statement-module fallback: try the canonical consolidated statement title
     # (合并资产负债表 / 合并利润表 / 合并现金流量表) via resolve_statement. This
     # honors rules whose selector is a descriptive section label that did not
@@ -389,15 +431,27 @@ def _resolve_section(text: str, outline: list[dict], rule: dict, stock_code: str
     if stmt_key is not None:
         entry = T.resolve_statement(outline, stmt_key)
         if entry is not None:
-            body = T.extract_section_text(text, outline, entry)
+            body = T.extract_section_text(text, outline, entry,
+                                          page_offsets=page_offsets,
+                                          page_count=page_count)
             if body:
                 return body, entry.get("title", stmt_key)
-    # body-text fallback for quarterly reports whose outline lacks statement
-    # titles: search the raw text for the canonical statement title and slice.
-    if stmt_key is not None:
-        body = T.extract_statement_text(text, stmt_key)
-        if body:
-            return body, f"<body-text: {stmt_key}>"
+    # body-text fallback: search raw text for each candidate title and slice.
+    # Catches sections present in the PDF text but missing from the outline
+    # (e.g. 财务报表附注, 员工情况 sub-sections).
+    for sel in ordered:
+        section = sel.get("section")
+        if not section:
+            continue
+        for candidate in RSM.candidates(form, section):
+            tried.append(candidate)
+            body = T.extract_statement_text(text, candidate)
+            if body:
+                return body, f"<body-text: {candidate}>"
+            # Also try direct text search for generic section titles
+            body = T.extract_section_by_title(text, candidate)
+            if body:
+                return body, f"<body-text: {candidate}>"
     return None, tried
 
 
@@ -443,22 +497,23 @@ def _llm_extract_section(
     section_text: str, rules: list[dict], period: str, *, max_chars: int | None = None,
     pdf_url: str | None = None, section_key: str | None = None,
 ) -> dict[str, dict]:
-    """One LLM call over a section requesting every indicator in `rules`.
+    """One Pydantic-typed LLM call per module over a section's rules.
 
-    Returns ``{indicator_name: {value, unit, note}}``. On any failure (no API
-    key, parse error) returns one entry per rule with ``value=None`` and a note.
+    Groups ``rules`` by ``module`` (balance_sheet, income_statement, cashflow,
+    report_section), makes one ``call_llm_pydantic`` per module using the
+    corresponding Pydantic model from ``indicators_models``, and returns
+    ``{indicator_name: {value, unit, note}}``.
 
-    When ``pdf_url`` and ``section_key`` are provided, the raw ``{records:[...]}``
-    response is persisted to and read from the section cache
-    (:mod:`llm_section_cache`). On a full hit (all wanted indicators present in
-    the cached ``meta.wanted``) the LLM is not called; on a partial hit the
-    delta is fetched and merged into the cached response.
+    On any failure (no API key, parse error) returns one entry per rule with
+    ``value=None`` and a note.  Caching delegates to :mod:`llm_section_cache`
+    using the Pydantic model's rules hash as the version key.
     """
     import cnreport_tools as T
     import llm_section_cache as LSC
+    from indicators_models import model_to_json_schema, model_for_subgroup
 
     if max_chars is None:
-        max_chars = int(os.environ.get("LLM_MAX_CHARS", "12000"))
+        max_chars = int(os.environ.get("LLM_MAX_CHARS", "24000"))
 
     cfg = T.llm_config()
     if not cfg["api_key"]:
@@ -467,124 +522,110 @@ def _llm_extract_section(
             for r in rules
         }
 
-    wanted_names = [r["name"] for r in rules]
-    rh = rules_hash() if (pdf_url and section_key) else ""
+    # Group by (module, subgroup) — each group gets a focused Pydantic model
+    # with fewer fields, reducing LLM hallucination.
+    by_group: dict[tuple[str, str], list[dict]] = {}
+    for r in rules:
+        mod = r.get("module", "")
+        sub = r.get("subgroup") or mod
+        by_group.setdefault((mod, sub), []).append(r)
 
-    # Section cache lookup (only when caller supplied pdf_url + section_key).
-    # Cache read/write are wrapped in try/except so a broken cache never blocks
-    # the LLM path; on any error we fall through to a fresh LLM call.
     _log = logging.getLogger(__name__)
-    cached = None
-    if pdf_url and section_key:
+    all_results: dict[str, dict] = {}
+
+    for (module, subgroup), group_rules in by_group.items():
+        wanted_names = [r["name"] for r in group_rules]
+        model_cls = model_for_subgroup(module, subgroup, group_rules)
+        model_rh = rules_hash(group_rules)
+        # Build the LLM user prompt
+        snippet = section_text[:max_chars]
+        section_title = section_key or module
+        schema = model_to_json_schema(model_cls)
+        field_descriptions = []
+        for nm in wanted_names:
+            field_info = schema["schema"]["properties"].get(nm, {})
+            desc = field_info.get("description", nm)
+            field_descriptions.append(f"  - {nm}: {desc}")
+
+        expected_keys = json.dumps(wanted_names, ensure_ascii=False)
+        system = (
+            "You extract structured financial figures from Chinese annual-report text. "
+            "Return only valid JSON. "
+            f"The text is from the section '{section_title}'. "
+            "The text may contain multiple years of data. Return only the "
+            "most recent year's (2023) value as a single number, not a dict. "
+            f"Your response MUST be a JSON object with these exact keys: {expected_keys}. "
+            "Match indicator names to text lines by financial meaning, not exact wording. "
+            "Examples: '母公司股东'→'归属于母公司普通股股东的净利润', "
+            "'业务及管理费'→'业务及管理费用', "
+            "'发行债务证券所收到的现金'→'发行债券收到的现金', "
+            "'投资联营及合营企业所支付的现金'→'取得子公司、合营联营企业及其他营业单位支付的现金净额', "
+            "'税前利润'→'利润总额'. "
+            "Set to null only if the item genuinely does not exist in the text."
+        )
+        user = (
+            f"Financial section: {section_title}\n\n"
+            f"Period: {period}\n\n"
+            f"Relevant text:\n{snippet}\n\n"
+            f"Extract values for these indicators:\n" + "\n".join(field_descriptions) + "\n\n"
+            f"Return a JSON object with keys: {expected_keys}. "
+            "Each value must be a single number or null."
+        )
+
+        # Cache lookup (when caller supplied pdf_url + section_key)
+        _cached_raw = None
+        if pdf_url and section_key:
+            try:
+                _cached_raw = LSC.get(pdf_url, section_key, period, model_rh)
+            except Exception as e:
+                _log.debug("section cache read error: %s", e)
+
+        if _cached_raw is not None:
+            cached_names = {LSC._normalize_name(r.get("indicator", "")) for r in _cached_raw}
+            wanted_norm = {LSC._normalize_name(n) for n in wanted_names}
+            missing_norm = wanted_norm - cached_names
+            if not missing_norm:
+                # Full hit
+                for rec in _cached_raw:
+                    nm = rec.get("indicator", "")
+                    if LSC._normalize_name(nm) in wanted_norm:
+                        all_results[nm] = {
+                            "value": rec.get("value"),
+                            "unit": rec.get("unit") or "",
+                            "note": "llm-section-cache",
+                        }
+                for r in group_rules:
+                    if r["name"] not in all_results:
+                        all_results[r["name"]] = {"value": None, "unit": r.get("unit", ""), "note": "llm-section-cache: not returned"}
+                continue
+
+        # Call the LLM with the focused subgroup schema
         try:
-            cached = LSC.get(pdf_url, section_key, period, rh)
-        except Exception as e:
-            _log.debug("section cache read error: %s", e)
-            cached = None
-
-    if cached is not None:
-        cached_records = LSC.cached_subset(cached, wanted_names)
-        cached_norm = {LSC._normalize_name(r.get("indicator", "")) for r in cached_records}
-        wanted_norm = {LSC._normalize_name(n) for n in wanted_names}
-        missing_norm = wanted_norm - cached_norm
-        if not missing_norm:
-            # Full hit: every wanted indicator is in the cache. No LLM call.
-            return _records_to_results(cached_records, rules, note="llm-section-cache")
-        # Partial hit: fetch the delta, merge, write back, return merged.
-        delta_rules = [r for r in rules if LSC._normalize_name(r["name"]) in missing_norm]
-        delta_out = _llm_fetch_records(section_text, delta_rules, period, max_chars)
-        if "error" in delta_out:
-            return _records_to_results(cached_records, rules, note="llm-section-cache")
-        delta_records = list(delta_out.get("records") or [])
-        merged = list(cached_records) + [
-            r for r in delta_records
-            if LSC._normalize_name(r.get("indicator", "")) not in cached_norm
-        ]
-        try:
-            LSC.put(pdf_url, section_key, period, rh, merged)
-        except Exception as e:
-            _log.debug("section cache write error: %s", e)
-        return _records_to_results(merged, rules, note="llm-section-cache")
-
-    # Cache miss (or cache disabled / no pdf_url/section_key): call the LLM.
-    fetched = _llm_fetch_records(section_text, rules, period, max_chars)
-    if "error" in fetched:
-        return fetched["error"]
-    if pdf_url and section_key:
-        try:
-            LSC.put(pdf_url, section_key, period, rh, fetched.get("records") or [])
-        except Exception as e:
-            _log.debug("section cache write error: %s", e)
-    return _records_to_results(fetched.get("records") or [], rules, note="llm")
-
-
-def _llm_fetch_records(
-    section_text: str, rules: list[dict], period: str, max_chars: int,
-) -> dict:
-    """One LLM call → ``{"records": [...]}`` or ``{"error": {name: {value:None, note}}}``.
-
-    Pure LLM call + parse; no cache reads or writes. Returns the raw records so
-    the caller can persist them, and the per-rule error map for failure paths.
-    """
-    import cnreport_tools as T
-
-    snippet = section_text[:max_chars]
-    wanted = []
-    for r in rules:
-        hint = (r.get("source") or {}).get("schema_hint") or {}
-        wanted.append({"indicator": r["name"], "unit": r.get("unit", ""), **hint})
-
-    system = (
-        "You extract structured financial figures from Chinese annual-report text. "
-        "For each requested indicator, return its value for the requested period. "
-        "Return ONLY a JSON object with a 'records' array; one record per indicator. "
-        "If an indicator is not present, set value to null. Do not include prose."
-    )
-    user = json.dumps({"period": period, "wanted": wanted, "text": snippet}, ensure_ascii=False)
-    try:
-        content = T.call_llm_json(system, user)
-        data = json.loads(content)
-        records = data.get("records") if isinstance(data, dict) else data
-        if not isinstance(records, list):
-            records = []
-    except Exception as e:
-        return {"error": {
-            r["name"]: {"value": None, "unit": r.get("unit", ""), "note": f"llm error: {type(e).__name__}: {e}"}
-            for r in rules
-        }}
-    return {"records": records}
-
-
-def _records_to_results(
-    records: list[dict], rules: list[dict], *, note: str,
-) -> dict[str, dict]:
-    """Map a ``{records:[{indicator,value,unit}]}`` payload to ``{name: {value, unit, note}}``.
-
-    Missing indicators get ``value=None`` and ``note="<note>: not returned"``
-    so the caller can distinguish a cache hit that was complete from one that
-    had a partial LLM response originally.
-    """
-    by_name: dict[str, dict] = {}
-    for rec in records:
-        if not isinstance(rec, dict):
+            instance = T.call_llm_pydantic(system, user, model_cls)
+        except RuntimeError as e:
+            for r in group_rules:
+                all_results[r["name"]] = {
+                    "value": None, "unit": r.get("unit", ""),
+                    "note": f"llm error: {e}",
+                }
             continue
-        nm = rec.get("indicator")
-        if not nm:
-            continue
-        by_name[_normalize(nm)] = {
-            "value": rec.get("value"),
-            "unit": rec.get("unit") or "",
-            "note": note,
-        }
-    out: dict[str, dict] = {}
-    for r in rules:
-        key = _normalize(r["name"])
-        if key in by_name:
-            out[r["name"]] = by_name[key]
-        else:
-            out[r["name"]] = {"value": None, "unit": r.get("unit", ""),
-                              "note": f"{note}: not returned" if note != "llm" else "llm: not returned"}
-    return out
+
+        raw = instance.model_dump()
+        if pdf_url and section_key:
+            try:
+                records = [{"indicator": k, "value": v} for k, v in raw.items()]
+                LSC.put(pdf_url, section_key, period, model_rh, records)
+            except Exception as e:
+                _log.debug("section cache write error: %s", e)
+
+        for r in group_rules:
+            all_results[r["name"]] = {
+                "value": _to_json_val(raw.get(r["name"])),
+                "unit": r.get("unit", ""),
+                "note": "llm",
+            }
+
+    return all_results
 
 
 def _run_extractor(
@@ -594,59 +635,98 @@ def _run_extractor(
     pdf_url: str | None = None,
     section_key: str | None = None,
 ) -> dict:
-    """Dispatch one report rule to its extractor, honoring ``extractor_mode``.
+    """Dispatch one report rule, honoring ``extractor_mode``.
 
-    ``llm_cache`` (when provided) carries the batched LLM result for this section
-    so a single indicator lookup reuses the per-section call instead of re-querying.
+    Script rules (a ``script_rules`` row matching the indicator +
+    ``document_type``) are dispatched first via the named-extractor registry in
+    :mod:`script_extractors` — they are deterministic, so they run in any mode
+    (including ``python``) and never need an LLM call or API key.
 
-    When ``pdf_url`` + ``section_key`` are provided and the rule resolves to the
-    LLM extractor, the persistent section cache (``llm_section_cache``) is
-    consulted first. A hit returns the cached record with
-    ``note: "llm-section-cache"``; a miss falls through to ``_llm_extract_section``
-    and the result is written back to the cache.
+    Remaining rules go through the LLM extractor. ``llm_cache`` (when provided)
+    carries the batched LLM result for this section so a single indicator lookup
+    reuses the per-section call instead of re-querying. When ``pdf_url`` +
+    ``section_key`` are provided, the persistent section cache
+    (``llm_section_cache``) is consulted first; a miss falls through to
+    ``_llm_extract_section`` and the result is written back to the cache.
     """
-    declared = rule.get("extractor") or (rule.get("source") or {}).get("extractor") or "llm"
-    if extractor_mode == "llm":
-        effective = "llm"
-    elif extractor_mode == "python":
-        if declared.startswith("python:"):
-            effective = declared
-        else:
-            return {"value": None, "unit": rule.get("unit", ""),
-                    "note": "skipped: llm extractor in python mode"}
-    else:  # auto
-        effective = declared
+    # script-rule dispatch (deterministic; runs in any mode, no LLM)
+    script_result = _try_script_extractor(section_text, rule, period)
+    if script_result is not None:
+        return script_result
 
-    if effective == "llm":
-        if llm_cache is not None and rule["name"] in llm_cache:
-            return llm_cache[rule["name"]]
-        result = _llm_extract_section(
-            section_text, [rule], period,
-            pdf_url=pdf_url, section_key=section_key,
-        )
-        return result.get(rule["name"], {"value": None, "unit": rule.get("unit", ""), "note": "llm: empty"})
-    if effective.startswith("python:"):
-        import indicators_extractors
+    if extractor_mode == "python":
+        return {"value": None, "unit": rule.get("unit", ""),
+                "note": "skipped: llm extractor in python mode"}
 
-        name = effective.split(":", 1)[1]
-        fn = indicators_extractors.get(name)
-        if fn is None:
-            return {"value": None, "unit": rule.get("unit", ""),
-                    "note": f"unknown extractor: {effective}"}
-        try:
-            return fn(section_text, rule, period)
-        except Exception as e:
-            return {"value": None, "unit": rule.get("unit", ""),
-                    "note": f"extractor error: {type(e).__name__}: {e}"}
-    return {"value": None, "unit": rule.get("unit", ""), "note": f"unknown extractor: {effective}"}
+    if llm_cache is not None and rule["name"] in llm_cache:
+        return llm_cache[rule["name"]]
+    result = _llm_extract_section(
+        section_text, [rule], period,
+        pdf_url=pdf_url, section_key=section_key,
+    )
+    return result.get(rule["name"], {"value": None, "unit": rule.get("unit", ""), "note": "llm: empty"})
+
+
+def _try_script_extractor(
+    section_text: str, rule: dict, period: str,
+) -> Optional[dict]:
+    """Run a matching script rule's named extractor, or return ``None``.
+
+    Looks up a ``script_rules`` row by the rule's indicator (``name``) and
+    ``document_type`` (``report_type``). If one exists, dispatches to the
+    registered extractor named by ``extract_rule``. Unknown extractors and
+    extractor errors return ``{value: None}`` rather than raising. Returns
+    ``None`` when no script rule exists (so the caller falls through to the
+    LLM path).
+    """
+    import script_extractors
+    import rules_db
+
+    name = rule.get("name") or rule.get("indicator")
+    if not name:
+        return None
+    doc_type = rule.get("report_type") or rule.get("document_type")
+    srule = rules_db.get_script_rule(name, doc_type)
+    if srule is None:
+        return None
+    extract_rule = srule.get("extract_rule")
+    fn = script_extractors.get(extract_rule)
+    if fn is None:
+        return {
+            "value": None, "unit": rule.get("unit", ""),
+            "note": f"unknown extractor: {extract_rule}",
+            "extractor": f"script:{extract_rule}",
+        }
+    try:
+        res = fn(section_text, srule, period)
+    except Exception as e:  # noqa: BLE001 — extractor must not abort extraction
+        return {
+            "value": None, "unit": rule.get("unit", ""),
+            "note": f"script:{extract_rule} error: {e}",
+            "extractor": f"script:{extract_rule}",
+        }
+    res.setdefault("unit", rule.get("unit", ""))
+    res.setdefault("note", f"script:{extract_rule}")
+    res["extractor"] = f"script:{extract_rule}"
+    return res
 
 
 def _resolve_via_report(
     text: str, outline: list[dict], rule: dict, stock_code: str,
-    year: int, period: str, extractor_mode: str, pdf_url: str,
+    year: int, period: str, form: str, extractor_mode: str, pdf_url: str,
     llm_cache: Optional[dict] = None,
+    page_offsets: Optional[list[int]] = None,
+    page_count: int = 0,
 ) -> dict:
-    section_text, matched = _resolve_section(text, outline, rule, stock_code)
+    section_text, matched = _resolve_section(
+        text,
+        outline,
+        rule,
+        stock_code,
+        form=form,
+        page_offsets=page_offsets,
+        page_count=page_count,
+    )
     if section_text is None:
         return _value_obj(
             None, rule=rule, source=f"report:{matched}", extractor=rule.get("extractor", "llm"),
@@ -659,7 +739,8 @@ def _resolve_via_report(
     )
     return _value_obj(
         res.get("value"), rule=rule, source=f"report:{matched}",
-        extractor=res.get("note", "").startswith("llm") and "llm"
+        extractor=res.get("extractor")
+        or (res.get("note", "").startswith("llm") and "llm")
         or (rule.get("extractor") or "llm"),
         period=period, provenance=pdf_url, note=res.get("note", ""),
     )
@@ -778,7 +859,10 @@ def _resolve_via_computed(rule: dict, base_values: dict[str, Any], period: str) 
 class _Ctx:
     """Carries everything a resolution pass needs to avoid re-fetching."""
 
-    def __init__(self, company, filing, text, outline, year, period, form, extractor_mode):
+    def __init__(
+        self, company, filing, text, outline, year, period, form, extractor_mode,
+        page_offsets: Optional[list[int]] = None,
+    ):
         self.company = company
         self.filing = filing
         self.text = text
@@ -787,6 +871,7 @@ class _Ctx:
         self.period = period
         self.form = form
         self.extractor_mode = extractor_mode
+        self.page_offsets = page_offsets or []
         self._section_cache: dict[str, str] = {}  # section title → body text
 
     @property
@@ -809,7 +894,9 @@ def _resolve_rule_value(rule: dict, ctx: _Ctx, depth: int = 0) -> dict:
     if st == "report":
         return _resolve_via_report(
             ctx.text, ctx.outline, rule, ctx.stock_code, ctx.year, ctx.period,
-            ctx.extractor_mode, ctx.pdf_url,
+            ctx.form, ctx.extractor_mode, ctx.pdf_url,
+            page_offsets=ctx.page_offsets or None,
+            page_count=len(ctx.page_offsets) - 1 if len(ctx.page_offsets) > 1 else 0,
         )
     if st == "computed":
         src = rule.get("source") or {}
@@ -855,16 +942,44 @@ def _build_ctx(
         return None, {
             "error": f"no filing found for {company['stock_code']} form={form!r} year={year}"
         }
+    # Prefer the A-share filing over H-share / overseas variants.
+    # H股公告 / 海外公告 titles contain "H股" or "海外" — skip them when
+    # a plain A-share filing exists.
     top = filings[0]
-    text = outline = None
+    for f in filings:
+        title = (f.get("title") or "").lower()
+        if "h股" not in title and "海外" not in title:
+            top = f
+            break
+    text = outline = page_offsets = None
     if fetch_pdf:
-        text, _ = report_cache.get_or_fetch(
+        text, cache_info = report_cache.get_or_fetch(
             top["pdf_url"],
             stock_code=company["stock_code"], year=year, form=form,
             announcement_id=top.get("announcement_id") or "",
         )
-        outline = T.parse_outline(text)
-    ctx = _Ctx(company, top, text, outline, year, period, form, extractor_mode)
+        # prefer enriched outline (pymupdf + regex + statement titles) when available
+        enriched = cache_info.get("enriched_outline")
+        if enriched:
+            outline = enriched
+        else:
+            # try building enriched outline from cached PDF
+            try:
+                cache_dir = report_cache.cache_dir()
+                pdf_path = cache_dir / f"{cache_info.get('stem', '')}.pdf"
+                pdf_data = pdf_path.read_bytes() if pdf_path.exists() else None
+                enriched, page_off, _ = T.build_enriched_outline(text, pdf_data=pdf_data)
+                if enriched:
+                    outline = enriched
+                    if page_off:
+                        page_offsets = page_off
+            except Exception:
+                pass
+        if outline is None:
+            outline = T.parse_outline(text)
+        page_offsets = cache_info.get("page_offsets", [])
+    ctx = _Ctx(company, top, text, outline, year, period, form, extractor_mode,
+               page_offsets=page_offsets)
     return ctx, None
 
 
@@ -924,12 +1039,78 @@ def _computed_needs_pdf(rule: dict, depth: int = 0) -> bool:
     return False
 
 
+# ── concurrency ───────────────────────────────────────────────────
+
+
+def _resolve_concurrency(concurrency: Optional[int]) -> int:
+    """Resolve the in-call worker cap for a concurrent extraction pass.
+
+    A positive ``concurrency`` wins; otherwise the ``EXTRACT_CONCURRENCY`` env
+    var is read (default ``4``). The result is clamped to ``>= 1`` — ``1`` means
+    sequential, and callers short-circuit the pool entirely at that value so
+    behavior and call order are identical to a plain loop (the deterministic,
+    reproducible path used by tests and rate-fragile providers).
+    """
+    if concurrency is not None and concurrency > 0:
+        return concurrency
+    try:
+        env = int(os.environ.get("EXTRACT_CONCURRENCY", "4"))
+    except (TypeError, ValueError):
+        env = 4
+    return max(1, env)
+
+
+def _resolve_batch_concurrency(concurrency: Optional[int]) -> int:
+    """Resolve the cross-target worker cap for ``extract_indicators_batch``.
+
+    Independent from the in-call cap (``_resolve_concurrency``); default ``2``
+    via ``EXTRACT_BATCH_CONCURRENCY`` so the product
+    ``batch_concurrency × extract_concurrency`` stays modest (default ``2 × 4 = 8``
+    peak in-flight LLM calls) against provider rate limits.
+    """
+    if concurrency is not None and concurrency > 0:
+        return concurrency
+    try:
+        env = int(os.environ.get("EXTRACT_BATCH_CONCURRENCY", "2"))
+    except (TypeError, ValueError):
+        env = 2
+    return max(1, env)
+
+
+def _map_merge(items, fn, concurrency: int, *, label: str = "") -> list:
+    """Map ``fn`` over ``items`` concurrently up to ``concurrency`` workers.
+
+    Returns the list of ``fn(item)`` results in **input order**. When
+    ``concurrency <= 1`` or there is at most one item, runs inline (no thread
+    pool) so behavior and call order are identical to ``[fn(i) for i in items]``
+    — the deterministic path used by tests and for reproducibility.
+
+    Workers never mutate shared state: each returns a plain value and the caller
+    merges results. This is safe because the I/O-bound call sites are already
+    concurrency-safe at this boundary: ``cnreport_tools.call_llm_json`` issues a
+    fresh ``httpx.post`` per call (no shared client); ``report_cache`` and
+    ``llm_section_cache`` write atomically (``tmp`` + ``os.replace``) to
+    *distinct* keys; ``_RULES_CACHE`` is read-only after first load; and
+    ``financials_client.get_statements`` holds no module-level mutable state.
+
+    ``label`` is a debug-only tag surfaced in log messages to identify which
+    pass (``section`` / ``akshare`` / ``batch``) is running.
+    """
+    if concurrency <= 1 or len(items) <= 1:
+        return [fn(it) for it in items]
+    _log = logging.getLogger(__name__)
+    _log.debug("concurrent %s pass: %d items, %d workers", label or "map", len(items), concurrency)
+    with ThreadPoolExecutor(max_workers=concurrency) as ex:
+        return list(ex.map(fn, items))
+
+
 def extract_indicators(
     ticker_or_name: str,
     year: int,
     indicators: Optional[list[str]] = None,
     form: str = "年度报告",
     extractor_mode: str = "auto",
+    concurrency: Optional[int] = None,
 ) -> dict:
     """Extract many indicators for one company/year in one pass.
 
@@ -973,6 +1154,7 @@ def extract_indicators(
             cached["cached"] = True
             return cached
 
+    cap = _resolve_concurrency(concurrency)
     results: dict[str, dict] = {}
     missing: list[dict] = []
     unresolved: list[dict] = []
@@ -984,10 +1166,14 @@ def extract_indicators(
         for nm in not_applicable:
             missing.append({"indicator": nm, "reason": "not applicable"})
 
-    # --- akshare group: one fetch ---
+    # --- akshare group: one network fetch per rule, run concurrently up to `cap` ---
     akshare_rules = [r for r in target_rules if r["source_type"] == "akshare"]
-    for r in akshare_rules:
-        results[r["name"]] = _resolve_via_akshare(ctx.company, r, year, "annual")
+
+    def _resolve_one_akshare(r: dict) -> tuple[str, dict]:
+        return r["name"], _resolve_via_akshare(ctx.company, r, year, "annual")
+
+    for name, val in _map_merge(akshare_rules, _resolve_one_akshare, cap, label="akshare"):
+        results[name] = val
 
     # --- external group: realtime/market indicators not in the report PDF → unresolved ---
     external_rules = [r for r in target_rules if r["source_type"] == "external"]
@@ -1003,7 +1189,12 @@ def extract_indicators(
     section_of: dict[str, str] = {}
     section_text_cache: dict[str, str] = {}
     for r in report_rules:
-        body, matched = _resolve_section(ctx.text, ctx.outline, r, ctx.stock_code)
+        body, matched = _resolve_section(
+            ctx.text, ctx.outline, r, ctx.stock_code,
+            form=ctx.form,
+            page_offsets=ctx.page_offsets or None,
+            page_count=len(ctx.page_offsets) - 1 if ctx.page_offsets and len(ctx.page_offsets) > 1 else 0,
+        )
         if body is None:
             results[r["name"]] = _value_obj(
                 None, rule=r, source=f"report:{matched}", extractor=r.get("extractor", "llm"),
@@ -1032,34 +1223,67 @@ def extract_indicators(
                 unresolved.append({"indicator": r["name"], "note": res["note"]})
     else:
         sections = sorted(set(section_of.values()))
-        for sec in sections:
-            rules_in_sec = [r for r in report_rules if section_of.get(r["name"]) == sec]
-            llm_rules = [r for r in rules_in_sec if _effective_extractor(r, extractor_mode) == "llm"]
-            python_rules = [r for r in rules_in_sec if _effective_extractor(r, extractor_mode).startswith("python:")]
+
+        def _extract_one_section(sec: str) -> tuple[dict[str, dict], int]:
+            """Resolve all rules in one section: script rules first, then one LLM call per module for the rest.
+
+            Returns ``(sub_results, reuse_delta)`` so the main thread can merge
+            into ``results`` without any shared-dict mutation across workers.
+            Disjoint sections own disjoint indicator names and distinct
+            section-cache keys, so this is safe to run concurrently.
+            """
+            all_rules_in_sec = [r for r in report_rules if section_of.get(r["name"]) == sec]
+            if extractor_mode == "python":
+                return {
+                    r["name"]: _value_obj(
+                        None, rule=r, source=f"report:{sec}", extractor="llm",
+                        period="annual", provenance=ctx.pdf_url,
+                        note="skipped: llm extractor in python mode",
+                    )
+                    for r in all_rules_in_sec
+                }, 0
+            sub: dict[str, dict] = {}
+            llm_rules: list[dict] = []
+            for r in all_rules_in_sec:
+                script_res = _try_script_extractor(section_text_cache[sec], r, "annual")
+                if script_res is not None:
+                    val = script_res.get("value")
+                    note = script_res.get("note", "")
+                    if val is not None:
+                        sub[r["name"]] = _value_obj(
+                            val, rule=r, source=f"report:{sec}",
+                            extractor=script_res.get("extractor", f"script:{note}"),
+                            period="annual", provenance=ctx.pdf_url, note=note,
+                        )
+                    else:
+                        llm_rules.append(r)
+                else:
+                    llm_rules.append(r)
             llm_cache: dict[str, dict] = {}
+            reuse = 0
             if llm_rules:
                 llm_cache = _llm_extract_section(
                     section_text_cache[sec], llm_rules, "annual",
                     pdf_url=ctx.pdf_url, section_key=sec,
                 )
-                # Count records served from the section cache.
                 for r in llm_rules:
                     rec = llm_cache.get(r["name"], {})
                     if (rec.get("note") or "").startswith("llm-section-cache"):
-                        section_cache_reuse += 1
+                        reuse += 1
             for r in llm_rules:
                 rec = llm_cache.get(r["name"], {"value": None, "note": "llm: empty"})
-                results[r["name"]] = _value_obj(
+                sub[r["name"]] = _value_obj(
                     rec.get("value"), rule=r, source=f"report:{sec}", extractor="llm",
                     period="annual", provenance=ctx.pdf_url, note=rec.get("note", ""),
                 )
-            for r in python_rules:
-                res = _run_extractor(section_text_cache[sec], r, "annual", "python")
-                results[r["name"]] = _value_obj(
-                    res.get("value"), rule=r, source=f"report:{sec}",
-                    extractor=r.get("extractor", "python"), period="annual",
-                    provenance=ctx.pdf_url, note=res.get("note", ""),
-                )
+            return sub, reuse
+
+        # Sections are independent → safe to run concurrently. _map_merge returns
+        # outcomes in input (sorted-section) order, so the merged `results` dict
+        # matches the prior sequential layout; concurrency<=1 runs inline.
+        for sub, reuse in _map_merge(sections, _extract_one_section, cap, label="section"):
+            results.update(sub)
+            section_cache_reuse += reuse
 
     # --- computed group: evaluate from bases already in `results` ---
     computed_rules = [r for r in target_rules if r["source_type"] == "computed"]
@@ -1107,6 +1331,8 @@ def extract_indicators(
         "missing": missing,
         "unresolved": unresolved,
         "section_cache_reuse": section_cache_reuse,
+        "concurrency": cap,
+        "dataframe": _build_dataframe(results, ctx.stock_code, ctx.company.get("name", ""), year),
     }
     if stem is not None:
         report_cache.write_cached_indicators(stem, bundle)
@@ -1147,6 +1373,7 @@ def extract_indicators_by_position(
     extractor: str = "auto",
     indicators: Optional[list[str]] = None,
     form: str = "年度报告",
+    concurrency: Optional[int] = None,
 ) -> dict:
     """Extract the indicators named in a position CSV for one company/year/form.
 
@@ -1193,7 +1420,7 @@ def extract_indicators_by_position(
     if delegate_names:
         bundle = extract_indicators(
             ticker_or_name, year, indicators=delegate_names,
-            form=form, extractor_mode=extractor,
+            form=form, extractor_mode=extractor, concurrency=concurrency,
         )
     else:
         # nothing to extract from the report — build a header without fetching the PDF
@@ -1219,6 +1446,7 @@ def extract_indicators_by_position(
                 "missing": [],
                 "unresolved": [],
                 "section_cache_reuse": 0,
+                "concurrency": 0,
             }
 
     bundle["csv_path"] = str(_resolve_csv_path(csv_path))
@@ -1228,13 +1456,109 @@ def extract_indicators_by_position(
     return bundle
 
 
+# ── cross-target batch extraction ──────────────────────────────────
+
+
+def extract_indicators_batch(
+    targets: list,
+    *,
+    concurrency: Optional[int] = None,
+    extract_concurrency: Optional[int] = None,
+    csv_path: Optional[str] = "docs/indicators_position.csv",
+    indicators: Optional[list[str]] = None,
+    form: str = "年度报告",
+    extractor_mode: str = "auto",
+) -> dict:
+    """Run many ``(ticker, year[, form])`` extractions concurrently.
+
+    Each ``target`` is a ``(ticker, year)`` or ``(ticker, year, form)`` tuple,
+    or a dict ``{"ticker", "year", "form"?}``. Extractions run concurrently up to
+    a worker cap (``concurrency``, default ``EXTRACT_BATCH_CONCURRENCY`` or ``2``).
+    A target that raises, or returns a bundle containing an ``error`` key, is
+    recorded in ``failures`` and never aborts the batch.
+
+    ``extract_concurrency`` is forwarded to each inner ``extract_indicators``
+    call as the in-call cap (default ``EXTRACT_CONCURRENCY``/``4``). Because the
+    batch pool and the in-call pool are independent, peak in-flight LLM calls is
+    bounded by ``batch_concurrency × extract_concurrency`` — tune both against
+    provider rate limits.
+
+    When ``csv_path`` is given (default), each target is extracted via
+    ``extract_indicators_by_position`` (CSV-driven); when ``csv_path is None``,
+    via ``extract_indicators`` directly (e.g. multiyear python-only runs).
+
+    Returns ``{"results": {target_key: bundle}, "failures": [...], "concurrency": <batch_cap>}``.
+    ``target_key`` is ``"<ticker>_<year>"`` for the annual form, else
+    ``"<ticker>_<year>_<form>"``. The result map is order-independent.
+    """
+    norm: list[tuple[str, int, str]] = []
+    for t in targets:
+        if isinstance(t, dict):
+            ticker, year, f = t["ticker"], t["year"], t.get("form", form)
+        elif isinstance(t, (list, tuple)):
+            ticker, year = t[0], t[1]
+            f = t[2] if len(t) > 2 else form
+        else:
+            raise TypeError(f"target must be tuple/dict, got {type(t).__name__}")
+        norm.append((ticker, year, f))
+
+    def _extract_one(target: tuple[str, int, str]):
+        ticker, year, f = target
+        key = f"{ticker}_{year}_{f}" if f != "年度报告" else f"{ticker}_{year}"
+        try:
+            if csv_path:
+                bundle = extract_indicators_by_position(
+                    ticker, year, csv_path=csv_path, extractor=extractor_mode,
+                    indicators=indicators, form=f, concurrency=extract_concurrency,
+                )
+            else:
+                bundle = extract_indicators(
+                    ticker, year, indicators=indicators, form=f,
+                    extractor_mode=extractor_mode, concurrency=extract_concurrency,
+                )
+        except Exception as e:  # noqa: BLE001 — batch isolation: never abort the batch
+            return ("fail", key, f"{type(e).__name__}: {e}")
+        if isinstance(bundle, dict) and "error" in bundle:
+            return ("fail", key, str(bundle["error"]))
+        return ("ok", key, bundle)
+
+    batch_cap = _resolve_batch_concurrency(concurrency)
+    outcomes = _map_merge(norm, _extract_one, batch_cap, label="batch")
+    results_map: dict = {}
+    failures: list = []
+    for status, key, payload in outcomes:
+        if status == "ok":
+            results_map[key] = payload
+        else:
+            failures.append({"target": key, "error": payload})
+    return {"results": results_map, "failures": failures, "concurrency": batch_cap}
+
+
 def _effective_extractor(rule: dict, extractor_mode: str) -> str:
-    declared = rule.get("extractor") or (rule.get("source") or {}).get("extractor") or "llm"
-    if extractor_mode == "llm":
-        return "llm"
-    if extractor_mode == "python":
-        return declared if declared.startswith("python:") else "llm"
-    return declared
+    """Return the effective extractor for a report rule.
+
+    With python extractors removed, all report rules use "llm".
+    In ``python`` mode, returns "llm" (which the caller treats as skipped).
+    """
+    return "llm"
+
+
+def _build_dataframe(
+    results: dict[str, dict], stock_code: str, company_name: str, year: int,
+) -> list[dict]:
+    """Convert ``{name: {value, unit, ...}}`` → flat list of dicts (pandas-friendly)."""
+    rows: list[dict] = []
+    for name, rec in results.items():
+        rows.append({
+            "stock_code": stock_code,
+            "company_name": company_name,
+            "year": year,
+            "indicator": name,
+            "value": rec.get("value"),
+            "unit": rec.get("unit", ""),
+            "note": rec.get("note", ""),
+        })
+    return rows
 
 
 # ── methodology renderer ──────────────────────────────────────────
@@ -1344,6 +1668,31 @@ def render_methodology() -> str:
         "which indicates a full bundle hit). The cache is on by default; set "
         "`LLM_SECTION_CACHE=off` to disable it at runtime. CNINFO reports are "
         "immutable, so the cache is safe to leave on indefinitely."
+    )
+    lines.append("")
+    lines.append("## Concurrency")
+    lines.append("")
+    lines.append(
+        "`extract_indicators` runs its per-section LLM calls and `akshare` calls "
+        "concurrently up to a worker cap (sections are independent: disjoint "
+        "indicator names, distinct section-cache keys), so a cold first pass takes "
+        "`~1 × LLM_latency` instead of `N_sections × latency`. The cap is set by "
+        "the `concurrency` parameter, falling back to the `EXTRACT_CONCURRENCY` "
+        "env var (default `4`); `concurrency=1` runs inline with no thread pool and "
+        "reproduces the prior sequential behavior and call order exactly. The "
+        "bundle reports the cap used via a `concurrency: <int>` field.\n"
+        "\n"
+        "`extract_indicators_batch(targets, ...)` runs many `(ticker, year[, form])` "
+        "extractions concurrently (powering `scripts/extract_indicators_by_position.py "
+        "--from-file` and `scripts/extract_indicators_multiyear.py`). Its batch cap "
+        "(`concurrency`, default `EXTRACT_BATCH_CONCURRENCY`/`2`) is independent of "
+        "the in-call cap (`extract_concurrency`, default `EXTRACT_CONCURRENCY`/`4`), "
+        "so peak in-flight LLM calls is bounded by their product (`2 × 4 = 8` by "
+        "default). Lower either if the provider rate-limits; set either to `1` for "
+        "strictly sequential runs. The thread pool relies on the existing concurrency "
+        "boundaries — `call_llm_json` issues a fresh `httpx.post` per call, "
+        "`report_cache`/`llm_section_cache` write atomically to distinct keys, and "
+        "`_RULES_CACHE` is read-only after first load — so no new locking is needed."
     )
     lines.append("")
     return "\n".join(lines)

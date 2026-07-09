@@ -127,32 +127,22 @@ def _infer_extractor(
 ) -> str:
     """Pick a sensible default extractor for a CSV-sourced rule.
 
-    Percent/ratio names → ``python:percent_value``; HR headcount →
-    ``python:headcount``; statement line items → ``python:table_row``;
-    narrative sections → ``llm``; ``external`` rules carry no extractor.
+    All report-type rules now use ``"llm"`` — the Python extractors
+    (table_row, percent_value, headcount) have been removed.
+    ``external`` rules carry no extractor.
     """
     if source_type == "external":
         return ""
-    name = indicator or ""
-    se = (section_en or "").strip()
-    if any(name.endswith(s) or s in name for s in ("率", "比率", "比例", "占比")):
-        return "python:percent_value"
-    if se.startswith("Human Resources") or any(k in name for k in ("员工", "人数", "在职")):
-        return "python:headcount"
-    if module in _STATEMENT_KEYWORD:
-        return "python:table_row"
-    if any(se.startswith(p) for p in _NARRATIVE_SECTION_PREFIXES):
-        return "llm"
-    return "auto"
+    return "llm"
 
 
 def _infer_unit(indicator: str, section_en: str, source_type: str, extractor: str) -> str:
     if source_type == "external":
         return ""
     name = indicator or ""
-    if extractor == "python:percent_value" or name.endswith("率") or "比率" in name or "比例" in name:
+    if name.endswith("率") or "比率" in name or "比例" in name or "占比" in name:
         return "%"
-    if extractor == "python:headcount":
+    if any(k in name for k in ("员工", "人数", "在职")):
         return "人"
     if "股" in name and "股东" not in name:
         return "股"

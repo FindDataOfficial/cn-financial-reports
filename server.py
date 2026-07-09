@@ -677,5 +677,23 @@ def extract_indicators_by_position(
     )
 
 
+@app.tool
+def audit_rule_gaps(
+    out_dir: str = "out",
+    output_path: str = "docs/rule_gap_audit.json",
+    max_files: int = 0,
+) -> dict:
+    """Audit rule gaps from existing out/ bundles and write a stable JSON report.
+
+    Args:
+        out_dir: directory containing extracted bundles (default "out").
+        output_path: path to write the audit report JSON (default docs/rule_gap_audit.json).
+        max_files: optional cap on number of bundles scanned (0 = no cap).
+
+    Returns: {output_path, report} or {error}.
+    """
+    return T.audit_rule_gaps(out_dir=out_dir, output_path=output_path, max_files=max_files)
+
+
 if __name__ == "__main__":
     app.run(transport="stdio", show_banner=False)

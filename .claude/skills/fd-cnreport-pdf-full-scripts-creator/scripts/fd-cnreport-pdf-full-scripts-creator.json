@@ -1,0 +1,18 @@
+{
+  "document_type": "年报",
+  "indicators": [
+    "拨备覆盖率",
+    "分红金额",
+    "拨贷比_coverage",
+    "分红率",
+    "A股分红金额",
+    "A股融资金额",
+    "年度涨跌幅",
+    "前五大客户收入占比",
+    "前五大供应商采购占比",
+    "上市募集资金总额",
+    "支付新股发行费用",
+    "每股分红"
+  ],
+  "script_path": "/Users/chengsishi/finddata/cnreport/.opencode/skills/fd-cnreport-pdf-full-scripts-creator/scripts/full_extraction_doctype.py"
+}

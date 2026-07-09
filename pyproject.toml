@@ -13,6 +13,7 @@ dependencies = [
     "elasticsearch>=8.0",
     "akshare>=1.13",
     "pandas>=2.0",
+    "pymupdf>=1.28.0",
 ]
 
 [build-system]

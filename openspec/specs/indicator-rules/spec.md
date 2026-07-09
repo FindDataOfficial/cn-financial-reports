@@ -5,11 +5,19 @@
 Define the structure and behavior of the indicator rule set: how rules map an indicator to a source location and extractor, how companies are profiled for applicability, how rules are filtered per company, how pluggable extractors dispatch by name, and how sections are resolved by walking the `selectors[]` chain.
 ## Requirements
 ### Requirement: Rule structure maps an indicator to a source location and extractor
-The system SHALL load an indicator rule set from `indicator_rules.json`. Each rule SHALL define: `name`, `aliases`, `module`, `subgroup`, `applies_to`, `source_type` (`akshare` | `report` | `computed` | `external`), and an extraction specification. For `akshare` rules the spec SHALL be `{statement, field}`; for `report` rules it SHALL be an ordered `selectors[]` chain (each entry an optional `company` filter + a `section` selector + optional `fallback` flag) plus an `extractor` (`"llm"` or `"python:<name>"`) and optional `schema_hint`; for `computed` rules it SHALL be `{formula, inputs}`; for `external` rules the spec SHALL carry no `selectors[]` and no `extractor` (the indicator is sourced from realtime/market data, not the report PDF). Each rule MAY carry `unit`, `period_type`, `direction`, `note`, and a `report_type` field recording which periodic report types contain the indicator (e.g. `年报/半年报/季报`, `实时`).
+The system SHALL load an indicator rule set from the rules database (see the `rules-database` capability). Each rule SHALL define: `name`, `aliases`, `module`, `subgroup`, `applies_to`, `source_type` (`akshare` | `report` | `computed` | `external`), and an extraction specification. For `report` rules the spec SHALL be an ordered `selectors[]` chain (each entry an optional `company` filter + a `section` selector + optional `fallback` flag) plus an `extractor` field. The `extractor` field for `report` rules SHALL be `"llm"` or omitted (defaults to `"llm"`), or SHALL resolve to a script rule — a row in the `script_rules` table whose `extract_rule` names a registered extractor (see the `script-indicator-extract` capability). For `computed` rules the spec SHALL be `{formula, inputs}`; for `external` rules the spec SHALL carry no `selectors[]` and no `extractor`. `indicator_rules.json` is retained only as a migration seed; it is no longer the runtime source of truth.
 
 #### Scenario: report rule with a selector chain
 - **WHEN** a `report` rule for 资本充足率 declares `selectors: [{company: ["601398"], section: "三、资本充足率分析"}, {section: "资本充足率"}, {section: "风险管理", fallback: true}]`
 - **THEN** for 工商银行 the engine tries `三、资本充足率分析` first; for any other bank it tries `资本充足率` first, then `风险管理`.
+
+#### Scenario: Script rule dispatches via the registry
+- **WHEN** a rule for 利息收入 has a matching `script_rules` row with `extract_rule: "table_row"`
+- **THEN** the engine dispatches to the registered `table_row` extractor with the section text + rule, returns `{value, unit, note}`, and makes no LLM call.
+
+#### Scenario: LLM rule dispatches via the LLM batch path
+- **WHEN** a `report` rule has no matching `script_rules` row
+- **THEN** the engine dispatches it through the LLM batch path with `extractor: "llm"`.
 
 #### Scenario: computed rule with formula and inputs
 - **WHEN** a `computed` rule declares `{formula: "不良贷款余额 / 贷款和垫款总额 * 100", inputs: ["不良贷款余额", "贷款和垫款总额"]}`
@@ -48,21 +56,6 @@ The system SHALL provide `applicable_rules(company)` returning the subset of rul
 #### Scenario: Exclude override
 - **WHEN** a rule declares `applies_to: {industry: "bank", sub_types: ["*"], exclude_companies: ["601398"]}`
 - **THEN** `applicable_rules` excludes it for 601398 and includes it for every other bank.
-
-### Requirement: Pluggable extractors dispatch by name
-The system SHALL maintain an extractor registry in `indicators_extractors.py` mapping names to Python functions `(section_text, rule, period) -> {value, unit, note}`, with a `register(name, fn)` API. A rule's `extractor: "python:<name>"` SHALL dispatch to the registered function. A rule's `extractor: "llm"` SHALL route through the existing `ai_extract` path. A rule's `extractor: "auto"` (or omitted) SHALL resolve to `computed` for computed rules, the akshare fetch for akshare rules, and `llm` for report rules unless a `python:` extractor is named. Adding a new Python extractor SHALL require only adding a function and calling `register` — no engine change.
-
-#### Scenario: python extractor dispatch
-- **WHEN** a rule declares `extractor: "python:regex_amount"` and the registry contains `regex_amount`
-- **THEN** the engine calls `regex_amount(section_text, rule, period)` and returns its result with `extractor: "python:regex_amount"`, making no LLM call.
-
-#### Scenario: Unknown python extractor name
-- **WHEN** a rule declares `extractor: "python:no_such"` and no function is registered under that name
-- **THEN** the rule's result is `{value: null, note: "unknown extractor: python:no_such"}` and the indicator is listed in `unresolved`.
-
-#### Scenario: Registering a new extractor
-- **WHEN** the user adds a function and calls `register("my_parser", fn)` in `indicators_extractors.py`, then sets `extractor: "python:my_parser"` on a rule
-- **THEN** the engine dispatches to `fn` for that rule with no other code change.
 
 ### Requirement: Section resolution walks the selector chain
 For `report` rules, the system SHALL resolve the section by walking `selectors[]` in order: for each entry whose `company` filter matches the target (or has no `company` filter), attempt `resolve_selector` (exact → regex) on the parsed outline; the first hit is used. If no entry hits, the indicator SHALL be listed in `missing`. The system SHALL fetch the matched section's text through the report cache.
@@ -108,4 +101,11 @@ The migration SHALL derive each rule's `source_type` from its CSV `report_type`:
 #### Scenario: Realtime report_type classified as external
 - **WHEN** a CSV row has `report_type: "实时"`
 - **THEN** the resulting rule has `source_type: "external"`, carries no `selectors[]`, and is skipped during report extraction.
+
+### Requirement: Rules database is the runtime source of truth
+The system SHALL load rules from the rules database at runtime. `indicator_rules.json` SHALL serve only as a migration seed (consumed by `scripts/migrate_rules_to_db.py`). `list_indicators`, `get_indicator`, `extract_indicators`, and the extraction script SHALL all read from the same in-memory rule set loaded from the rules database, so the catalog, lookup, batch, and script never disagree. The in-memory rule set SHALL be rebuilt from the database when its cache is invalidated by a write.
+
+#### Scenario: Database is the source of truth
+- **WHEN** rules are inserted or updated in the rules database
+- **THEN** the next `load_rules()` call reflects them, and `indicator_rules.json` is not consulted at runtime.
 
