@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Standalone position-CSV-driven indicator-extraction CLI for cnreport-mcp.
+"""Standalone position-CSV-driven indicator-extraction CLI for fd-cn-report.
 
 Runs the CSV-driven indicator rules engine from the command line (no MCP
 server). Reuses ``indicators_client.extract_indicators_by_position`` +

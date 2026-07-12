@@ -1,6 +1,6 @@
-"""Self-check for cnreport-mcp — no framework, just asserts.
+"""Self-check for fd-cn-report — no framework, just asserts.
 
-Run:  cd mcp/cnreport-mcp && uv run python selfcheck.py
+Run:  cd mcp/fd-cn-report && uv run python selfcheck.py
 
 Covers:
   1. migrate creates the three tables.

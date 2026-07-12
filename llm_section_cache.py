@@ -1,4 +1,4 @@
-"""On-disk LLM section cache for cnreport-mcp.
+"""On-disk LLM section cache for fd-cn-report.
 
 Persists the raw ``{records: [...]}`` response returned by
 ``cnreport_tools.call_llm_json`` so the same (PDF, section, period, rules hash)

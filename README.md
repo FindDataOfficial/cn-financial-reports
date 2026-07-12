@@ -1,4 +1,4 @@
-# cnreport-mcp
+# fd-cn-report
 
 MCP server for Chinese financial reports — 31 申万 L1 industry AI rule system,
 outline extraction, AI structured extraction, Elasticsearch store + search,
@@ -60,7 +60,7 @@ Interactive web UI to browse, filter, and search all 21,698 rules:
 # CLI
 python scripts/industry_rules_dashboard.py
 # or
-cnreport-dashboard
+fd-cn-report
 
 # MCP tool
 open_industry_rules_dashboard(port=8888)
@@ -241,7 +241,7 @@ python scripts/extract_indicators_multiyear.py 601398 2023 2024
 
 # Industry rules dashboard
 python scripts/industry_rules_dashboard.py [port]
-# or: cnreport-dashboard
+# or: fd-cn-report
 
 # Generate industry rules from real reports
 python scripts/generate_rules_from_real_reports.py
@@ -296,7 +296,7 @@ CNINFO and akshare are **keyless**. Other tools need env vars in `.env`:
 ## Architecture
 
 ```
-cnreport/
+fd-cn-report/
 ├── server.py                      # FastMCP server (@app.tool registrations)
 ├── cninfo_client.py               # CNINFO API (keyless lookup + query)
 ├── hk_stock_client.py             # HK stock API (akshare + HKEX)

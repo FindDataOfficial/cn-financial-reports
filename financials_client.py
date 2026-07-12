@@ -1,4 +1,4 @@
-"""akshare-backed financials client for cnreport-mcp.
+"""akshare-backed financials client for fd-cn-report.
 
 Single entry point for `get_financials`. Lazy-imports akshare so the MCP
 server starts even when akshare is uninstalled — `MissingDependencyError`
@@ -91,7 +91,7 @@ def get_statements(stock_code: str, *, period: str = "annual", exchange: str = "
         import akshare as ak  # noqa: WPS433 (lazy import is the point)
     except ImportError as e:
         raise MissingDependencyError(
-            "akshare not installed. Run: uv sync --directory mcp/cnreport-mcp"
+            "akshare not installed. Run: uv sync --directory mcp/fd-cn-report"
         ) from e
 
     cache_key = (stock_code.strip(), period, exchange or "")

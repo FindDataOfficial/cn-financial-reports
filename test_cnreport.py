@@ -1,4 +1,4 @@
-"""Unit tests for cnreport-mcp pure logic. No live ES/LLM/scrapling calls."""
+"""Unit tests for fd-cn-report pure logic. No live ES/LLM/scrapling calls."""
 import json
 import os
 import sys

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Standalone indicator-extraction CLI for cnreport-mcp.
+"""Standalone indicator-extraction CLI for fd-cn-report.
 
 Runs the indicator rules engine from the command line (no MCP server). Reuses
 `indicators_client` + `report_cache` — no fetching/parsing/extraction logic is

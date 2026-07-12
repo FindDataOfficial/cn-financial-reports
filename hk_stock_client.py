@@ -1,4 +1,4 @@
-"""Hong Kong stock data client for cnreport-mcp.
+"""Hong Kong stock data client for fd-cn-report.
 
 Wraps akshare HK stock functions and HKEX披露易 (HKEX News) API to provide
 HK stock company lookup, financial statements, and annual report filings.

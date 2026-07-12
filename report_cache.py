@@ -20,7 +20,7 @@ Stem scheme (see ``cache_key``):
 
 Env:
   CNREPORT_CACHE_DIR — override the cache directory
-                       (default: ``mcp/cnreport-mcp/.cache/reports/``)
+                       (default: ``mcp/fd-cn-report/.cache/reports/``)
 
 No TTL — CNINFO annual reports are immutable once published. Use
 ``clear_cache`` for manual eviction.

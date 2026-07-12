@@ -1,4 +1,4 @@
-"""CSV → indicator_rules.json migration for cnreport-mcp.
+"""CSV → indicator_rules.json migration for fd-cn-report.
 
 ``docs/indicators_position.csv`` is the maintained human-editable catalog of
 indicators and where each one lives in a periodic report (``section_en`` /

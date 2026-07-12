@@ -1,5 +1,5 @@
 """
-MCP Server for cnreport-mcp — Chinese annual report extraction + AI processing
+MCP Server for fd-cn-report — Chinese annual report extraction + AI processing
 + Elasticsearch store/search.
 
 Tools:
@@ -42,8 +42,8 @@ from fastmcp import FastMCP  # noqa: E402
 import cnreport_tools as T  # noqa: E402
 from cnreport_database import get_db, make_report_id  # noqa: E402
 
-logger = logging.getLogger("cnreport-mcp")
-app = FastMCP(name="cnreport-mcp")
+logger = logging.getLogger("fd-cn-report")
+app = FastMCP(name="fd-cn-report")
 
 _DEFAULT_MAX_CHARS = 12000
 _MAX_SIZE = 50

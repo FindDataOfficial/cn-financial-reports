@@ -1,6 +1,6 @@
 [project]
-name = "cnreport-mcp"
-version = "0.1.4"
+name = "fd-cn-report"
+version = "0.1.5"
 description = "Chinese financial report MCP server — 31 Shenwan industry AI rule system, outline extraction, AI structured extraction, Elasticsearch store + search, industry rules dashboard"
 requires-python = ">=3.10"
 dependencies = [
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-cnreport-dashboard = "scripts.industry_rules_dashboard:start_dashboard"
+fd-cn-report = "scripts.industry_rules_dashboard:start_dashboard"
 
 [build-system]
 requires = ["setuptools>=68"]

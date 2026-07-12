@@ -1,4 +1,4 @@
-"""Pure helpers for cnreport-mcp: fetch, outline parse, section select,
+"""Pure helpers for fd-cn-report: fetch, outline parse, section select,
 LLM extraction, Elasticsearch store/search. No FastMCP here — server.py
 registers the @app.tool wrappers that call these.
 """

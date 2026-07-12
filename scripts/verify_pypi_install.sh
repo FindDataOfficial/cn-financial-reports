@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 模拟从 PyPI 安装 cnreport-mcp 并验证核心模块能否正常导入。
+# 模拟从 PyPI 安装 fd-cn-report 并验证核心模块能否正常导入。
 #
 # 用法:
 #   ./scripts/verify_pypi_install.sh          # 用本地 dist/ 的 wheel 安装（默认，等价于 PyPI 产物）
@@ -12,8 +12,8 @@
 # 退出码: 0 = 全部通过; 非 0 = 有失败
 set -euo pipefail
 
-PKG="cnreport-mcp"
-PKG_NORM="cnreport_mcp"
+PKG="fd-cn-report"
+PKG_NORM="fd_cn_report"
 PY_VERSION="${PY_VERSION:-3.12}"
 VENV_DIR="${VENV_DIR:-/tmp/cnr_verify_$$}"
 SOURCE="local"

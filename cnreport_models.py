@@ -1,4 +1,4 @@
-"""SQLAlchemy ORM models for cnreport-mcp.
+"""SQLAlchemy ORM models for fd-cn-report.
 
 Extracted from the shared mcp `models` module so this package is self-contained
 and publishable to PyPI without the local mcp-models path dependency.

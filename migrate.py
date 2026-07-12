@@ -1,6 +1,6 @@
 """Create the cnreport tables in mcp/daas.db.
 
-Run:  cd mcp/cnreport-mcp && uv run python migrate.py
+Run:  cd mcp/fd-cn-report && uv run python migrate.py
 Idempotent — Base.metadata.create_all only adds missing tables.
 """
 from __future__ import annotations

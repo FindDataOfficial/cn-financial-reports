@@ -1,6 +1,6 @@
 """Self-check for the report cache + three-statements extraction — no network.
 
-Run:  cd mcp/cnreport-mcp && uv run python selfcheck_cache.py
+Run:  cd mcp/fd-cn-report && uv run python selfcheck_cache.py
 
 Covers:
   1. report_cache.cache_key: provenance / url-hash / local-path (None).

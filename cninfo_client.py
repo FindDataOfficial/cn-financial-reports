@@ -1,6 +1,6 @@
 """CNINFO (巨潮资讯) HTTP JSON-API client.
 
-Single network entry point for the cnreport-mcp company API. Wraps three
+Single network entry point for the fd-cn-report company API. Wraps three
 public, keyless endpoints CNINFO uses to power its own SPA:
 
   /new/information/topSearch/query   — company lookup by ticker or name

@@ -1,4 +1,4 @@
-"""Indicator rules engine for cnreport-mcp.
+"""Indicator rules engine for fd-cn-report.
 
 Loads the data-driven rule set (``indicator_rules.json``), profiles a company
 to decide which rules apply, and resolves indicator values via three source

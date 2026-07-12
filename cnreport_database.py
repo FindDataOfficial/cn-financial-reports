@@ -1,4 +1,4 @@
-"""Database helpers for cnreport-mcp.
+"""Database helpers for fd-cn-report.
 
 SQLAlchemy engine + session factory over the shared mcp/daas.db, CRUD for
 the three cnreport tables (ReportDocument, ReportSection, EsIndexMeta).
