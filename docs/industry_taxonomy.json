@@ -1,35 +1,43 @@
 {
-  "version": 1,
+  "version": 3,
+  "classification": "shenwan-l1-2021",
   "defaults": {
     "country": "cn",
     "company_types": ["listed"],
-    "report_kinds": ["annual-report"]
+    "report_kinds": ["annual-report"],
+    "hk_report_kinds": ["annual-report"]
   },
   "industries": [
-    {
-      "industry": "bank",
-      "label": "银行",
-      "company_types": ["listed"],
-      "report_kinds": ["annual-report", "interim-report", "quarterly-report"]
-    },
-    {
-      "industry": "insurance",
-      "label": "保险",
-      "company_types": ["listed"],
-      "report_kinds": ["annual-report", "interim-report"]
-    },
-    {
-      "industry": "securities",
-      "label": "证券",
-      "company_types": ["listed"],
-      "report_kinds": ["annual-report", "interim-report"]
-    },
-    {
-      "industry": "manufacturing",
-      "label": "制造业",
-      "company_types": ["listed"],
-      "report_kinds": ["annual-report", "interim-report"]
-    }
+    {"industry": "801010", "label": "农林牧渔", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801030", "label": "基础化工", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801040", "label": "钢铁", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801050", "label": "有色金属", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801080", "label": "电子", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801880", "label": "汽车", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801110", "label": "家用电器", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801120", "label": "食品饮料", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801130", "label": "纺织服饰", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801140", "label": "轻工制造", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801150", "label": "医药生物", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801160", "label": "公用事业", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801170", "label": "交通运输", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801180", "label": "房地产", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801200", "label": "商贸零售", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801210", "label": "社会服务", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801780", "label": "银行", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801790", "label": "非银金融", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801230", "label": "综合", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801710", "label": "建筑材料", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801720", "label": "建筑装饰", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801730", "label": "电力设备", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801890", "label": "机械设备", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801740", "label": "国防军工", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801750", "label": "计算机", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801760", "label": "传媒", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801770", "label": "通信", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801950", "label": "煤炭", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801960", "label": "石油石化", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801970", "label": "环保", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]},
+    {"industry": "801980", "label": "美容护理", "company_types": ["listed"], "report_kinds": ["annual-report", "interim-report", "quarterly-report"]}
   ]
 }
-

@@ -24,3 +24,7 @@ out/
 # Env / secrets
 .env
 .env.local
+daas.db
+docs/industry_rule_generation_report.json
+docs/industry_support_report.json
+.opencode/

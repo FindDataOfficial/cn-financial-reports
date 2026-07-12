@@ -765,13 +765,14 @@ def call_llm_json(system: str, user: str, max_retries: int = 3) -> str:
             {"role": "user", "content": user},
         ],
         "temperature": 0,
+        "max_tokens": 32000,
         "response_format": {"type": "json_object"},
     }
     headers = {"Authorization": f"Bearer {cfg['api_key']}"}
     last_err: Exception | None = None
     for attempt in range(max_retries):
         try:
-            resp = httpx.post(url, json=payload, headers=headers, timeout=120.0)
+            resp = httpx.post(url, json=payload, headers=headers, timeout=300.0)
             if resp.status_code == 429 and attempt < max_retries - 1:
                 retry_after = float(resp.headers.get("Retry-After", "5"))
                 time.sleep(min(retry_after, 30.0))
@@ -838,7 +839,7 @@ def call_llm_pydantic(
             if strat is not None:
                 payload["response_format"] = strat
             try:
-                resp = httpx.post(url, json=payload, headers=headers, timeout=120.0)
+                resp = httpx.post(url, json=payload, headers=headers, timeout=300.0)
                 if resp.status_code == 400 and strat is not None and strat.get("type") == "json_schema":
                     # provider rejected json_schema → try next strategy
                     last_err = RuntimeError(f"json_schema rejected: {resp.text[:200]}")
@@ -1450,6 +1451,138 @@ def extract_indicators_by_position(
     return indicators_client.extract_indicators_by_position(
         ticker_or_name, year, csv_path=csv_path, extractor=extractor, indicators=indicators,
     )
+
+
+# ── HK stock tools ───────────────────────────────────────────────
+
+
+@_tool_safe
+def get_hk_company(ticker_or_name: str) -> dict:
+    """Resolve a HK stock company by 5-digit ticker or name fragment.
+
+    Args:
+        ticker_or_name: ticker ("00700") or name fragment ("腾讯").
+
+    Returns: {stock_code, name, name_en, industry, employees, description, website}
+             or {error}.
+    """
+    import hk_stock_client
+
+    row = hk_stock_client.lookup_hk_company(ticker_or_name)
+    if not row:
+        return {"error": f"no HK company matched: {ticker_or_name!r}"}
+    return row
+
+
+@_tool_safe
+def list_hk_filings(
+    ticker_or_name: str,
+    form: Optional[str] = None,
+    year: Optional[int] = None,
+    limit: int = 20,
+) -> list[dict] | dict:
+    """List a HK stock company's filings/announcements.
+
+    Args:
+        ticker_or_name: HK stock ticker or name.
+        form: optional form type filter (e.g. "年报", "年报/中期报告").
+        year: optional year filter.
+        limit: max results (default 20).
+
+    Returns: list of filing entries or {error}.
+    """
+    import hk_stock_client
+
+    company = hk_stock_client.lookup_hk_company(ticker_or_name)
+    if not company:
+        return {"error": f"no HK company matched: {ticker_or_name!r}"}
+    rows = hk_stock_client.list_hk_filings(
+        company["stock_code"], form=form, year=year, limit=limit,
+    )
+    return rows
+
+
+@_tool_safe
+def get_hk_financials(ticker_or_name: str) -> dict:
+    """Return structured financial statements for a HK stock company.
+
+    Args:
+        ticker_or_name: HK stock ticker or name.
+
+    Returns: {stock_code, company_name, income_statement, balance_sheet, cashflow}
+             or {error}.
+    """
+    import hk_stock_client
+
+    company = hk_stock_client.lookup_hk_company(ticker_or_name)
+    if not company:
+        return {"error": f"no HK company matched: {ticker_or_name!r}"}
+    stmts = hk_stock_client.get_hk_financials(company["stock_code"])
+    return {
+        "stock_code": company["stock_code"],
+        "company_name": company["name"],
+        **stmts,
+    }
+
+
+@_tool_safe
+def get_hk_section(
+    ticker_or_name: str,
+    year: int,
+    section: str,
+) -> dict:
+    """Extract a named section from a HK stock annual report PDF.
+
+    Convenience wrapper: (ticker, year, section) → HK filing lookup
+    → PDF URL → existing text-extraction pipeline.
+
+    Args:
+        ticker_or_name: HK stock ticker or name.
+        year: fiscal year.
+        section: section title or selector.
+
+    Returns: {stock_code, company_name, year, section, pdf_url, text, char_count}
+             or {error}.
+    """
+    import hk_stock_client
+    import cnreport_tools as T
+
+    company = hk_stock_client.lookup_hk_company(ticker_or_name)
+    if not company:
+        return {"error": f"no HK company matched: {ticker_or_name!r}"}
+    filing = hk_stock_client.get_hk_annual_report_filing(company["stock_code"], year)
+    if not filing or not filing.get("pdf_url"):
+        return {
+            "error": f"no annual report filing found for {company['stock_code']} year={year}",
+            "company_name": company["name"],
+        }
+    pdf = filing["pdf_url"]
+    text, _ = report_cache.get_or_fetch(
+        pdf,
+        stock_code=company["stock_code"],
+        year=year,
+        form="hkex-annual",
+        announcement_id=filing.get("announcement_id") or "",
+    )
+    outline = T.parse_outline(text)
+    entry = T.resolve_selector(outline, section)
+    if entry is None:
+        return {
+            "error": "no section matched selector",
+            "available": [e["title"] for e in outline],
+            "pdf_url": pdf,
+        }
+    body = T.extract_section_text(text, outline, entry)
+    return {
+        "stock_code": company["stock_code"],
+        "company_name": company["name"],
+        "year": year,
+        "section": section,
+        "pdf_url": pdf,
+        "outline_entry": entry,
+        "char_count": len(body),
+        "text": body,
+    }
 
 
 @_tool_safe

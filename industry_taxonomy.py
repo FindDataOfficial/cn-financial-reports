@@ -1,9 +1,10 @@
 """Industry/company taxonomy and document_type helpers.
 
 This is a thin, explicit layer around the existing rule-generation pipeline.
-It standardizes how we name `document_type` for multi-industry scaling:
+Industry identifiers use Shenwan (申万) level-1 index codes (2021 edition),
+e.g. ``801780`` for 银行. ``document_type`` follows:
 
-  cn/<industry>/<company_type>/<report_kind>
+  cn/<sw_index_code>/<company_type>/<report_kind>
 """
 
 from __future__ import annotations
@@ -17,10 +18,15 @@ from typing import Iterable, Optional
 from pydantic import BaseModel, Field, field_validator
 
 _KEBAB_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+_SW_L1_RE = re.compile(r"^801\d{3}$")
 
 
 def _is_kebab(s: str) -> bool:
     return bool(_KEBAB_RE.match(s or ""))
+
+
+def _is_sw_l1_code(s: str) -> bool:
+    return bool(_SW_L1_RE.match(s or ""))
 
 
 class IndustrySpec(BaseModel):
@@ -31,10 +37,10 @@ class IndustrySpec(BaseModel):
 
     @field_validator("industry")
     @classmethod
-    def _industry_kebab(cls, v: str) -> str:
+    def _industry_sw_code(cls, v: str) -> str:
         v = (v or "").strip()
-        if not _is_kebab(v):
-            raise ValueError("industry must be kebab-case (lowercase)")
+        if not _is_sw_l1_code(v):
+            raise ValueError("industry must be a Shenwan L1 index code (801xxx)")
         return v
 
     @field_validator("company_types", "report_kinds")
@@ -53,6 +59,7 @@ class IndustrySpec(BaseModel):
 
 class IndustryTaxonomy(BaseModel):
     version: int = 1
+    classification: str = Field(default="shenwan-l1-2021")
     defaults: dict = Field(default_factory=dict)
     industries: list[IndustrySpec] = Field(default_factory=list)
 
@@ -78,7 +85,9 @@ def make_document_type(
     company_type = (company_type or "").strip()
     report_kind = (report_kind or "").strip()
     country = (country or "").strip() or "cn"
-    for name, val in (("industry", industry), ("company_type", company_type), ("report_kind", report_kind)):
+    if not _is_sw_l1_code(industry):
+        raise ValueError(f"industry must be a Shenwan L1 index code (801xxx): {industry!r}")
+    for name, val in (("company_type", company_type), ("report_kind", report_kind)):
         if not _is_kebab(val):
             raise ValueError(f"{name} must be kebab-case (lowercase): {val!r}")
     if not _is_kebab(country):
@@ -99,30 +108,38 @@ def list_document_types(
     taxonomy: IndustryTaxonomy,
     *,
     industry: Optional[str] = None,
+    country: Optional[str] = None,
 ) -> list[DocumentTypeEntry]:
-    want = (industry or "").strip() or None
+    want_industry = (industry or "").strip() or None
+    countries: list[str] = []
+    if country:
+        countries = [country.strip()]
+    else:
+        defaults_country = (taxonomy.defaults or {}).get("country") or "cn"
+        countries = [defaults_country, "hk"]
+
     out: list[DocumentTypeEntry] = []
     defaults = taxonomy.defaults or {}
-    country = (defaults.get("country") or "cn").strip() or "cn"
     default_company_types: Iterable[str] = defaults.get("company_types") or []
     default_report_kinds: Iterable[str] = defaults.get("report_kinds") or []
 
     for ind in taxonomy.industries:
-        if want and ind.industry != want:
+        if want_industry and ind.industry != want_industry:
             continue
         company_types = ind.company_types or list(default_company_types)
         report_kinds = ind.report_kinds or list(default_report_kinds)
-        for ct in company_types:
-            for rk in report_kinds:
-                dt = make_document_type(ind.industry, ct, rk, country=country)
-                out.append(
-                    DocumentTypeEntry(
-                        industry=ind.industry,
-                        company_type=ct,
-                        report_kind=rk,
-                        document_type=dt,
-                        label=ind.label or "",
+        for cntry in countries:
+            for ct in company_types:
+                for rk in report_kinds:
+                    dt = make_document_type(ind.industry, ct, rk, country=cntry)
+                    out.append(
+                        DocumentTypeEntry(
+                            industry=ind.industry,
+                            company_type=ct,
+                            report_kind=rk,
+                            document_type=dt,
+                            label=ind.label or "",
+                        )
                     )
-                )
     return out
 

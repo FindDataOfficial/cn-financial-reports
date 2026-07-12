@@ -677,6 +677,79 @@ def extract_indicators_by_position(
     )
 
 
+# ── HK stock tools ────────────────────────────────────────────────
+
+
+@app.tool
+def get_hk_company(ticker_or_name: str) -> dict:
+    """Resolve a HK stock company by 5-digit ticker or name fragment.
+
+    Args:
+        ticker_or_name: ticker ("00700") or name fragment ("腾讯").
+
+    Returns: {stock_code, name, name_en, industry, employees, description, website}
+             or {error}.
+    """
+    return T.get_hk_company(ticker_or_name)
+
+
+@app.tool
+def list_hk_filings(
+    ticker_or_name: str,
+    form: Optional[str] = None,
+    year: Optional[int] = None,
+    limit: int = 20,
+) -> dict:
+    """List a HK stock company's filings/announcements.
+
+    Args:
+        ticker_or_name: HK stock ticker or name.
+        form: optional form type filter (e.g. "年报").
+        year: optional year filter.
+        limit: max results (default 20).
+
+    Returns: {filings, count} or {error}.
+    """
+    result = T.list_hk_filings(
+        ticker_or_name, form=form, year=year, limit=limit,
+    )
+    if isinstance(result, dict) and "error" in result:
+        return result
+    return {"filings": result, "count": len(result) if isinstance(result, list) else 0}
+
+
+@app.tool
+def get_hk_financials(ticker_or_name: str) -> dict:
+    """Return structured financial statements for a HK stock company.
+
+    Args:
+        ticker_or_name: HK stock ticker or name.
+
+    Returns: {stock_code, company_name, income_statement, balance_sheet, cashflow}
+             or {error}.
+    """
+    return T.get_hk_financials(ticker_or_name)
+
+
+@app.tool
+def get_hk_section(
+    ticker_or_name: str,
+    year: int,
+    section: str,
+) -> dict:
+    """Extract a named section from a HK stock annual report PDF.
+
+    Args:
+        ticker_or_name: HK stock ticker or name.
+        year: fiscal year.
+        section: section title selector.
+
+    Returns: {stock_code, company_name, year, section, pdf_url,
+              outline_entry, text, char_count} or {error}.
+    """
+    return T.get_hk_section(ticker_or_name, year, section)
+
+
 @app.tool
 def audit_rule_gaps(
     out_dir: str = "out",
@@ -693,6 +766,21 @@ def audit_rule_gaps(
     Returns: {output_path, report} or {error}.
     """
     return T.audit_rule_gaps(out_dir=out_dir, output_path=output_path, max_files=max_files)
+
+
+@app.tool
+def open_industry_rules_dashboard(port: int = 8888) -> dict:
+    """Start the industry rules web dashboard with filtering and search.
+
+    Opens a web UI at http://localhost:<port> showing all 21,698 LLM rules
+    across 31 申万 L1 industries. Filter by industry, module, keyword; sort
+    by any column; paginated view.
+
+    Args:
+        port: TCP port to listen on (default 8888).
+    """
+    from scripts.industry_rules_dashboard import start_dashboard
+    start_dashboard(port)
 
 
 if __name__ == "__main__":

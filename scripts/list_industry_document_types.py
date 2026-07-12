@@ -25,7 +25,8 @@ import industry_taxonomy as IT  # noqa: E402
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="List industry document_type values.")
     p.add_argument("--taxonomy", default=str(IT.default_taxonomy_path()), help="Path to industry_taxonomy.json")
-    p.add_argument("--industry", help="Filter to one industry (kebab-case)")
+    p.add_argument("--industry", help="Filter to one Shenwan L1 index code (e.g. 801780)")
+    p.add_argument("--country", help="Country code: cn or hk (default: both)")
     p.add_argument("--format", choices=["text", "json"], default="text", help="Output format")
     return p.parse_args(argv)
 
@@ -33,7 +34,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     tax = IT.load_taxonomy(args.taxonomy)
-    entries = IT.list_document_types(tax, industry=args.industry)
+    entries = IT.list_document_types(tax, industry=args.industry, country=args.country)
 
     if args.format == "json":
         payload = [

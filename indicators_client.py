@@ -942,13 +942,13 @@ def _build_ctx(
         return None, {
             "error": f"no filing found for {company['stock_code']} form={form!r} year={year}"
         }
-    # Prefer the A-share filing over H-share / overseas variants.
+    # Prefer the A-share filing over H-share / overseas variants and skip summaries.
     # H股公告 / 海外公告 titles contain "H股" or "海外" — skip them when
-    # a plain A-share filing exists.
+    # a plain A-share filing exists. Also skip "摘要" (summary) filings.
     top = filings[0]
     for f in filings:
         title = (f.get("title") or "").lower()
-        if "h股" not in title and "海外" not in title:
+        if "h股" not in title and "海外" not in title and "摘要" not in title:
             top = f
             break
     text = outline = page_offsets = None

@@ -14,14 +14,14 @@
 
 ## 3. Operator workflow: generate and maintain rules per industry/document_type
 
-- [ ] 3.1 Document the end-to-end workflow to generate LLM rules for a chosen industry/document_type using existing generator skills
-- [ ] 3.2 Document the workflow to derive script rules from LLM rules for a chosen industry/document_type using existing generator skills
-- [ ] 3.3 Add an iterative maintenance loop playbook (failure → regenerate/update relevant rules → re-check coverage)
+- [x] 3.1 Document the end-to-end workflow to generate LLM rules for a chosen industry/document_type using existing generator skills
+- [x] 3.2 Document the workflow to derive script rules from LLM rules for a chosen industry/document_type using existing generator skills
+- [x] 3.3 Add an iterative maintenance loop playbook (failure → regenerate/update relevant rules → re-check coverage)
 
 ## 4. Seed support for first industries (thin vertical slices)
 
-- [ ] 4.1 Select an initial industry set (e.g., bank, insurance, securities, manufacturing) and define their candidate `document_type` values
-- [ ] 4.2 For each initial industry/document_type, declare a minimal indicator baseline (must-have indicators)
+- [x] 4.1 Select an initial industry set (e.g., bank, insurance, securities, manufacturing) and define their candidate `document_type` values
+- [x] 4.2 For each initial industry/document_type, declare a minimal indicator baseline (must-have indicators)
 - [ ] 4.3 Generate and persist LLM rules for each initial industry/document_type using representative PDFs/excerpts
 - [ ] 4.4 Generate and persist script rules for each initial industry/document_type derived from the LLM rules
 - [ ] 4.5 Run coverage checker and ensure each initial industry/document_type reaches “supported” status
@@ -30,5 +30,5 @@
 
 - [ ] 5.1 Create a small golden PDF corpus per initial industry/document_type (or approved sample pages) for smoke tests
 - [ ] 5.2 Add an automated smoke test that runs extraction for the golden corpus and asserts baseline indicator presence
-- [ ] 5.3 Add a CI-friendly report (per document_type) showing pass/fail and missing indicators to guide rule iteration
+- [x] 5.3 Add a CI-friendly report (per document_type) showing pass/fail and missing indicators to guide rule iteration
 
