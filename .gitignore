@@ -17,6 +17,7 @@ env/
 
 # Test outputs
 out/
+test_fixtures/
 
 # macOS
 .DS_Store
@@ -24,7 +25,17 @@ out/
 # Env / secrets
 .env
 .env.local
+
+# Database
 daas.db
+*.db
+
+# Generated docs
 docs/industry_rule_generation_report.json
 docs/industry_support_report.json
+
+# IDE / agent configs
+.claude/
 .opencode/
+.trae/
+openspec/
