@@ -34,6 +34,10 @@ daas.db
 docs/industry_rule_generation_report.json
 docs/industry_support_report.json
 
+# Generated extraction outputs
+indicator_extraction_*.csv
+docs/indicators_coverage_report.csv
+
 # IDE / agent configs
 .claude/
 .opencode/
