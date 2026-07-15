@@ -347,8 +347,10 @@ def _resolve_via_akshare(company: dict, rule: dict, year: int, period: str) -> d
             )
         field = matches[0]
     idx = columns.index(field)
-    # pick the row matching the requested year (period end -12-31)
-    target = f"{year}-12-31"
+    # pick the row matching the requested fiscal year. Rows carry their own
+    # period-end date (Dec-31 for CN periodic forms; other year-ends for HK
+    # companies), so match on the 4-digit year rather than assuming Dec-31.
+    target = str(year)
     row = None
     date_col = next((c for c in ("报告日", "报告期", "日期") if c in columns), None)
     if date_col:
@@ -471,6 +473,9 @@ _FORM_COMPAT_KEY: dict[str, str] = {
     "半年度报告": "半年报",
     "第一季度报告": "季报",
     "第三季度报告": "季报",
+    "招股说明书": "招股说明书",
+    "港股全球发售": "港股全球发售",
+    "港股年度报告": "港股年度报告",
 }
 
 
@@ -493,9 +498,38 @@ def _form_compatible(rule: dict, form: str) -> bool:
     return key in rt
 
 
+def _build_llm_system_prompt(
+    section_title: str, period: str, year: Optional[int], expected_keys: str,
+) -> str:
+    """Build the LLM system prompt for one section extraction.
+
+    The prompt is parameterized by the requested period (and ``year`` when
+    known) and is report-type-agnostic: it does not assume a CN annual report
+    and does not hard-code a year, so it applies to prospectus and HK report
+    text as well as CN periodic reports.
+    """
+    period_hint = f" ({year})" if year else ""
+    return (
+        "You extract structured financial figures from financial-report text. "
+        "Return only valid JSON. "
+        f"The text is from the section '{section_title}'. "
+        f"The text may contain multiple periods of data. Return only the value for "
+        f"the requested period{period_hint} as a single number, not a dict. "
+        f"Your response MUST be a JSON object with these exact keys: {expected_keys}. "
+        "Match indicator names to text lines by financial meaning, not exact wording. "
+        "Examples: '母公司股东'->'归属于母公司普通股股东的净利润', "
+        "'业务及管理费'->'业务及管理费用', "
+        "'发行债务证券所收到的现金'->'发行债券收到的现金', "
+        "'投资联营及合营企业所支付的现金'->'取得子公司、合营联营企业及其他营业单位支付的现金净额', "
+        "'税前利润'->'利润总额'. "
+        "Set to null only if the item genuinely does not exist in the text."
+    )
+
+
 def _llm_extract_section(
     section_text: str, rules: list[dict], period: str, *, max_chars: int | None = None,
     pdf_url: str | None = None, section_key: str | None = None,
+    year: Optional[int] = None,
 ) -> dict[str, dict]:
     """One Pydantic-typed LLM call per module over a section's rules.
 
@@ -548,21 +582,7 @@ def _llm_extract_section(
             field_descriptions.append(f"  - {nm}: {desc}")
 
         expected_keys = json.dumps(wanted_names, ensure_ascii=False)
-        system = (
-            "You extract structured financial figures from Chinese annual-report text. "
-            "Return only valid JSON. "
-            f"The text is from the section '{section_title}'. "
-            "The text may contain multiple years of data. Return only the "
-            "most recent year's (2023) value as a single number, not a dict. "
-            f"Your response MUST be a JSON object with these exact keys: {expected_keys}. "
-            "Match indicator names to text lines by financial meaning, not exact wording. "
-            "Examples: '母公司股东'→'归属于母公司普通股股东的净利润', "
-            "'业务及管理费'→'业务及管理费用', "
-            "'发行债务证券所收到的现金'→'发行债券收到的现金', "
-            "'投资联营及合营企业所支付的现金'→'取得子公司、合营联营企业及其他营业单位支付的现金净额', "
-            "'税前利润'→'利润总额'. "
-            "Set to null only if the item genuinely does not exist in the text."
-        )
+        system = _build_llm_system_prompt(section_title, period, year, expected_keys)
         user = (
             f"Financial section: {section_title}\n\n"
             f"Period: {period}\n\n"
@@ -634,6 +654,7 @@ def _run_extractor(
     *,
     pdf_url: str | None = None,
     section_key: str | None = None,
+    year: Optional[int] = None,
 ) -> dict:
     """Dispatch one report rule, honoring ``extractor_mode``.
 
@@ -662,7 +683,7 @@ def _run_extractor(
         return llm_cache[rule["name"]]
     result = _llm_extract_section(
         section_text, [rule], period,
-        pdf_url=pdf_url, section_key=section_key,
+        pdf_url=pdf_url, section_key=section_key, year=year,
     )
     return result.get(rule["name"], {"value": None, "unit": rule.get("unit", ""), "note": "llm: empty"})
 
@@ -735,7 +756,7 @@ def _resolve_via_report(
         )
     res = _run_extractor(
         section_text, rule, period, extractor_mode, llm_cache=llm_cache,
-        pdf_url=pdf_url, section_key=matched,
+        pdf_url=pdf_url, section_key=matched, year=year,
     )
     return _value_obj(
         res.get("value"), rule=rule, source=f"report:{matched}",
@@ -1126,9 +1147,23 @@ def extract_indicators(
         return err
     profile, applicable = applicable_rules(ctx.stock_code, ctx.company.get("name", ""))
 
-    # select the requested subset (after applicability)
+    # Form-compat filter: rules whose report_type doesn't include this form's
+    # compat key are skipped (source_type "form_filter"), not extracted. This
+    # mirrors extract_indicators_by_position so prospectus/HK rules don't run
+    # for periodic forms and vice versa. External (realtime/market) rules are
+    # form-agnostic and bypass this filter so they still reach the external
+    # group below (-> unresolved), not the form_filter skip.
+    def _form_ok(r: dict) -> bool:
+        return r.get("source_type") == "external" or _form_compatible(r, form)
+
+    skipped: list[dict] = []
+
+    # select the requested subset (after applicability + form-compat)
     if indicators is None:
-        target_rules = applicable
+        for r in applicable:
+            if not _form_ok(r):
+                skipped.append({"indicator": r["name"], "source_type": "form_filter", "note": f"not in {form}"})
+        target_rules = [r for r in applicable if _form_ok(r)]
     else:
         applicable_names = {r["name"] for r in applicable}
         target_rules = []
@@ -1138,6 +1173,8 @@ def extract_indicators(
             r = resolve_rule(nm)
             if r is None:
                 unknown.append(nm)
+            elif not _form_ok(r):
+                skipped.append({"indicator": nm, "source_type": "form_filter", "note": f"not in {form}"})
             elif r["name"] not in applicable_names:
                 not_applicable.append(nm)
             else:
@@ -1213,7 +1250,7 @@ def extract_indicators(
             if r["name"] not in section_of:
                 continue  # already added to missing
             sec = section_of[r["name"]]
-            res = _run_extractor(section_text_cache[sec], r, "annual", "python")
+            res = _run_extractor(section_text_cache[sec], r, "annual", "python", year=year)
             results[r["name"]] = _value_obj(
                 res.get("value"), rule=r, source=f"report:{sec}",
                 extractor=(r.get("extractor", "").startswith("python:") and r["extractor"] or "llm"),
@@ -1264,7 +1301,7 @@ def extract_indicators(
             if llm_rules:
                 llm_cache = _llm_extract_section(
                     section_text_cache[sec], llm_rules, "annual",
-                    pdf_url=ctx.pdf_url, section_key=sec,
+                    pdf_url=ctx.pdf_url, section_key=sec, year=year,
                 )
                 for r in llm_rules:
                     rec = llm_cache.get(r["name"], {})
@@ -1330,6 +1367,7 @@ def extract_indicators(
         "indicators": results,
         "missing": missing,
         "unresolved": unresolved,
+        "skipped": skipped,
         "section_cache_reuse": section_cache_reuse,
         "concurrency": cap,
         "dataframe": _build_dataframe(results, ctx.stock_code, ctx.company.get("name", ""), year),

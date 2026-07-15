@@ -35,6 +35,28 @@ class ScriptRulesOutput(BaseModel):
     rules: list[ScriptRuleModel] = Field(default_factory=list)
 
 
+def _sanitize_rule(rule: Any) -> Optional[dict]:
+    """Coerce common LLM type-mismatches before pydantic validation.
+
+    The LLM occasionally returns ``applies_to``/``source``/``value_range`` as a
+    string or ``aliases`` as a scalar, which would reject the whole chapter's
+    rule list. Drop/normalize those so a single mistyped field doesn't discard
+    valid indicators.
+    """
+    if not isinstance(rule, dict):
+        return None
+    for k in ("applies_to", "source", "value_range"):
+        if k in rule and not isinstance(rule[k], dict):
+            rule[k] = None
+    if not isinstance(rule.get("aliases"), list):
+        rule["aliases"] = []
+    for k in ("indicator", "document_type", "instruction", "position",
+              "module", "subgroup", "extractor", "unit", "period_type", "direction"):
+        if k in rule and rule[k] is not None and not isinstance(rule[k], str):
+            rule[k] = str(rule[k])
+    return rule
+
+
 def generate_and_persist(
     system: str,
     user: str,
@@ -57,7 +79,9 @@ def generate_and_persist(
         raise ValueError(
             f"LLM did not return valid JSON: {e}\n--- raw (first 500 chars) ---\n{raw[:500]}"
         ) from None
-    validated = output_model.model_validate(data)
+    rules_raw = data.get("rules", []) if isinstance(data, dict) else []
+    rules_clean = [r for r in (_sanitize_rule(r) for r in rules_raw) if r]
+    validated = output_model.model_validate({"rules": rules_clean})
     rules = getattr(validated, "rules", [])
     persisted = [upsert_fn(r.model_dump(exclude_none=False)) for r in rules]
     saved = rules_db.save_to_skill_scripts_dir(skill_name, persisted)

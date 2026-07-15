@@ -67,7 +67,7 @@ MODULES = [
     "cninfo_client",
     "financials_client",
     "indicators_client",
-    "indicators_extractors",
+    "script_extractors",
     "indicators_csv_migration",
     "report_cache",
     "selfcheck",

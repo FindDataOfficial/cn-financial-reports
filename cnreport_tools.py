@@ -22,11 +22,12 @@ _HEADING_RE = re.compile(
     r"|[\(（][一二三四五六七八九十百\d]+[\)）]"
     r"|[一二三四五六七八九十百]+、"
     r"|\d+[\.、]"
+    r"|(?:Part|Section|Chapter|CHAPTER|SECTION|PART)\s+[IVXLCDMivxlcdm\d+]"
     r")\s*(.+?)\s*\.{3,}?\s*\d*\s*$"  # optional dot-leader + page no
 )
 # looser fallback: heading token alone on a line
 _HEADING_LOOSE_RE = re.compile(
-    r"^\s*(第[一二三四五六七八九十百零〇\d]+[章节部分编篇]|[一二三四五六七八九十百]+、|\d+[\.、])\s*(\S.*?)\s*$"
+    r"^\s*(第[一二三四五六七八九十百零〇\d]+[章节部分编篇]|[一二三四五六七八九十百]+、|\d+[\.、]|(?:Part|Section|Chapter)\s+[IVXLCDMivxlcdm\d]+)\s*(\S.*?)\s*$"
 )
 
 
@@ -356,9 +357,9 @@ def _normalize_section_title(s: str) -> str:
 # never contain the consolidated substring, so they're skipped on the first
 # pass and only matched as a last-resort fallback on the un-prefixed pass.
 STATEMENT_MATCHERS: dict[str, list[str]] = {
-    "income_statement": ["合并及公司利润表", "合并利润表", "利润表", "合并及公司利润表–按中国会计准则编制"],
-    "balance_sheet": ["合并及公司资产负债表", "合并资产负债表", "资产负债表", "合并及公司资产负债表–按中国会计准则编制"],
-    "cashflow": ["合并及公司现金流量表", "合并现金流量表", "现金流量表", "合并及公司现金流量表–按中国会计准则编制"],
+    "income_statement": ["合并及公司利润表", "合并利润表", "利润表", "合并及公司利润表–按中国会计准则编制", "綜合收益表", "Statement of Profit or Loss"],
+    "balance_sheet": ["合并及公司资产负债表", "合并资产负债表", "资产负债表", "合并及公司资产负债表–按中国会计准则编制", "財務狀況表", "綜合財務狀況表", "Statement of Financial Position"],
+    "cashflow": ["合并及公司现金流量表", "合并现金流量表", "现金流量表", "合并及公司现金流量表–按中国会计准则编制", "綜合現金流量表", "Consolidated Statement of Cash Flows"],
 }
 
 # Financial statement table titles that may be absent from both PDF bookmarks
@@ -372,6 +373,9 @@ STATEMENT_TITLES: dict[str, list[str]] = {
         "银行资产负债表（未经审计）",
         "合并资产负债表",
         "资产负债表",
+        "財務狀況表",
+        "綜合財務狀況表",
+        "Statement of Financial Position",
     ],
     "income_statement": [
         "合并及公司利润表",
@@ -379,6 +383,8 @@ STATEMENT_TITLES: dict[str, list[str]] = {
         "银行利润表（未经审计）",
         "合并利润表",
         "利润表",
+        "綜合收益表",
+        "Statement of Profit or Loss",
     ],
     "cashflow": [
         "合并及公司现金流量表",
@@ -386,6 +392,8 @@ STATEMENT_TITLES: dict[str, list[str]] = {
         "银行现金流量表（未经审计）",
         "合并现金流量表",
         "现金流量表",
+        "綜合現金流量表",
+        "Consolidated Statement of Cash Flows",
     ],
     "equity": [
         "合并及公司股东权益变动表",
@@ -1760,3 +1768,442 @@ def audit_rule_gaps(
         encoding="utf-8",
     )
     return {"output_path": str(output_file), "report": report}
+
+
+# ── SSE (上海证券交易所) official-website tools ───────────────────
+# Direct primary-source path complementing CNINFO. See sse_client for the
+# undocumented query.sse.com.cn / sns.sseinfo.com endpoints.
+
+
+@_tool_safe
+def get_sse_company(ticker_or_name: str) -> dict:
+    """Resolve an SSE-listed company by 6-digit ticker.
+
+    Name fragments are not supported by the SSE client (no reliable search
+    endpoint) - resolve the name via ``get_company`` (CNINFO) first.
+
+    Returns: {stock_code, exchange, source, name} or {error}.
+    """
+    import sse_client
+
+    row = sse_client.lookup_sse_company(ticker_or_name)
+    if not row:
+        return {"error": f"no SSE company matched: {ticker_or_name!r} (use a 6-digit SSE code)"}
+    return row
+
+
+@_tool_safe
+def list_sse_filings(
+    ticker_or_name: str,
+    title: Optional[str] = None,
+    year: Optional[int] = None,
+    limit: int = 20,
+) -> list[dict] | dict:
+    """List a SSE-listed company's disclosures from sse.com.cn.
+
+    Args:
+        ticker_or_name: 6-digit SSE ticker.
+        title: optional title-substring filter (e.g. "年度报告").
+        year: optional fiscal-year filter.
+        limit: max rows (default 20).
+
+    Returns: list of {announcement_id, title, form, published, pdf_url,
+             stock_code, source} or {error}.
+    """
+    import sse_client
+
+    company = sse_client.lookup_sse_company(ticker_or_name)
+    if not company:
+        return {"error": f"no SSE company matched: {ticker_or_name!r} (use a 6-digit SSE code)"}
+    return sse_client.list_sse_filings(
+        company["stock_code"], title=title, year=year, limit=limit,
+    )
+
+
+@_tool_safe
+def get_sse_section(
+    ticker_or_name: str,
+    year: int,
+    section: str,
+) -> dict:
+    """Extract a named section from a SSE company's annual-report PDF.
+
+    Convenience wrapper: (ticker, year, section) -> SSE filing lookup
+    -> PDF URL -> existing text-extraction pipeline (report_cache + outline).
+
+    Returns: {stock_code, year, section, pdf_url, outline_entry, text,
+             char_count} or {error}.
+    """
+    import sse_client
+    import report_cache
+
+    company = sse_client.lookup_sse_company(ticker_or_name)
+    if not company:
+        return {"error": f"no SSE company matched: {ticker_or_name!r} (use a 6-digit SSE code)"}
+    filing = sse_client.get_sse_annual_report_filing(company["stock_code"], year)
+    if not filing or not filing.get("pdf_url"):
+        return {
+            "error": f"no annual report filing found for {company['stock_code']} year={year}",
+            "stock_code": company["stock_code"],
+        }
+    pdf = filing["pdf_url"]
+    text, _ = report_cache.get_or_fetch(
+        pdf,
+        stock_code=company["stock_code"],
+        year=year,
+        form="sse-annual",
+        announcement_id=filing.get("announcement_id") or "",
+    )
+    outline = parse_outline(text)
+    entry = resolve_selector(outline, section)
+    if entry is None:
+        return {
+            "error": "no section matched selector",
+            "available": [e["title"] for e in outline],
+            "pdf_url": pdf,
+        }
+    body = extract_section_text(text, outline, entry)
+    return {
+        "stock_code": company["stock_code"],
+        "year": year,
+        "section": section,
+        "pdf_url": pdf,
+        "outline_entry": entry,
+        "char_count": len(body),
+        "text": body,
+    }
+
+
+@_tool_safe
+def get_sse_interaction(ticker_or_name: str, limit: int = 20) -> dict:
+    """Fetch 上证e互动 investor Q&A for a SSE-listed company.
+
+    Returns: {stock_code, source, questions: [...]} or {stock_code, source,
+             error}. Endpoint (sns.sseinfo.com) is undocumented - verify live.
+    """
+    import sse_client
+
+    company = sse_client.lookup_sse_company(ticker_or_name)
+    if not company:
+        return {"error": f"no SSE company matched: {ticker_or_name!r} (use a 6-digit SSE code)"}
+    return sse_client.get_sse_interaction(company["stock_code"], limit=limit)
+
+
+# ── SZSE (深圳证券交易所) official-website tools ──────────────────
+
+
+@_tool_safe
+def get_szse_company(ticker_or_name: str) -> dict:
+    """Resolve a SZSE-listed company by 6-digit ticker (szse.cn).
+
+    Name fragments are not supported here - resolve via ``get_company`` first.
+
+    Returns: {stock_code, exchange, source, name} or {error}.
+    """
+    import szse_client
+
+    row = szse_client.lookup_szse_company(ticker_or_name)
+    if not row:
+        return {"error": f"no SZSE company matched: {ticker_or_name!r} (use a 6-digit SZSE code)"}
+    return row
+
+
+@_tool_safe
+def list_szse_filings(
+    ticker_or_name: str,
+    title: Optional[str] = None,
+    year: Optional[int] = None,
+    limit: int = 20,
+) -> list[dict] | dict:
+    """List a SZSE-listed company's disclosures directly from szse.cn.
+
+    Returns: list of {announcement_id, title, form, published, pdf_url,
+             stock_code, source} or {error}.
+    """
+    import szse_client
+
+    company = szse_client.lookup_szse_company(ticker_or_name)
+    if not company:
+        return {"error": f"no SZSE company matched: {ticker_or_name!r} (use a 6-digit SZSE code)"}
+    return szse_client.list_szse_filings(
+        company["stock_code"], title=title, year=year, limit=limit,
+    )
+
+
+@_tool_safe
+def get_szse_section(
+    ticker_or_name: str,
+    year: int,
+    section: str,
+) -> dict:
+    """Extract a named section from a SZSE company's annual-report PDF.
+
+    Returns: {stock_code, year, section, pdf_url, outline_entry, text,
+             char_count} or {error}.
+    """
+    import szse_client
+    import report_cache
+
+    company = szse_client.lookup_szse_company(ticker_or_name)
+    if not company:
+        return {"error": f"no SZSE company matched: {ticker_or_name!r} (use a 6-digit SZSE code)"}
+    filing = szse_client.get_szse_annual_report_filing(company["stock_code"], year)
+    if not filing or not filing.get("pdf_url"):
+        return {
+            "error": f"no annual report filing found for {company['stock_code']} year={year}",
+            "stock_code": company["stock_code"],
+        }
+    pdf = filing["pdf_url"]
+    text, _ = report_cache.get_or_fetch(
+        pdf,
+        stock_code=company["stock_code"],
+        year=year,
+        form="szse-annual",
+        announcement_id=filing.get("announcement_id") or "",
+    )
+    outline = parse_outline(text)
+    entry = resolve_selector(outline, section)
+    if entry is None:
+        return {
+            "error": "no section matched selector",
+            "available": [e["title"] for e in outline],
+            "pdf_url": pdf,
+        }
+    body = extract_section_text(text, outline, entry)
+    return {
+        "stock_code": company["stock_code"],
+        "year": year,
+        "section": section,
+        "pdf_url": pdf,
+        "outline_entry": entry,
+        "char_count": len(body),
+        "text": body,
+    }
+
+
+@_tool_safe
+def get_szse_interaction(ticker_or_name: str, limit: int = 20) -> dict:
+    """Fetch 互动易 investor Q&A for a SZSE-listed company (irm.cninfo.com.cn).
+
+    Returns: {stock_code, source, questions: [...]} or {error}.
+    """
+    import szse_client
+
+    company = szse_client.lookup_szse_company(ticker_or_name)
+    if not company:
+        return {"error": f"no SZSE company matched: {ticker_or_name!r} (use a 6-digit SZSE code)"}
+    return szse_client.get_szse_interaction(company["stock_code"], limit=limit)
+
+
+# ── BSE (北京证券交易所) official-website tools ───────────────────
+# BSE-native disclosure with a CNINFO cross-reference fallback; each filing
+# row carries a `source` field ("bse" | "cninfo") so callers know the origin.
+
+
+@_tool_safe
+def get_bse_company(ticker_or_name: str) -> dict:
+    """Resolve a BSE-listed company by 6-digit ticker (bse.cn).
+
+    Returns: {stock_code, exchange, source, name} or {error}.
+    """
+    import bse_client
+
+    row = bse_client.lookup_bse_company(ticker_or_name)
+    if not row:
+        return {"error": f"no BSE company matched: {ticker_or_name!r} (use a 6-digit BSE code)"}
+    return row
+
+
+@_tool_safe
+def list_bse_filings(
+    ticker_or_name: str,
+    title: Optional[str] = None,
+    year: Optional[int] = None,
+    limit: int = 20,
+) -> list[dict] | dict:
+    """List a BSE-listed company's disclosures (BSE-native, CNINFO fallback).
+
+    Each row carries ``source: "bse" | "cninfo"``. Returns: list of
+    {announcement_id, title, form, published, pdf_url, stock_code, source} or
+    {error}.
+    """
+    import bse_client
+
+    company = bse_client.lookup_bse_company(ticker_or_name)
+    if not company:
+        return {"error": f"no BSE company matched: {ticker_or_name!r} (use a 6-digit BSE code)"}
+    return bse_client.list_bse_filings(
+        company["stock_code"], title=title, year=year, limit=limit,
+    )
+
+
+@_tool_safe
+def get_bse_section(
+    ticker_or_name: str,
+    year: int,
+    section: str,
+) -> dict:
+    """Extract a named section from a BSE company's annual-report PDF.
+
+    The filing may be served from BSE or CNINFO (fallback); the result carries
+    ``source`` so the caller knows the origin.
+
+    Returns: {stock_code, year, section, pdf_url, source, outline_entry, text,
+             char_count} or {error}.
+    """
+    import bse_client
+    import report_cache
+
+    company = bse_client.lookup_bse_company(ticker_or_name)
+    if not company:
+        return {"error": f"no BSE company matched: {ticker_or_name!r} (use a 6-digit BSE code)"}
+    filing = bse_client.get_bse_annual_report_filing(company["stock_code"], year)
+    if not filing or not filing.get("pdf_url"):
+        return {
+            "error": f"no annual report filing found for {company['stock_code']} year={year}",
+            "stock_code": company["stock_code"],
+        }
+    pdf = filing["pdf_url"]
+    text, _ = report_cache.get_or_fetch(
+        pdf,
+        stock_code=company["stock_code"],
+        year=year,
+        form="bse-annual",
+        announcement_id=filing.get("announcement_id") or "",
+    )
+    outline = parse_outline(text)
+    entry = resolve_selector(outline, section)
+    if entry is None:
+        return {
+            "error": "no section matched selector",
+            "available": [e["title"] for e in outline],
+            "pdf_url": pdf,
+            "source": filing.get("source") or "bse",
+        }
+    body = extract_section_text(text, outline, entry)
+    return {
+        "stock_code": company["stock_code"],
+        "year": year,
+        "section": section,
+        "pdf_url": pdf,
+        "source": filing.get("source") or "bse",
+        "outline_entry": entry,
+        "char_count": len(body),
+        "text": body,
+    }
+
+
+# ── CSRC (中国证监会) official-website tools ──────────────────────
+# Regulatory data CNINFO/exchanges do not cover: announcements, IPO / 并购重组
+# review status, enforcement. HTML-parsed (lxml); endpoints undocumented.
+
+
+@_tool_safe
+def list_csrc_filings(
+    category: Optional[str] = None,
+    begin_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    limit: int = 20,
+) -> list[dict] | dict:
+    """List CSRC regulatory announcements/notices (csrc.gov.cn).
+
+    Args:
+        category: optional channel hint (informational).
+        begin_date / end_date: optional ``YYYY-MM-DD`` post-filter.
+        limit: max rows (default 20).
+
+    Returns: list of {title, published, url, source} or {error}.
+    """
+    import csrc_client
+
+    return csrc_client.list_csrc_filings(
+        category, begin_date=begin_date, end_date=end_date, limit=limit,
+    )
+
+
+@_tool_safe
+def get_csrc_ipo_review(company_or_code: str) -> dict:
+    """Query CSRC IPO (首发) application review status for a company.
+
+    Returns: {company, source, fields} (matching application row) or
+             {company, source, error}. Endpoint undocumented - verify live.
+    """
+    import csrc_client
+
+    return csrc_client.get_csrc_ipo_review(company_or_code)
+
+
+@_tool_safe
+def get_csrc_merger_review(company_or_code: str) -> dict:
+    """Query CSRC 并购重组 (M&A) review status for a company.
+
+    Returns: {company, source, fields} or {company, source, error}.
+    """
+    import csrc_client
+
+    return csrc_client.get_csrc_merger_review(company_or_code)
+
+
+@_tool_safe
+def list_csrc_enforcement(
+    begin_date: Optional[str] = None,
+    limit: int = 20,
+) -> list[dict] | dict:
+    """List CSRC administrative-penalty / enforcement actions (csrc.gov.cn).
+
+    Returns: list of {title, published, url, source} or {error}.
+    """
+    import csrc_client
+
+    return csrc_client.list_csrc_enforcement(begin_date=begin_date, limit=limit)
+
+
+# ── Ministry statistics (部级部门) tools ──────────────────────────
+# Structured economic/financial statistics from NBS/MOF/PBoC/SAFE/GACC/NFRA,
+# complementing fd-cn-gov's catalog-archive scraping with data queries.
+
+
+@_tool_safe
+def list_ministries() -> list[dict] | dict:
+    """List the supported ministry statistics sources.
+
+    Returns: list of {id, label, en, transport, base} or {error}.
+    """
+    import ministry_stats_client
+
+    return ministry_stats_client.list_ministries()
+
+
+@_tool_safe
+def get_ministry_stat(
+    ministry_id: str,
+    url: Optional[str] = None,
+    limit: int = 50,
+) -> dict:
+    """Fetch a ministry's statistics page and parse its HTML tables.
+
+    Args:
+        ministry_id: one of nbs/mof/pboc/safe/gacc/nfra (use get_nbs_stat for nbs).
+        url: optional explicit stat-page URL (overrides the default).
+        limit: max rows per table.
+
+    Returns: {ministry, label, source, url, tables, table_count} or {error}.
+    """
+    import ministry_stats_client
+
+    return ministry_stats_client.get_ministry_stat(ministry_id, url=url, limit=limit)
+
+
+@_tool_safe
+def get_nbs_stat(indicator_code: str, dbcode: str = "hgnd") -> dict:
+    """Query an NBS (国家统计局) macro statistic by indicator code.
+
+    Args:
+        indicator_code: NBS indicator code (e.g. "A0201" for GDP).
+        dbcode: NBS database code (default "hgnd" = national annual).
+
+    Returns: {indicator, source, dbcode, data: {period: value}} or {error}.
+    """
+    import ministry_stats_client
+
+    return ministry_stats_client.get_nbs_stat(indicator_code, dbcode=dbcode)

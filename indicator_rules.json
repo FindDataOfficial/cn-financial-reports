@@ -1980,22 +1980,16 @@
         ],
         "exclude_companies": []
       },
-      "source_type": "report",
-      "extractor": "llm",
+      "source_type": "akshare",
+      "extractor": "auto",
       "unit": "元",
       "period_type": "annual",
       "direction": "none",
       "report_type": "年报/半年报/季报",
       "note": "sourced from indicators_position.csv (section: 资产负债表 — 一、资产)",
-      "_csv_source": true,
       "source": {
-        "selectors": [
-          {
-            "section": "资产负债表",
-            "fallback": true
-          }
-        ],
-        "extractor": "llm"
+        "statement": "balance_sheet",
+        "field": "买入返售金融资产"
       }
     },
     {
@@ -11281,6 +11275,4742 @@
         ],
         "extractor": "llm"
       }
+    },
+    {
+      "name": "结算备付金",
+      "aliases": [],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "结算备付金"
+      }
+    },
+    {
+      "name": "交易性金融资产",
+      "aliases": [
+        "Trading Financial Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "交易性金融资产"
+      }
+    },
+    {
+      "name": "应收票据及应收账款",
+      "aliases": [
+        "Notes and Accounts Receivable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收票据及应收账款"
+      }
+    },
+    {
+      "name": "应收款项融资",
+      "aliases": [
+        "Receivables Financing"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收款项融资"
+      }
+    },
+    {
+      "name": "预付款项",
+      "aliases": [
+        "Prepayments"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "预付款项"
+      }
+    },
+    {
+      "name": "应收保费",
+      "aliases": [
+        "Insurance Premiums Receivable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收保费"
+      }
+    },
+    {
+      "name": "应收分保账款",
+      "aliases": [
+        "Reinsurance Accounts Receivable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收分保账款"
+      }
+    },
+    {
+      "name": "应收分保合同准备金",
+      "aliases": [
+        "Reinsurance Contract Reserves Receivable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收分保合同准备金"
+      }
+    },
+    {
+      "name": "其他应收款",
+      "aliases": [
+        "Other Receivables"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他应收款"
+      }
+    },
+    {
+      "name": "合同资产",
+      "aliases": [
+        "Contract Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "合同资产"
+      }
+    },
+    {
+      "name": "持有待售资产",
+      "aliases": [
+        "Assets Held for Sale"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "划分为持有待售的资产"
+      }
+    },
+    {
+      "name": "待摊费用",
+      "aliases": [
+        "Prepaid Expenses"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "待摊费用"
+      }
+    },
+    {
+      "name": "一年内到期的非流动资产",
+      "aliases": [
+        "Non-current Assets Due Within One Year"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "一年内到期的非流动资产"
+      }
+    },
+    {
+      "name": "其他流动资产",
+      "aliases": [
+        "Other Current Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他流动资产"
+      }
+    },
+    {
+      "name": "(其中)应收票据",
+      "aliases": [
+        "Of which: Notes Receivable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收票据"
+      }
+    },
+    {
+      "name": "(其中)应收股利",
+      "aliases": [
+        "Of which: Dividends Receivable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收股利"
+      }
+    },
+    {
+      "name": "(其中)数据资源",
+      "aliases": [
+        "Of which: Data Resources"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "report",
+      "extractor": "llm",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item. Under inventory / 存货"
+    },
+    {
+      "name": "债权投资",
+      "aliases": [
+        "Debt Investment"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "债权投资"
+      }
+    },
+    {
+      "name": "其他债权投资",
+      "aliases": [
+        "Other Debt Investments"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他债权投资"
+      }
+    },
+    {
+      "name": "其他权益工具投资",
+      "aliases": [
+        "Other Equity Instrument Investments"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他权益工具投资"
+      }
+    },
+    {
+      "name": "其他非流动金融资产",
+      "aliases": [
+        "Other Non-current Financial Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他非流动金融资产"
+      }
+    },
+    {
+      "name": "生产性生物资产",
+      "aliases": [
+        "Productive Biological Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "生产性生物资产"
+      }
+    },
+    {
+      "name": "油气资产",
+      "aliases": [
+        "Oil and Gas Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "油气资产"
+      }
+    },
+    {
+      "name": "公益性生物资产",
+      "aliases": [
+        "Public Welfare Biological Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "公益性生物资产"
+      }
+    },
+    {
+      "name": "开发支出",
+      "aliases": [
+        "Development Expenditure"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "开发支出"
+      }
+    },
+    {
+      "name": "长期待摊费用",
+      "aliases": [
+        "Long-term Deferred Expenses"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "长期待摊费用"
+      }
+    },
+    {
+      "name": "其他非流动资产",
+      "aliases": [
+        "Other Non-current Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Detailed balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他非流动资产"
+      }
+    },
+    {
+      "name": "(其中)固定资产清理",
+      "aliases": [
+        "Of which: Fixed Assets Disposal"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产 / 附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item annotation.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "固定资产清理"
+      }
+    },
+    {
+      "name": "(其中)工程物资",
+      "aliases": [
+        "Of which: Engineering Materials"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "资产负债表 — 一、资产 / 附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item annotation.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "工程物资"
+      }
+    },
+    {
+      "name": "短期借款",
+      "aliases": [
+        "Short-term Borrowings"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "短期借款"
+      }
+    },
+    {
+      "name": "交易性金融负债",
+      "aliases": [
+        "Trading Financial Liabilities"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "交易性金融负债"
+      }
+    },
+    {
+      "name": "应付票据及应付账款",
+      "aliases": [
+        "Notes and Accounts Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应付票据及应付账款"
+      }
+    },
+    {
+      "name": "预收账款",
+      "aliases": [
+        "Advances from Customers"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "预收款项"
+      }
+    },
+    {
+      "name": "吸收存款及同业存放",
+      "aliases": [
+        "Deposits from Customers and Interbank"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "吸收存款及同业存放"
+      }
+    },
+    {
+      "name": "代理买卖证券款",
+      "aliases": [
+        "Agency Trading Securities Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "代理买卖证券款"
+      }
+    },
+    {
+      "name": "代理承销证券款",
+      "aliases": [
+        "Agency Underwriting Securities Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "代理承销证券款"
+      }
+    },
+    {
+      "name": "其他应付款",
+      "aliases": [
+        "Other Payables"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他应付款"
+      }
+    },
+    {
+      "name": "应付手续费及佣金",
+      "aliases": [
+        "Fees and Commissions Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应付手续费及佣金"
+      }
+    },
+    {
+      "name": "应付分保账款",
+      "aliases": [
+        "Reinsurance Accounts Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应付分保账款"
+      }
+    },
+    {
+      "name": "持有待售负债",
+      "aliases": [
+        "Liabilities Held for Sale"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "划分为持有待售的负债"
+      }
+    },
+    {
+      "name": "一年内到期的非流动负债",
+      "aliases": [
+        "Non-current Liabilities Due Within One Year"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "一年内到期的非流动负债"
+      }
+    },
+    {
+      "name": "一年内到期的递延收益",
+      "aliases": [
+        "Deferred Revenue Due Within One Year"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "一年内的递延收益"
+      }
+    },
+    {
+      "name": "短期应付债券",
+      "aliases": [
+        "Short-term Bonds Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应付短期债券"
+      }
+    },
+    {
+      "name": "其他流动负债",
+      "aliases": [
+        "Other Current Liabilities"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他流动负债"
+      }
+    },
+    {
+      "name": "保险合同准备金",
+      "aliases": [
+        "Insurance Contract Reserves"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "保险合同准备金"
+      }
+    },
+    {
+      "name": "长期借款",
+      "aliases": [
+        "Long-term Borrowings"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "长期借款"
+      }
+    },
+    {
+      "name": "长期应付款",
+      "aliases": [
+        "Long-term Payables"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "长期应付款"
+      }
+    },
+    {
+      "name": "长期应付职工薪酬",
+      "aliases": [
+        "Long-term Employee Compensation Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "长期应付职工薪酬"
+      }
+    },
+    {
+      "name": "长期递延收益",
+      "aliases": [
+        "Long-term Deferred Revenue"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "长期递延收益"
+      }
+    },
+    {
+      "name": "其他非流动负债",
+      "aliases": [
+        "Other Non-current Liabilities"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance-sheet line item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "其他非流动负债"
+      }
+    },
+    {
+      "name": "(其中)应付票据",
+      "aliases": [
+        "Of which: Notes Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应付票据"
+      }
+    },
+    {
+      "name": "(其中)应付账款",
+      "aliases": [
+        "Of which: Accounts Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应付账款"
+      }
+    },
+    {
+      "name": "(其中)应付股利",
+      "aliases": [
+        "Of which: Dividends Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应付股利"
+      }
+    },
+    {
+      "name": "(其中)专项应付款",
+      "aliases": [
+        "Of which: Special Payables"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "专项应付款"
+      }
+    },
+    {
+      "name": "净营运资本",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Working capital = current assets - current liabilities.",
+      "source": {
+        "formula": "流动资产合计 - 流动负债合计",
+        "inputs": [
+          "流动资产合计",
+          "流动负债合计"
+        ]
+      }
+    },
+    {
+      "name": "流动资产占比",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Current assets as % of total assets.",
+      "source": {
+        "formula": "流动资产合计 / 资产总计 * 100",
+        "inputs": [
+          "流动资产合计",
+          "资产总计"
+        ]
+      }
+    },
+    {
+      "name": "货币资金占比",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash as % of total assets.",
+      "source": {
+        "formula": "货币资金 / 资产总计 * 100",
+        "inputs": [
+          "货币资金",
+          "资产总计"
+        ]
+      }
+    },
+    {
+      "name": "非流动资产合计",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Non-current assets = total assets - current assets.",
+      "source": {
+        "formula": "资产总计 - 流动资产合计",
+        "inputs": [
+          "资产总计",
+          "流动资产合计"
+        ]
+      }
+    },
+    {
+      "name": "非流动资产占比",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Non-current assets as % of total assets.",
+      "source": {
+        "formula": "非流动资产合计 / 资产总计 * 100",
+        "inputs": [
+          "非流动资产合计",
+          "资产总计"
+        ]
+      }
+    },
+    {
+      "name": "重资产占比",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Heavy assets (fixed + construction in progress + intangibles) as % of total assets.",
+      "source": {
+        "formula": "(固定资产 + 在建工程 + 无形资产) / 资产总计 * 100",
+        "inputs": [
+          "固定资产",
+          "在建工程",
+          "无形资产",
+          "资产总计"
+        ]
+      }
+    },
+    {
+      "name": "流动负债占比",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Current liabilities as % of total liabilities.",
+      "source": {
+        "formula": "流动负债合计 / 负债合计 * 100",
+        "inputs": [
+          "流动负债合计",
+          "负债合计"
+        ]
+      }
+    },
+    {
+      "name": "非流动负债合计",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Non-current liabilities = total liabilities - current liabilities.",
+      "source": {
+        "formula": "负债合计 - 流动负债合计",
+        "inputs": [
+          "负债合计",
+          "流动负债合计"
+        ]
+      }
+    },
+    {
+      "name": "非流动负债占比",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Non-current liabilities as % of total liabilities.",
+      "source": {
+        "formula": "非流动负债合计 / 负债合计 * 100",
+        "inputs": [
+          "非流动负债合计",
+          "负债合计"
+        ]
+      }
+    },
+    {
+      "name": "有息负债",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Interest-bearing liabilities.",
+      "source": {
+        "formula": "短期借款 + 长期借款 + 应付债券 + 一年内到期的非流动负债",
+        "inputs": [
+          "短期借款",
+          "长期借款",
+          "应付债券",
+          "一年内到期的非流动负债"
+        ]
+      }
+    },
+    {
+      "name": "有息负债率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Interest-bearing liabilities / total assets.",
+      "source": {
+        "formula": "有息负债 / 资产总计 * 100",
+        "inputs": [
+          "有息负债",
+          "资产总计"
+        ]
+      }
+    },
+    {
+      "name": "流动比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Current ratio.",
+      "source": {
+        "formula": "流动资产合计 / 流动负债合计",
+        "inputs": [
+          "流动资产合计",
+          "流动负债合计"
+        ]
+      }
+    },
+    {
+      "name": "速动比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Quick ratio.",
+      "source": {
+        "formula": "(流动资产合计 - 存货) / 流动负债合计",
+        "inputs": [
+          "流动资产合计",
+          "存货",
+          "流动负债合计"
+        ]
+      }
+    },
+    {
+      "name": "清算价值比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Liquidation value ratio.",
+      "source": {
+        "formula": "(流动资产合计 - 流动负债合计) / 负债合计 * 100",
+        "inputs": [
+          "流动资产合计",
+          "流动负债合计",
+          "负债合计"
+        ]
+      }
+    },
+    {
+      "name": "货币资金占流动负债比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash to current liabilities.",
+      "source": {
+        "formula": "货币资金 / 流动负债合计 * 100",
+        "inputs": [
+          "货币资金",
+          "流动负债合计"
+        ]
+      }
+    },
+    {
+      "name": "在建工程占固定资产比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "七、偿债及资本结构",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Construction in progress to fixed assets.",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "在建工程"
+      }
+    },
+    {
+      "name": "营业总收入",
+      "aliases": [
+        "Total Operating Revenue",
+        "Gross Revenue"
+      ],
+      "module": "income_statement",
+      "subgroup": "一、营业收入",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Total operating revenue (including other income).",
+      "source": {
+        "statement": "income_statement",
+        "field": "营业总收入"
+      }
+    },
+    {
+      "name": "已赚保费",
+      "aliases": [
+        "Earned Premiums"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 一、营业收入",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Insurance earned premiums.",
+      "source": {
+        "statement": "income_statement",
+        "field": "已赚保费"
+      }
+    },
+    {
+      "name": "营业总成本",
+      "aliases": [
+        "Total Operating Costs"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Total operating costs.",
+      "source": {
+        "statement": "income_statement",
+        "field": "营业总成本"
+      }
+    },
+    {
+      "name": "退保金",
+      "aliases": [
+        "Surrender Benefits"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Insurance surrender benefits.",
+      "source": {
+        "statement": "income_statement",
+        "field": "退保金"
+      }
+    },
+    {
+      "name": "保险合同赔付支出",
+      "aliases": [
+        "Insurance Claims Paid"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Insurance claims and赔付支出.",
+      "source": {
+        "statement": "income_statement",
+        "field": "赔付支出净额"
+      }
+    },
+    {
+      "name": "提取保险责任准备金净额",
+      "aliases": [
+        "Insurance Reserve Withdrawal Net"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Net insurance reserve withdrawal.",
+      "source": {
+        "statement": "income_statement",
+        "field": "提取保险合同准备金净额"
+      }
+    },
+    {
+      "name": "保单红利支出",
+      "aliases": [
+        "Policy Dividend Expenses"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Policyholder dividend expenses.",
+      "source": {
+        "statement": "income_statement",
+        "field": "保单红利支出"
+      }
+    },
+    {
+      "name": "分保费用",
+      "aliases": [
+        "Reinsurance Expenses"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Reinsurance expenses.",
+      "source": {
+        "statement": "income_statement",
+        "field": "分保费用"
+      }
+    },
+    {
+      "name": "(备注)资本化研发支出",
+      "aliases": [
+        "Capitalized R&D Expenditure"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "report",
+      "extractor": "llm",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Capitalized R&D expenditure (note item)."
+    },
+    {
+      "name": "(备注)资本化研发支出占比",
+      "aliases": [
+        "Capitalized R&D Ratio"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "report",
+      "extractor": "llm",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Capitalized R&D as % of total R&D (note item)."
+    },
+    {
+      "name": "(其中)利息费用",
+      "aliases": [
+        "Of which: Interest Expense"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Interest expense sub-item (where financial expenses includes interest).",
+      "source": {
+        "statement": "income_statement",
+        "field": "利息费用"
+      }
+    },
+    {
+      "name": "加：其他收益",
+      "aliases": [
+        "Add: Other Income"
+      ],
+      "module": "income_statement",
+      "subgroup": "三、营业利润",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Other income / government grants.",
+      "source": {
+        "statement": "income_statement",
+        "field": "其他收益"
+      }
+    },
+    {
+      "name": "(其中)以摊余成本计量的金融资产终止确认产生的投资收益",
+      "aliases": [
+        "Investment Income from Derecognition of Amortized Cost Financial Assets"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 一、营业收入",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item of investment income.",
+      "source": {
+        "statement": "income_statement",
+        "field": "以摊余成本计量的金融资产终止确认产生的收益"
+      }
+    },
+    {
+      "name": "净敞口套期收益",
+      "aliases": [
+        "Net Open Hedge Gains"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 一、营业收入",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Net gains from open hedge positions.",
+      "source": {
+        "statement": "income_statement",
+        "field": "净敞口套期收益"
+      }
+    },
+    {
+      "name": "资产处置收益",
+      "aliases": [
+        "Asset Disposal Gains"
+      ],
+      "module": "income_statement",
+      "subgroup": "三、营业利润",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Gains from asset disposals.",
+      "source": {
+        "statement": "income_statement",
+        "field": "资产处置收益"
+      }
+    },
+    {
+      "name": "(其中)非流动资产毁损报废利得",
+      "aliases": [
+        "Of which: Non-current Asset Scrapping Gains"
+      ],
+      "module": "income_statement",
+      "subgroup": "三、营业利润",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item under non-operating income.",
+      "source": {
+        "statement": "income_statement",
+        "field": "非流动资产处置利得"
+      }
+    },
+    {
+      "name": "(其中)非流动资产毁损报废损失",
+      "aliases": [
+        "Of which: Non-current Asset Scrapping Losses"
+      ],
+      "module": "income_statement",
+      "subgroup": "三、营业利润",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Sub-item under non-operating expenses.",
+      "source": {
+        "statement": "income_statement",
+        "field": "非流动资产处置损失"
+      }
+    },
+    {
+      "name": "核心利润",
+      "aliases": [
+        "Core Profit"
+      ],
+      "module": "income_statement",
+      "subgroup": "三、营业利润",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "report",
+      "extractor": "llm",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Core profit = revenue - cost - SG&A - R&D - interest (approx).",
+      "source": {
+        "formula": "营业收入 - 营业成本 - 销售费用 - 管理费用 - 研发费用 - 财务费用",
+        "inputs": [
+          "营业收入",
+          "营业成本",
+          "销售费用",
+          "管理费用",
+          "研发费用",
+          "财务费用"
+        ]
+      }
+    },
+    {
+      "name": "核心利润率",
+      "aliases": [
+        "Core Profit Margin"
+      ],
+      "module": "income_statement",
+      "subgroup": "三、营业利润",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "report",
+      "extractor": "llm",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Core profit / revenue.",
+      "source": {
+        "formula": "核心利润 / 营业收入 * 100",
+        "inputs": [
+          "核心利润",
+          "营业收入"
+        ]
+      }
+    },
+    {
+      "name": "其他营业利润率",
+      "aliases": [
+        "Other Operating Profit Margin"
+      ],
+      "module": "income_statement",
+      "subgroup": "三、营业利润",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "report",
+      "extractor": "llm",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Other operating profit margin."
+    },
+    {
+      "name": "研发费占利润总额比值",
+      "aliases": [
+        "R&D to Total Profit Ratio"
+      ],
+      "module": "income_statement",
+      "subgroup": "四、利润总额",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "report",
+      "extractor": "llm",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "R&D expenses / total profit.",
+      "source": {
+        "formula": "研发费用 / 利润总额 * 100",
+        "inputs": [
+          "研发费用",
+          "利润总额"
+        ]
+      }
+    },
+    {
+      "name": "销售费用率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Selling expense ratio.",
+      "source": {
+        "formula": "销售费用 / 营业收入 * 100",
+        "inputs": [
+          "销售费用",
+          "营业收入"
+        ]
+      }
+    },
+    {
+      "name": "管理费用率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Administrative expense ratio.",
+      "source": {
+        "formula": "管理费用 / 营业收入 * 100",
+        "inputs": [
+          "管理费用",
+          "营业收入"
+        ]
+      }
+    },
+    {
+      "name": "研发费用率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "R&D expense ratio.",
+      "source": {
+        "formula": "研发费用 / 营业收入 * 100",
+        "inputs": [
+          "研发费用",
+          "营业收入"
+        ]
+      }
+    },
+    {
+      "name": "财务费用率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Financial expense ratio.",
+      "source": {
+        "formula": "财务费用 / 营业收入 * 100",
+        "inputs": [
+          "财务费用",
+          "营业收入"
+        ]
+      }
+    },
+    {
+      "name": "营业费用率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Total operating expense ratio (SG&A + R&D + finance).",
+      "source": {
+        "formula": "(销售费用 + 管理费用 + 研发费用 + 财务费用) / 营业收入 * 100",
+        "inputs": [
+          "销售费用",
+          "管理费用",
+          "研发费用",
+          "财务费用",
+          "营业收入"
+        ]
+      }
+    },
+    {
+      "name": "四项费用率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Four expense ratio (same as operating expense ratio).",
+      "source": {
+        "formula": "(销售费用 + 管理费用 + 研发费用 + 财务费用) / 营业收入 * 100",
+        "inputs": [
+          "销售费用",
+          "管理费用",
+          "研发费用",
+          "财务费用",
+          "营业收入"
+        ]
+      }
+    },
+    {
+      "name": "息税前净利润(EBIT)",
+      "aliases": [
+        "EBIT"
+      ],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Earnings Before Interest and Tax.",
+      "source": {
+        "formula": "利润总额 + 利息费用(利息支出)",
+        "inputs": [
+          "利润总额",
+          "利息费用"
+        ]
+      }
+    },
+    {
+      "name": "息税折旧及摊销前盈利(EBITDA)",
+      "aliases": [
+        "EBITDA"
+      ],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Earnings Before Interest, Tax, Depreciation and Amortization.",
+      "source": {
+        "formula": "息税前净利润(EBIT) + 固定资产折旧 + 无形资产摊销 + 长期待摊费用摊销 + 使用权资产摊销 + 投资性房地产的折旧及摊销",
+        "inputs": [
+          "息税前净利润(EBIT)",
+          "固定资产折旧、油气资产折耗、生产性生物资产折旧",
+          "无形资产摊销",
+          "长期待摊费用摊销",
+          "使用权资产摊销",
+          "投资性房地产的折旧及摊销"
+        ]
+      }
+    },
+    {
+      "name": "销售商品、提供劳务收到的现金",
+      "aliases": [
+        "Cash from Sales of Goods/Services"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "销售商品、提供劳务收到的现金"
+      }
+    },
+    {
+      "name": "向其他金融机构拆入资金净增加额",
+      "aliases": [
+        "Net Increase of Borrowings from Other Financial Institutions"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "向其他金融机构拆入资金净增加额"
+      }
+    },
+    {
+      "name": "收到原保险合同保费取得的现金",
+      "aliases": [
+        "Cash from Insurance Premiums Received"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "收到原保险合同保费取得的现金"
+      }
+    },
+    {
+      "name": "收到再保险业务现金净额",
+      "aliases": [
+        "Net Cash from Reinsurance Business"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "收到再保险业务现金净额"
+      }
+    },
+    {
+      "name": "保户储金及投资款净增加额",
+      "aliases": [
+        "Net Increase of Policyholder Deposits"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "保户储金及投资款净增加额"
+      }
+    },
+    {
+      "name": "代理买卖证券收到的现金净额",
+      "aliases": [
+        "Net Cash from Agency Securities Trading"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "securities",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "处置交易性金融资产净增加额"
+      }
+    },
+    {
+      "name": "收到的税费返还",
+      "aliases": [
+        "Tax Refunds Received"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "收到的税费返还"
+      }
+    },
+    {
+      "name": "购买商品、接收劳务支付的现金",
+      "aliases": [
+        "Cash Paid for Goods and Services"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "购买商品、接受劳务支付的现金"
+      }
+    },
+    {
+      "name": "向其他金融机构拆入资金净减少额",
+      "aliases": [
+        "Net Decrease of Borrowings from Other Financial Institutions"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "report",
+      "extractor": "llm",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item."
+    },
+    {
+      "name": "支付原保险合同赔付等款项的现金",
+      "aliases": [
+        "Cash Paid for Insurance Claims"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "支付原保险合同赔付款项的现金"
+      }
+    },
+    {
+      "name": "支付保单红利的现金",
+      "aliases": [
+        "Cash Paid for Policy Dividends"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 经营活动",
+      "applies_to": {
+        "industry": "insurance",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "支付保单红利的现金"
+      }
+    },
+    {
+      "name": "质押贷款净增加额",
+      "aliases": [
+        "Net Increase of Pledged Loans"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 投资活动",
+      "applies_to": {
+        "industry": "bank",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "质押贷款净增加额"
+      }
+    },
+    {
+      "name": "取得借款收到的现金",
+      "aliases": [
+        "Cash from Borrowings"
+      ],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 筹资活动",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow statement line item.",
+      "source": {
+        "statement": "cashflow",
+        "field": "取得借款收到的现金"
+      }
+    },
+    {
+      "name": "人均营业总收入",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "一、人均指标",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Per-capita operating revenue.",
+      "source": {
+        "formula": "营业收入 / 员工人数",
+        "inputs": [
+          "营业收入",
+          "员工人数"
+        ]
+      }
+    },
+    {
+      "name": "有形资产回报率(ROTA)",
+      "aliases": [
+        "ROTA"
+      ],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Return on Tangible Assets.",
+      "source": {
+        "formula": "净利润 / (资产总计 - 无形资产 - 商誉 - 开发支出) * 100",
+        "inputs": [
+          "净利润",
+          "资产总计",
+          "无形资产",
+          "商誉",
+          "开发支出"
+        ]
+      }
+    },
+    {
+      "name": "资本回报率(ROIC)",
+      "aliases": [
+        "ROIC"
+      ],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Return on Invested Capital.",
+      "source": {
+        "formula": "归属于母公司普通股股东的净利润 / (所有者权益合计 + 有息负债) * 100",
+        "inputs": [
+          "归属于母公司普通股股东的净利润",
+          "所有者权益合计",
+          "有息负债"
+        ]
+      }
+    },
+    {
+      "name": "资本收益率(ROC)",
+      "aliases": [
+        "ROC"
+      ],
+      "module": "report_section",
+      "subgroup": "四、盈利能力",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "%",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Return on Capital.",
+      "source": {
+        "formula": "净利润 / 所有者权益合计 * 100",
+        "inputs": [
+          "净利润",
+          "所有者权益合计"
+        ]
+      }
+    },
+    {
+      "name": "预付账款周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "预付账款周转率 ratio.",
+      "source": {
+        "formula": "营业收入 / 预付账款",
+        "inputs": [
+          "营业收入",
+          "预付款项"
+        ]
+      }
+    },
+    {
+      "name": "合同资产周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "合同资产周转率 ratio.",
+      "source": {
+        "formula": "营业收入 / 合同资产",
+        "inputs": [
+          "营业收入",
+          "合同资产"
+        ]
+      }
+    },
+    {
+      "name": "存货周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "存货周转率 ratio.",
+      "source": {
+        "formula": "营业成本 / 存货",
+        "inputs": [
+          "营业成本",
+          "存货"
+        ]
+      }
+    },
+    {
+      "name": "应收票据和应收账款周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应收票据和应收账款周转率 ratio.",
+      "source": {
+        "formula": "营业收入 / 应收票据及应收账款",
+        "inputs": [
+          "营业收入",
+          "应收票据及应收账款"
+        ]
+      }
+    },
+    {
+      "name": "应收票据周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应收票据周转率 ratio.",
+      "source": {
+        "formula": "营业收入 / 应收票据",
+        "inputs": [
+          "营业收入",
+          "(其中)应收票据"
+        ]
+      }
+    },
+    {
+      "name": "应收账款周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应收账款周转率 ratio.",
+      "source": {
+        "formula": "营业收入 / 应收账款",
+        "inputs": [
+          "营业收入",
+          "(其中)应收账款"
+        ]
+      }
+    },
+    {
+      "name": "应收款项融资周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应收款项融资周转率 ratio.",
+      "source": {
+        "formula": "营业收入 / 应收款项融资",
+        "inputs": [
+          "营业收入",
+          "应收款项融资"
+        ]
+      }
+    },
+    {
+      "name": "预收账款周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "预收账款周转率 ratio.",
+      "source": {
+        "formula": "营业收入 / 预收账款",
+        "inputs": [
+          "营业收入",
+          "预收账款"
+        ]
+      }
+    },
+    {
+      "name": "合同负债周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "合同负债周转率 ratio.",
+      "source": {
+        "formula": "营业收入 / 合同负债",
+        "inputs": [
+          "营业收入",
+          "合同负债"
+        ]
+      }
+    },
+    {
+      "name": "应付票据和应付账款周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应付票据和应付账款周转率 ratio.",
+      "source": {
+        "formula": "营业成本 / 应付票据及应付账款",
+        "inputs": [
+          "营业成本",
+          "应付票据及应付账款"
+        ]
+      }
+    },
+    {
+      "name": "应付票据周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应付票据周转率 ratio.",
+      "source": {
+        "formula": "营业成本 / 应付票据",
+        "inputs": [
+          "营业成本",
+          "(其中)应付票据"
+        ]
+      }
+    },
+    {
+      "name": "应付账款周转率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应付账款周转率 ratio.",
+      "source": {
+        "formula": "营业成本 / 应付账款",
+        "inputs": [
+          "营业成本",
+          "(其中)应付账款"
+        ]
+      }
+    },
+    {
+      "name": "预付账款周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "预付账款周转天数 in days.",
+      "source": {
+        "formula": "365 / 预付账款周转率",
+        "inputs": [
+          "预付账款周转率"
+        ]
+      }
+    },
+    {
+      "name": "合同资产周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "合同资产周转天数 in days.",
+      "source": {
+        "formula": "365 / 合同资产周转率",
+        "inputs": [
+          "合同资产周转率"
+        ]
+      }
+    },
+    {
+      "name": "存货周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "存货周转天数 in days.",
+      "source": {
+        "formula": "365 / 存货周转率",
+        "inputs": [
+          "存货周转率"
+        ]
+      }
+    },
+    {
+      "name": "应收票据和应收账款周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应收票据和应收账款周转天数 in days.",
+      "source": {
+        "formula": "365 / 应收票据和应收账款周转率",
+        "inputs": [
+          "应收票据和应收账款周转率"
+        ]
+      }
+    },
+    {
+      "name": "应收票据周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应收票据周转天数 in days.",
+      "source": {
+        "formula": "365 / 应收票据周转率",
+        "inputs": [
+          "应收票据周转率"
+        ]
+      }
+    },
+    {
+      "name": "应收账款周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应收账款周转天数 in days.",
+      "source": {
+        "formula": "365 / 应收账款周转率",
+        "inputs": [
+          "应收账款周转率"
+        ]
+      }
+    },
+    {
+      "name": "应收款项融资周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应收款项融资周转天数 in days.",
+      "source": {
+        "formula": "365 / 应收款项融资周转率",
+        "inputs": [
+          "应收款项融资周转率"
+        ]
+      }
+    },
+    {
+      "name": "预收账款周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "预收账款周转天数 in days.",
+      "source": {
+        "formula": "365 / 预收账款周转率",
+        "inputs": [
+          "预收账款周转率"
+        ]
+      }
+    },
+    {
+      "name": "合同负债周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "合同负债周转天数 in days.",
+      "source": {
+        "formula": "365 / 合同负债周转率",
+        "inputs": [
+          "合同负债周转率"
+        ]
+      }
+    },
+    {
+      "name": "应付票据和应付账款周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应付票据和应付账款周转天数 in days.",
+      "source": {
+        "formula": "365 / 应付票据和应付账款周转率",
+        "inputs": [
+          "应付票据和应付账款周转率"
+        ]
+      }
+    },
+    {
+      "name": "应付票据周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应付票据周转天数 in days.",
+      "source": {
+        "formula": "365 / 应付票据周转率",
+        "inputs": [
+          "应付票据周转率"
+        ]
+      }
+    },
+    {
+      "name": "应付账款周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "应付账款周转天数 in days.",
+      "source": {
+        "formula": "365 / 应付账款周转率",
+        "inputs": [
+          "应付账款周转率"
+        ]
+      }
+    },
+    {
+      "name": "营业周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "营业周转天数.",
+      "source": {
+        "formula": "存货周转天数 + 应收票据和应收账款周转天数 - 应付票据和应付账款周转天数",
+        "inputs": [
+          "存货周转天数",
+          "应收票据和应收账款周转天数",
+          "应付票据和应付账款周转天数"
+        ]
+      }
+    },
+    {
+      "name": "净现金周转天数(CCC)",
+      "aliases": [
+        "CCC"
+      ],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash Conversion Cycle.",
+      "source": {
+        "formula": "存货周转天数 + 应收票据和应收账款周转天数 - 应付票据和应付账款周转天数",
+        "inputs": [
+          "存货周转天数",
+          "应收票据和应收账款周转天数",
+          "应付票据和应付账款周转天数"
+        ]
+      }
+    },
+    {
+      "name": "流动资产周转天数",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "天",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "流动资产周转天数.",
+      "source": {
+        "formula": "365 / (营业收入 / 流动资产合计)",
+        "inputs": [
+          "营业收入",
+          "流动资产合计"
+        ]
+      }
+    },
+    {
+      "name": "销售商品提供劳务收到的现金对营业收入的比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow quality ratio.",
+      "source": {
+        "formula": "销售商品、提供劳务收到的现金 / 营业收入",
+        "inputs": [
+          "销售商品、提供劳务收到的现金",
+          "营业收入"
+        ]
+      }
+    },
+    {
+      "name": "经营活动产生的现金流量净额对营业利润的比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow quality ratio.",
+      "source": {
+        "formula": "经营活动产生的现金流量净额 / 营业利润",
+        "inputs": [
+          "经营活动产生的现金流量净额",
+          "营业利润"
+        ]
+      }
+    },
+    {
+      "name": "经营活动产生的现金流量净额对净利润的比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow quality ratio.",
+      "source": {
+        "formula": "经营活动产生的现金流量净额 / 净利润",
+        "inputs": [
+          "经营活动产生的现金流量净额",
+          "净利润"
+        ]
+      }
+    },
+    {
+      "name": "销售商品提供劳务收到的现金对总资产的比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow quality ratio.",
+      "source": {
+        "formula": "销售商品、提供劳务收到的现金 / 资产总计",
+        "inputs": [
+          "销售商品、提供劳务收到的现金",
+          "资产总计"
+        ]
+      }
+    },
+    {
+      "name": "经营活动产生的现金流量净额对固定资产的比率",
+      "aliases": [],
+      "module": "report_section",
+      "subgroup": "财务报表附注",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "computed",
+      "extractor": "computed",
+      "unit": "times",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Cash flow quality ratio.",
+      "source": {
+        "formula": "经营活动产生的现金流量净额 / 固定资产",
+        "inputs": [
+          "经营活动产生的现金流量净额",
+          "固定资产"
+        ]
+      }
+    },
+    {
+      "name": "(其中)应收账款",
+      "aliases": [
+        "Of which: Accounts Receivable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收账款"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance_sheet line item via akshare."
+    },
+    {
+      "name": "(其中)应收利息",
+      "aliases": [
+        "Of which: Interest Receivable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应收利息"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance_sheet line item via akshare."
+    },
+    {
+      "name": "(其中)应付利息",
+      "aliases": [
+        "Of which: Interest Payable"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "应付利息"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance_sheet line item via akshare."
+    },
+    {
+      "name": "存货",
+      "aliases": [
+        "Inventory"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "存货"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance_sheet line item via akshare."
+    },
+    {
+      "name": "流动资产合计",
+      "aliases": [
+        "Total Current Assets"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "流动资产合计"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance_sheet line item via akshare."
+    },
+    {
+      "name": "流动负债合计",
+      "aliases": [
+        "Total Current Liabilities"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "二、负债",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "流动负债合计"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance_sheet line item via akshare."
+    },
+    {
+      "name": "货币资金",
+      "aliases": [
+        "Cash"
+      ],
+      "module": "balance_sheet",
+      "subgroup": "一、资产",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "balance_sheet",
+        "field": "货币资金"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard balance_sheet line item via akshare."
+    },
+    {
+      "name": "营业成本",
+      "aliases": [
+        "Operating Costs"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "income_statement",
+        "field": "营业成本"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard income_statement line item via akshare."
+    },
+    {
+      "name": "销售费用",
+      "aliases": [
+        "Selling Expenses"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "income_statement",
+        "field": "销售费用"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard income_statement line item via akshare."
+    },
+    {
+      "name": "管理费用",
+      "aliases": [
+        "Administrative Expenses"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "income_statement",
+        "field": "管理费用"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard income_statement line item via akshare."
+    },
+    {
+      "name": "研发费用",
+      "aliases": [
+        "R&D Expenses"
+      ],
+      "module": "income_statement",
+      "subgroup": "利润表 — 二、营业支出",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "income_statement",
+        "field": "研发费用"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard income_statement line item via akshare."
+    },
+    {
+      "name": "(其中)子公司吸收少数股东投资收到的现金",
+      "aliases": [],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 筹资活动",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "cashflow",
+        "field": "子公司吸收少数股东投资收到的现金"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard cashflow line item via akshare."
+    },
+    {
+      "name": "(其中)子公司支付少数股东股利及利润",
+      "aliases": [],
+      "module": "cashflow",
+      "subgroup": "现金流量表 — 筹资活动",
+      "applies_to": {
+        "industry": "*",
+        "sub_types": [
+          "*"
+        ],
+        "companies": [
+          "*"
+        ],
+        "exclude_companies": []
+      },
+      "source_type": "akshare",
+      "source": {
+        "statement": "cashflow",
+        "field": "子公司支付给少数股东的股利、利润"
+      },
+      "extractor": "auto",
+      "unit": "元",
+      "period_type": "annual",
+      "direction": "none",
+      "report_type": "年报/半年报/季报",
+      "note": "Standard cashflow line item via akshare."
     }
   ]
 }

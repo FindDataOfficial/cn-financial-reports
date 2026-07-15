@@ -77,6 +77,7 @@ def extract_section(
     company: Optional[str] = None,
     stock_code: Optional[str] = None,
     year: Optional[int] = None,
+    form: Optional[str] = None,
     fetcher: str = "uv",
 ) -> dict:
     """Extract one section's body text by selector.
@@ -85,6 +86,8 @@ def extract_section(
         source: report URL or local file path.
         selector: exact section title, regex, or 1-based ordinal.
         company/stock_code/year: optional provenance metadata, persisted with the report.
+        form: optional report type (e.g. 年度报告, 招股说明书); included in the
+            report_id so different report types for one company + year don't collide.
         fetcher: reserved (v1 uses httpx/pypdf).
     """
     import report_cache
@@ -102,7 +105,7 @@ def extract_section(
         }
     body = T.extract_section_text(text, outline, entry)
 
-    report_id = make_report_id(source, company, year)
+    report_id = make_report_id(source, company, year, form)
     db = get_db()
     db.upsert_document(report_id, source, company, stock_code, year, parse_status="ok")
     db.upsert_section(report_id, entry["ordinal"], entry["level"], entry["title"], len(body))
@@ -748,6 +751,284 @@ def get_hk_section(
               outline_entry, text, char_count} or {error}.
     """
     return T.get_hk_section(ticker_or_name, year, section)
+
+
+# ── SSE (上交所) official-website tools ───────────────────────────
+
+
+@app.tool
+def get_sse_company(ticker_or_name: str) -> dict:
+    """Resolve a SSE-listed company by 6-digit ticker (sse.com.cn).
+
+    Args:
+        ticker_or_name: 6-digit SSE ticker (600xxx/601xxx/603xxx/605xxx/688xxx/900xxx).
+        Name fragments are not supported here - resolve via get_company first.
+
+    Returns: {stock_code, exchange, source, name} or {error}.
+    """
+    return T.get_sse_company(ticker_or_name)
+
+
+@app.tool
+def list_sse_filings(
+    ticker_or_name: str,
+    title: Optional[str] = None,
+    year: Optional[int] = None,
+    limit: int = 20,
+) -> dict:
+    """List a SSE-listed company's disclosures directly from sse.com.cn.
+
+    Args:
+        ticker_or_name: 6-digit SSE ticker.
+        title: optional title-substring filter (e.g. "年度报告").
+        year: optional fiscal-year filter.
+        limit: max rows (default 20).
+
+    Returns: {filings, count} or {error}.
+    """
+    result = T.list_sse_filings(ticker_or_name, title=title, year=year, limit=limit)
+    if isinstance(result, dict) and "error" in result:
+        return result
+    return {"filings": result, "count": len(result) if isinstance(result, list) else 0}
+
+
+@app.tool
+def get_sse_section(
+    ticker_or_name: str,
+    year: int,
+    section: str,
+) -> dict:
+    """Extract a named section from a SSE company's annual-report PDF.
+
+    Args:
+        ticker_or_name: 6-digit SSE ticker.
+        year: fiscal year.
+        section: section title selector.
+
+    Returns: {stock_code, year, section, pdf_url, outline_entry, text,
+              char_count} or {error}.
+    """
+    return T.get_sse_section(ticker_or_name, year, section)
+
+
+@app.tool
+def get_sse_interaction(ticker_or_name: str, limit: int = 20) -> dict:
+    """Fetch 上证e互动 investor Q&A for a SSE-listed company (sns.sseinfo.com).
+
+    Args:
+        ticker_or_name: 6-digit SSE ticker.
+        limit: max Q&A pairs (default 20).
+
+    Returns: {stock_code, source, questions: [...]} or {error}.
+    """
+    return T.get_sse_interaction(ticker_or_name, limit=limit)
+
+
+# ── SZSE (深交所) official-website tools ──────────────────────────
+
+
+@app.tool
+def get_szse_company(ticker_or_name: str) -> dict:
+    """Resolve a SZSE-listed company by 6-digit ticker (szse.cn).
+
+    Args:
+        ticker_or_name: 6-digit SZSE ticker (000xxx/001xxx/002xxx/003xxx/300xxx/301xxx).
+
+    Returns: {stock_code, exchange, source, name} or {error}.
+    """
+    return T.get_szse_company(ticker_or_name)
+
+
+@app.tool
+def list_szse_filings(
+    ticker_or_name: str,
+    title: Optional[str] = None,
+    year: Optional[int] = None,
+    limit: int = 20,
+) -> dict:
+    """List a SZSE-listed company's disclosures directly from szse.cn.
+
+    Returns: {filings, count} or {error}.
+    """
+    result = T.list_szse_filings(ticker_or_name, title=title, year=year, limit=limit)
+    if isinstance(result, dict) and "error" in result:
+        return result
+    return {"filings": result, "count": len(result) if isinstance(result, list) else 0}
+
+
+@app.tool
+def get_szse_section(
+    ticker_or_name: str,
+    year: int,
+    section: str,
+) -> dict:
+    """Extract a named section from a SZSE company's annual-report PDF.
+
+    Returns: {stock_code, year, section, pdf_url, outline_entry, text,
+              char_count} or {error}.
+    """
+    return T.get_szse_section(ticker_or_name, year, section)
+
+
+@app.tool
+def get_szse_interaction(ticker_or_name: str, limit: int = 20) -> dict:
+    """Fetch 互动易 investor Q&A for a SZSE-listed company (irm.cninfo.com.cn).
+
+    Returns: {stock_code, source, questions: [...]} or {error}.
+    """
+    return T.get_szse_interaction(ticker_or_name, limit=limit)
+
+
+# ── BSE (北交所) official-website tools ───────────────────────────
+
+
+@app.tool
+def get_bse_company(ticker_or_name: str) -> dict:
+    """Resolve a BSE-listed company by 6-digit ticker (bse.cn).
+
+    Args:
+        ticker_or_name: 6-digit BSE ticker (430xxx / 83xxxx / 87xxxx / 88xxxx / 920xxx).
+
+    Returns: {stock_code, exchange, source, name} or {error}.
+    """
+    return T.get_bse_company(ticker_or_name)
+
+
+@app.tool
+def list_bse_filings(
+    ticker_or_name: str,
+    title: Optional[str] = None,
+    year: Optional[int] = None,
+    limit: int = 20,
+) -> dict:
+    """List a BSE-listed company's disclosures (BSE-native, CNINFO fallback).
+
+    Each row carries ``source: "bse" | "cninfo"``. Returns: {filings, count} or {error}.
+    """
+    result = T.list_bse_filings(ticker_or_name, title=title, year=year, limit=limit)
+    if isinstance(result, dict) and "error" in result:
+        return result
+    return {"filings": result, "count": len(result) if isinstance(result, list) else 0}
+
+
+@app.tool
+def get_bse_section(
+    ticker_or_name: str,
+    year: int,
+    section: str,
+) -> dict:
+    """Extract a named section from a BSE company's annual-report PDF.
+
+    The filing may be served from BSE or CNINFO (fallback); the result carries
+    ``source``. Returns: {stock_code, year, section, pdf_url, source,
+    outline_entry, text, char_count} or {error}.
+    """
+    return T.get_bse_section(ticker_or_name, year, section)
+
+
+# ── CSRC (证监会) official-website tools ──────────────────────────
+
+
+@app.tool
+def list_csrc_filings(
+    category: Optional[str] = None,
+    begin_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    limit: int = 20,
+) -> dict:
+    """List CSRC regulatory announcements/notices (csrc.gov.cn).
+
+    Args:
+        category: optional channel hint (informational).
+        begin_date / end_date: optional YYYY-MM-DD post-filter on published date.
+        limit: max rows (default 20).
+
+    Returns: {filings, count} or {error}.
+    """
+    result = T.list_csrc_filings(category, begin_date=begin_date, end_date=end_date, limit=limit)
+    if isinstance(result, dict) and "error" in result:
+        return result
+    return {"filings": result, "count": len(result) if isinstance(result, list) else 0}
+
+
+@app.tool
+def get_csrc_ipo_review(company_or_code: str) -> dict:
+    """Query CSRC IPO (首发) application review status for a company.
+
+    Returns: {company, source, fields} (matching application row) or
+             {company, source, error}.
+    """
+    return T.get_csrc_ipo_review(company_or_code)
+
+
+@app.tool
+def get_csrc_merger_review(company_or_code: str) -> dict:
+    """Query CSRC 并购重组 (M&A) review status for a company.
+
+    Returns: {company, source, fields} or {company, source, error}.
+    """
+    return T.get_csrc_merger_review(company_or_code)
+
+
+@app.tool
+def list_csrc_enforcement(
+    begin_date: Optional[str] = None,
+    limit: int = 20,
+) -> dict:
+    """List CSRC administrative-penalty / enforcement actions (csrc.gov.cn).
+
+    Returns: {filings, count} or {error}.
+    """
+    result = T.list_csrc_enforcement(begin_date=begin_date, limit=limit)
+    if isinstance(result, dict) and "error" in result:
+        return result
+    return {"filings": result, "count": len(result) if isinstance(result, list) else 0}
+
+
+# ── Ministry statistics (部级部门) tools ──────────────────────────
+
+
+@app.tool
+def list_ministries() -> dict:
+    """List the supported ministry statistics sources.
+
+    Returns: {ministries: [{id, label, en, transport, base}], count} or {error}.
+    """
+    result = T.list_ministries()
+    if isinstance(result, dict) and "error" in result:
+        return result
+    return {"ministries": result, "count": len(result) if isinstance(result, list) else 0}
+
+
+@app.tool
+def get_ministry_stat(
+    ministry_id: str,
+    url: Optional[str] = None,
+    limit: int = 50,
+) -> dict:
+    """Fetch a ministry's statistics page and parse its HTML tables.
+
+    Args:
+        ministry_id: one of nbs/mof/pboc/safe/gacc/nfra (use get_nbs_stat for nbs).
+        url: optional explicit stat-page URL (overrides the default).
+        limit: max rows per table.
+
+    Returns: {ministry, label, source, url, tables, table_count} or {error}.
+    """
+    return T.get_ministry_stat(ministry_id, url=url, limit=limit)
+
+
+@app.tool
+def get_nbs_stat(indicator_code: str, dbcode: str = "hgnd") -> dict:
+    """Query an NBS (国家统计局) macro statistic by indicator code.
+
+    Args:
+        indicator_code: NBS indicator code (e.g. "A0201" for GDP).
+        dbcode: NBS database code (default "hgnd" = national annual).
+
+    Returns: {indicator, source, dbcode, data: {period: value}} or {error}.
+    """
+    return T.get_nbs_stat(indicator_code, dbcode=dbcode)
 
 
 @app.tool

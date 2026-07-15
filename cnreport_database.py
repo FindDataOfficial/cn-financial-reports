@@ -34,9 +34,21 @@ logger = logging.getLogger(__name__)
 _DEFAULT_DB_PATH = Path(__file__).resolve().parent.parent / "daas.db"
 
 
-def make_report_id(source: str, company: Optional[str], year: Optional[int]) -> str:
-    """Stable id for a report: hash of source+company+year."""
+def make_report_id(
+    source: str,
+    company: Optional[str],
+    year: Optional[int],
+    form: Optional[str] = None,
+) -> str:
+    """Stable id for a report: hash of source+company+year(+form when given).
+
+    ``form`` is included when provided so an annual report and a prospectus for
+    the same company + year do not collide in ``report_documents``. Omitting it
+    preserves the legacy hash (source+company+year) for existing callers.
+    """
     raw = f"{source}|{company or ''}|{year or ''}"
+    if form:
+        raw += f"|{form}"
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]
 
 

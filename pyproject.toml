@@ -1,6 +1,6 @@
 [project]
 name = "fd-cn-report"
-version = "0.1.5"
+version = "0.2.0"
 description = "Chinese financial report MCP server — 31 Shenwan industry AI rule system, outline extraction, AI structured extraction, Elasticsearch store + search, industry rules dashboard"
 requires-python = ">=3.10"
 dependencies = [
@@ -14,10 +14,8 @@ dependencies = [
     "akshare>=1.13",
     "pandas>=2.0",
     "pymupdf>=1.28.0",
+    "lxml>=4.9",
 ]
-
-[project.scripts]
-fd-cn-report = "scripts.industry_rules_dashboard:start_dashboard"
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -32,7 +30,7 @@ py-modules = [
     "cninfo_client",
     "financials_client",
     "indicators_client",
-    "indicators_extractors",
+    "script_extractors",
     "indicators_csv_migration",
     "report_cache",
     "llm_section_cache",
@@ -40,4 +38,10 @@ py-modules = [
     "selfcheck_cache",
     "migrate",
     "hk_stock_client",
+    "official_client_utils",
+    "sse_client",
+    "szse_client",
+    "bse_client",
+    "csrc_client",
+    "ministry_stats_client",
 ]

@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 # ── HKEX披露易 API endpoints ──────────────────────────────────────
 _HKEX_BASE = "https://www1.hkexnews.hk"
-_HKEX_SEARCH = f"{_HKEX_BASE}/search/titlesearch.hk"
+_HKEX_SEARCH = f"{_HKEX_BASE}/search/titlesearch.xhtml"
 _HKEX_DAILY = f"{_HKEX_BASE}/app/sehk/daily/hkexnews-list.html"
 _PDF_CDN = "https://www.hkexnews.hk/"
 _TIMEOUT = 30.0
@@ -198,6 +198,35 @@ def _serialize_df(df: Any) -> dict:
 # ── filing / announcement listing (via HKEX披露易) ──────────────
 
 
+_ACTIVE_STOCKS_URL = f"{_HKEX_BASE}/ncms/script/eds/activestock_sehk_e.json"
+_STOCK_ID_CACHE: dict[str, str] = {}  # 5-digit ticker -> HKEX internal stockId
+
+
+def _resolve_hk_stock_id(stock_code: str) -> Optional[str]:
+    """Resolve a HK ticker to HKEX's internal stockId via the active-stocks JSON.
+
+    HKEX's title search filters by an internal numeric id (the ``i`` field),
+    not the 5-digit ticker (``c``); e.g. Tencent 00700 -> 7609. Returns the
+    internal id, or ``None`` when the ticker is not in the active-stocks list.
+    """
+    ticker = _format_ticker(stock_code)
+    if ticker in _STOCK_ID_CACHE:
+        return _STOCK_ID_CACHE[ticker]
+    try:
+        with _client() as c:
+            resp = c.get(_ACTIVE_STOCKS_URL, timeout=30.0)
+            resp.raise_for_status()
+            stocks = resp.json()
+    except Exception as e:  # noqa: BLE001
+        logger.warning("HKEX active-stocks fetch failed: %s", e)
+        return None
+    for entry in stocks or []:
+        if str(entry.get("c")) == ticker:
+            _STOCK_ID_CACHE[ticker] = str(entry.get("i"))
+            return _STOCK_ID_CACHE[ticker]
+    return None
+
+
 def list_hk_filings(
     stock_code: str,
     *,
@@ -220,109 +249,111 @@ def list_hk_filings(
         List of {announcement_id, title, published, pdf_url, category, stock_code}.
     """
     ticker = _format_ticker(stock_code)
-    bare = _strip_leading_zeros(ticker)
-    
+    internal = _resolve_hk_stock_id(ticker)
+    if internal is None:
+        logger.warning("HKEX: could not resolve internal stockId for %s", ticker)
+        return []
+
     params: dict[str, Any] = {
-        "stockId": bare,
+        "stockId": internal,
         "sortDir": "desc",
         "sortByOptions": "DateTime",
         "market": "SEHK",
         "language": "ZH",
+        "category": "0",
     }
     if year:
         params["from"] = f"{year}0101"
         params["to"] = f"{year}1231"
-    
-    try:
-        rows = _query_hkex(params)
-    except Exception as e:
-        logger.warning("HKEX search failed for %s: %s", ticker, e)
-        return []
-    
-    # Filter by form type
+
+    # HKEX returns ~100 rows per page; paginate until we have `limit` or run out.
+    rows: list[dict] = []
+    page = 1
+    while len(rows) < limit and page <= 20:
+        params["page"] = str(page)
+        try:
+            page_rows = _query_hkex(params)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("HKEX search failed for %s page %d: %s", ticker, page, e)
+            break
+        if not page_rows:
+            break
+        rows.extend(page_rows)
+        if len(page_rows) < 100:
+            break
+        page += 1
+
+    # Filter by form type (document category headline)
     if form:
         rows = [r for r in rows if form in (r.get("category_name", "") or "")]
-    
-    # Post-filter by year
-    if year:
-        rows = [r for r in rows if str(year) in (r.get("title", "") or "")]
-    
+
+    # (year is already applied via the from/to date window above; do NOT filter
+    # by the title, since annual-report titles carry the fiscal year, not the
+    # publish year.)
     return rows[:limit]
 
 
 def _query_hkex(params: dict) -> list[dict]:
-    """Query HKEX披露易 title search API.
-    
-    Returns parsed list of filing entries. Each entry has:
-    {announcement_id, title, published, pdf_url, category_name, stock_code}.
+    """POST to the HKEX披露易 title search and parse filing rows.
+
+    HKEX titlesearch.xhtml is a JSF form that returns result rows to a POST
+    (a GET ignores the stock filter). Each row carries release-time, stock
+    code/name, a headline (document category), and a doc-link (title + pdf).
+    Returns parsed entries; HTTP errors log a warning and return ``[]``.
     """
     headers = {
         "User-Agent": _UA,
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "Referer": _HKEX_SEARCH,
     }
     try:
         with _client() as c:
-            resp = c.get(_HKEX_SEARCH, params=params, headers=headers, timeout=30.0)
+            resp = c.post(_HKEX_SEARCH, data=params, headers=headers, timeout=30.0)
             resp.raise_for_status()
             html = resp.text
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logger.warning("HKEX search HTTP error: %s", e)
         return []
-    
     return _parse_hkex_results(html)
 
 
 def _parse_hkex_results(html: str) -> list[dict]:
-    """Parse HKEX title search results HTML into structured entries.
-    
-    The HKEX results page returns an HTML table with filing entries.
-    This is a robust parser that extracts from <tr> elements.
+    """Parse HKEX titlesearch.xhtml result rows into structured entries.
+
+    Each ``<tr>`` row holds: release-time, stock-short-code, stock-short-name,
+    a ``headline`` div (document category), and a ``doc-link`` div whose ``<a>``
+    carries the title text and the PDF href (site-relative). Returns one entry
+    per row that has a doc-link: ``{announcement_id, title, published,
+    pdf_url, category_name, stock_code}``.
     """
     results: list[dict] = []
-    
-    # Try to find the results table and parse rows
-    table_pattern = re.compile(
-        r'<tr[^>]*>\s*<td[^>]*>(.*?)</td>\s*<td[^>]*>(.*?)</td>\s*<td[^>]*>(.*?)</td>',
-        re.DOTALL,
-    )
-    
-    for match in table_pattern.finditer(html):
-        title_td = match.group(1)
-        date_td = match.group(2)
-        cat_td = match.group(3)
-        
-        title = re.sub(r'<[^>]+>', '', title_td).strip()
-        date_str = re.sub(r'<[^>]+>', '', date_td).strip()
-        category = re.sub(r'<[^>]+>', '', cat_td).strip()
-        
-        # Extract PDF URL from the title cell's <a> tag
-        pdf_match = re.search(r'href="([^"]*\.PDF)"', title_td, re.IGNORECASE)
-        pdf_url = ""
-        if pdf_match:
-            url = pdf_match.group(1)
-            if url.startswith("http"):
-                pdf_url = url
-            else:
-                pdf_url = _PDF_CDN + url.lstrip("/")
-        
-        # Extract announcement ID from URL
-        ann_id = ""
-        if pdf_url:
-            id_match = re.search(r'/(\d+)\.PDF', pdf_url, re.IGNORECASE)
-            if id_match:
-                ann_id = id_match.group(1)
-        
+    for row in re.findall(r"<tr[^>]*>.*?</tr>", html, re.DOTALL):
+        pdf_m = re.search(r'doc-link">\s*<a[^>]*href="([^"]+)"', row, re.IGNORECASE | re.DOTALL)
+        if not pdf_m:
+            continue
+        url = pdf_m.group(1)
+        pdf_url = url if url.startswith("http") else _PDF_CDN + url.lstrip("/")
+        title_m = re.search(r'doc-link">\s*<a[^>]*>(.*?)</a>', row, re.IGNORECASE | re.DOTALL)
+        title = re.sub(r"<[^>]+>|\s+", " ", title_m.group(1)).strip() if title_m else ""
+        cat_m = re.search(r'class="headline">(.*?)</div>', row, re.DOTALL)
+        category = re.sub(r"<[^>]+>|\s+", " ", cat_m.group(1)).strip() if cat_m else ""
+        date_m = re.search(r'release-time"[^>]*>(.*?)</td>', row, re.IGNORECASE | re.DOTALL)
+        published = re.sub(r"<[^>]+>|\s+", " ", date_m.group(1)).strip() if date_m else ""
+        published = published.replace("Release Time:", "").strip()
+        code_m = re.search(r'stock-short-code"[^>]*>.*?Stock Code:\s*</span>(\d+)', row, re.DOTALL | re.IGNORECASE)
+        stock_code = code_m.group(1) if code_m else ""
+        ann_m = re.search(r"/(\d+)\.pdf", pdf_url, re.IGNORECASE)
+        ann_id = ann_m.group(1) if ann_m else ""
         if title:
             results.append({
                 "announcement_id": ann_id,
                 "title": title,
-                "published": date_str,
+                "published": published,
                 "pdf_url": pdf_url,
                 "category_name": category,
-                "stock_code": "",
+                "stock_code": stock_code,
             })
-    
     return results
 
 
@@ -338,7 +369,7 @@ def get_hk_annual_report_filing(
     Picks the most likely annual/年度 report from the filing list.
     Returns the filing dict with pdf_url, or None if not found.
     """
-    filings = list_hk_filings(stock_code, year=year, limit=30)
+    filings = list_hk_filings(stock_code, year=year, limit=400)
     
     # Look for annual report keywords in title
     annual_keywords = ["年報", "年度报告", "Annual Report", "年报"]
@@ -372,3 +403,36 @@ def get_hk_report_text(pdf_url: str) -> str:
         text = extract_pdf_text(raw)
     
     return text or ""
+
+
+def get_hk_prospectus_filing(
+    stock_code: str,
+    year: Optional[int] = None,
+) -> Optional[dict]:
+    """Find the global-offering prospectus (招股章程) filing for a HK stock.
+
+    HKEX lists the global-offering prospectus (全球发售 / 招股章程) as a filing
+    distinct from periodic reports. This searches the filing list (optionally
+    narrowed by year) and picks the first filing whose title matches a
+    prospectus keyword, paralleling :func:`get_hk_annual_report_filing`.
+
+    Returns the filing dict (with ``pdf_url``) or ``None`` when no match exists.
+    """
+    filings = list_hk_filings(stock_code, year=year, limit=50)
+
+    prospectus_keywords = [
+        "招股章程", "招股说明书", "全球发售", "全球發售",
+        "Prospectus", "Global Offering",
+    ]
+    for f in filings:
+        title = f.get("title") or ""
+        for kw in prospectus_keywords:
+            if kw.lower() in title.lower():
+                return f
+
+    # Fallback: return the first filing with a PDF if one exists.
+    for f in filings:
+        if f.get("pdf_url"):
+            return f
+
+    return None if not filings else filings[0]

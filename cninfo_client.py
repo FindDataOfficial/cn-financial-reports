@@ -45,6 +45,14 @@ _UA = (
 _REGISTRY_PATH = Path(__file__).resolve().parent / "cninfo_categories.json"
 _CATEGORIES_CACHE: Optional[dict] = None
 
+# User-facing form names that are aliases for registry category names that do
+# not match verbatim (e.g. the prospectus is published as 首发 on CNINFO but
+# exposed to callers as 招股说明书). `resolve_category` consults this map before
+# scanning the registry groups.
+_CATEGORY_ALIASES: dict[str, str] = {
+    "招股说明书": "首发",
+}
+
 
 def load_categories() -> dict:
     """Load and cache the CNINFO category registry (cninfo_categories.json).
@@ -83,6 +91,9 @@ def resolve_category(category: Optional[str]) -> Optional[str]:
         return None
     if category.startswith("category_"):
         return category
+    # Map user-facing aliases (e.g. 招股说明书) to the registry's canonical name
+    # (首发) before scanning the groups.
+    category = _CATEGORY_ALIASES.get(category, category)
     for group in load_categories().get("groups", []):
         for cat in group.get("categories", []):
             if cat.get("name") == category:
@@ -308,8 +319,9 @@ def _form_from_title(title: str) -> str:
     """
     if not title:
         return ""
-    # Order matters: longer forms first.
-    for form in ("半年度报告", "第一季度报告", "第三季度报告", "年度报告"):
+    # Order matters: longer forms first. 招股说明书 (prospectus) is checked
+    # alongside the periodic forms so IPO announcements map to their own form.
+    for form in ("半年度报告", "第一季度报告", "第三季度报告", "年度报告", "招股说明书"):
         if form in title:
             return form
     return ""

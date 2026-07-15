@@ -25,6 +25,15 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+# Load .env file for LLM_API_KEY and other config
+try:
+    from dotenv import load_dotenv
+    env_path = _REPO_ROOT / '.env'
+    if env_path.exists():
+        load_dotenv(env_path)
+except ImportError:
+    pass
+
 import indicators_client  # noqa: E402
 
 
@@ -37,6 +46,9 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--rules", help="Path to an indicator_rules.json to use instead of the default")
     p.add_argument("--extractor", choices=["auto", "llm", "python"], default="auto",
                    help="Extractor mode (default: auto). 'python' skips report rules whose extractor is LLM.")
+    p.add_argument("--form", default="年度报告",
+                   choices=["年度报告", "半年度报告", "第一季度报告", "第三季度报告"],
+                   help="Report form (default: 年度报告)")
     p.add_argument("--indicators", help="Comma-separated indicator names to extract (default: all applicable)")
     p.add_argument("--out-dir", default="./out", help="Output directory (default: ./out)")
     p.add_argument("--format", default="json,csv", help="Comma-separated output formats (default: json,csv)")
@@ -52,9 +64,10 @@ def _companies(args: argparse.Namespace) -> list[str]:
     return [args.ticker_or_name]
 
 
-def _write_outputs(bundle: dict, stock: str, year: int, out_dir: Path, fmts: list[str]) -> None:
+def _write_outputs(bundle: dict, stock: str, year: int, out_dir: Path, fmts: list[str], form: str = "") -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    stem = f"{stock}_{year}"
+    form_suffix = {"年度报告": "", "半年度报告": "_h1", "第一季度报告": "_q1", "第三季度报告": "_q3"}.get(form, "")
+    stem = f"{stock}_{year}{form_suffix}"
     if "json" in fmts:
         (out_dir / f"{stem}.json").write_text(
             json.dumps(bundle, ensure_ascii=False, indent=2), encoding="utf-8"
@@ -90,6 +103,7 @@ def _extract_one(target: str, args: argparse.Namespace) -> dict:
         indicators = [s.strip() for s in args.indicators.split(",") if s.strip()]
     bundle = indicators_client.extract_indicators(
         target, args.year, indicators=indicators, extractor_mode=args.extractor,
+        form=args.form,
     )
     # record provenance the engine doesn't own
     bundle["rule_file"] = str(indicators_client._REGISTRY_PATH)
@@ -120,7 +134,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
 
         stock = bundle.get("stock_code") or target
-        _write_outputs(bundle, stock, args.year, out_dir, fmts)
+        _write_outputs(bundle, stock, args.year, out_dir, fmts, args.form)
         n_ok = sum(1 for v in (bundle.get("indicators") or {}).values() if v.get("value") is not None)
         print(
             f"[OK]   {stock} {args.year}: {n_ok}/{len(bundle.get('indicators') or {})} indicators "

@@ -77,7 +77,7 @@ Features:
 
 ---
 
-## Tools (26 MCP tools)
+## Tools (44 MCP tools)
 
 | Layer | Tool | Description |
 |-------|------|-------------|
@@ -93,6 +93,24 @@ Features:
 | | `list_hk_filings` | List HKEX filings |
 | | `get_hk_financials` | HK financial statements |
 | | `get_hk_section` | HK report section extraction |
+| **Official-website (SSE/SZSE/BSE)** | `get_sse_company` | Resolve SSE-listed company by 6-digit ticker |
+| | `list_sse_filings` | List SSE disclosures from sse.com.cn |
+| | `get_sse_section` | SSE annual-report section extraction |
+| | `get_sse_interaction` | 上证e互动 investor Q&A |
+| | `get_szse_company` | Resolve SZSE-listed company by 6-digit ticker |
+| | `list_szse_filings` | List SZSE disclosures from szse.cn |
+| | `get_szse_section` | SZSE annual-report section extraction |
+| | `get_szse_interaction` | 互动易 investor Q&A |
+| | `get_bse_company` | Resolve BSE-listed company by 6-digit ticker |
+| | `list_bse_filings` | List BSE disclosures (BSE-native, CNINFO fallback) |
+| | `get_bse_section` | BSE annual-report section extraction |
+| **Official-website (CSRC)** | `list_csrc_filings` | List CSRC regulatory announcements |
+| | `get_csrc_ipo_review` | CSRC IPO (首发) review status |
+| | `get_csrc_merger_review` | CSRC 并购重组 review status |
+| | `list_csrc_enforcement` | CSRC enforcement actions |
+| **Ministry statistics** | `list_ministries` | List supported ministry stat sources |
+| | `get_ministry_stat` | Ministry stats page -> HTML tables |
+| | `get_nbs_stat` | NBS macro statistic by indicator code |
 | **PDF / AI / ES** | `list_outline` | Parse 目录 from report URL or PDF path |
 | | `extract_section` | Body text by exact title / regex / ordinal |
 | | `ai_extract` | LLM-structured extraction over section text |
@@ -261,6 +279,74 @@ list_hk_filings("00700", year=2023)        # → HKEX filings
 get_hk_financials("00700")                 # → financial statements
 get_hk_section("00700", year=2023, section="管理层讨论与分析")
 ```
+
+## Official-website datasources (SSE / SZSE / BSE)
+
+Direct, primary-source disclosure paths complementing CNINFO. Each exchange
+client resolves a 6-digit ticker locally (no network) and lists disclosures
+from the exchange's own site. BSE falls back to CNINFO when its own API is
+thin, tagging each row with `source: "bse" | "cninfo"`. Section extraction
+reuses the same outline pipeline as CNINFO/HK.
+
+```python
+# SSE (上交所) - 600/601/603/605/688/900 codes
+get_sse_company("600519")
+list_sse_filings("600519", year=2023)                         # -> sse.com.cn disclosures
+get_sse_section("600519", year=2023, section="管理层讨论与分析")
+get_sse_interaction("600519")                                  # -> 上证e互动 Q&A
+
+# SZSE (深交所) - 000/001/002/003/300/301 codes
+get_szse_company("000001")
+list_szse_filings("000001", year=2023)                        # -> szse.cn disclosures
+get_szse_section("000001", year=2023, section="管理层讨论与分析")
+get_szse_interaction("000001")                                 # -> 互动易 Q&A (irm.cninfo.com.cn)
+
+# BSE (北交所) - 430xxx / 83xxxx / 87xxxx / 88xxxx / 920xxx codes
+get_bse_company("835185")
+list_bse_filings("835185", year=2023)                         # -> BSE-native, else CNINFO fallback
+get_bse_section("835185", year=2023, section="管理层讨论与分析")  # result carries `source`
+```
+
+> **Endpoints are undocumented.** SSE (`query.sse.com.cn`), SZSE
+> (`www.szse.cn/api`), BSE (`www.bse.cn`), and the Q&A hosts
+> (`sns.sseinfo.com`, `irm.cninfo.com.cn`) expose no official API contract and
+> shift over time. Clients are thin, retry 429/5xx, and bypass proxy env
+> (`trust_env=False`). Run `CNREPORT_SELFCHECK_LIVE=1 uv run python selfcheck.py`
+> to ping each endpoint - 4xx/5xx are flagged per source without failing the
+> suite. Name-fragment resolution is not supported by these clients; resolve the
+> name via `get_company` (CNINFO) first, then pass the 6-digit code.
+
+## CSRC regulatory data (证监会)
+
+CSRC regulatory data CNINFO/exchanges do not cover: announcements, IPO / 并购重组
+review status, and enforcement. HTML-parsed with `lxml`; endpoints undocumented.
+
+```python
+list_csrc_filings(begin_date="2024-01-01")              # -> regulatory announcements
+get_csrc_ipo_review("贵州茅台")                          # -> IPO review status row
+get_csrc_merger_review("某科技股份公司")                 # -> M&A review status row
+list_csrc_enforcement()                                 # -> administrative-penalty actions
+```
+
+## Ministry statistics (部级部门)
+
+Structured economic/financial statistics from ministry-level departments,
+complementing `fd-cn-gov`'s catalog-archive scraping with *data* queries. NBS
+has a JSON API; the others publish HTML tables. Results are TTL-cached under
+`.cache/stats/`. Base URLs reuse `fd-cn-gov`'s registry when importable.
+
+```python
+list_ministries()                       # -> [{id, label, en, transport, base}, ...]
+get_nbs_stat("A0201")                   # -> NBS GDP series {period: value}  (dbcode="hgnd" annual)
+get_ministry_stat("gacc")               # -> GACC trade page parsed into HTML tables
+get_ministry_stat("pboc", limit=20)     # -> PBoC monetary tables
+# Supported ids: nbs mof pboc safe gacc nfra
+```
+
+> Ministry stat-page paths and CSRC URLs are best-guess and **undocumented** -
+> verify live via `CNREPORT_SELFCHECK_LIVE=1 uv run python selfcheck.py`.
+> Corrections are one-line edits in `ministry_stats_client._MINISTRIES` /
+> `csrc_client._URLS`.
 
 ## Setup
 

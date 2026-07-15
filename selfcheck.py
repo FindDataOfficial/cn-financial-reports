@@ -229,6 +229,45 @@ def check_catalog_and_special():
         cninfo_client._post_json = _orig_post
 
 
+def check_official_sources():
+    """Non-failing live-endpoint ping for official-website datasource clients.
+
+    Offline by default (the rest of selfcheck makes no live calls). Set
+    ``CNREPORT_SELFCHECK_LIVE=1`` to actually ping each source's base
+    endpoint; 4xx/5xx or errors are reported per source but NEVER fail the
+    suite - they flag endpoints that need attention (design.md risk:
+    undocumented/shifting exchange & government APIs). Each client module
+    exposes ``ping() -> {ok, status_code, url}``; modules not yet implemented
+    are reported as such.
+    """
+    sources = [
+        ("SSE 上交所", "sse_client"),
+        ("SZSE 深交所", "szse_client"),
+        ("BSE 北交所", "bse_client"),
+        ("CSRC 证监会", "csrc_client"),
+        ("ministry stats", "ministry_stats_client"),
+    ]
+    if os.environ.get("CNREPORT_SELFCHECK_LIVE") != "1":
+        print("  · official sources: skipped (set CNREPORT_SELFCHECK_LIVE=1 to ping live)")
+        return
+    import importlib
+
+    for label, modname in sources:
+        try:
+            mod = importlib.import_module(modname)
+        except ImportError:
+            print(f"  · {label}: not implemented yet")
+            continue
+        try:
+            r = mod.ping()
+            if r.get("ok"):
+                print(f"  ✓ {label}: {r.get('status_code')} {r.get('url')}")
+            else:
+                print(f"  ✗ {label}: {r.get('status_code')} {r.get('url')} (needs attention)")
+        except Exception as e:  # noqa: BLE001 - non-failing ping
+            print(f"  ✗ {label}: {type(e).__name__}: {e}")
+
+
 def main():
     print("db checks:")
     check_db()
@@ -240,6 +279,8 @@ def main():
     check_company_api()
     print("catalog + special-report checks:")
     check_catalog_and_special()
+    print("official-source checks:")
+    check_official_sources()
     print("\nALL SELF-CHECKS PASSED")
 
 
